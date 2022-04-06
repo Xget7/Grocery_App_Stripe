@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/juani/Dropbox/Apps/GroceryAp/app/src/main/res/drawable/ic_add_to_cart.xml" value="0.122" />
+        <entry key="..\:/Users/juani/Dropbox/Apps/GroceryAp/app/src/main/res/drawable/ic_add_to_cart_svgrepo_com.xml" value="0.122" />
+        <entry key="..\:/Users/juani/Dropbox/Apps/GroceryAp/app/src/main/res/drawable/ic_baseline_edit_24.xml" value="0.1" />
+        <entry key="..\:/Users/juani/Dropbox/Apps/GroceryAp/app/src/main/res/drawable/ic_baseline_google.xml" value="0.123" />
+        <entry key="..\:/Users/juani/Dropbox/Apps/GroceryAp/app/src/main/res/drawable/ic_cart_background.xml" value="0.122" />
+        <entry key="..\:/Users/juani/Dropbox/Apps/GroceryAp/app/src/main/res/layout/activity_main.xml" value="0.3614583333333333" />
+        <entry key="..\:/Users/juani/Dropbox/Apps/GroceryAp/app/src/main/res/layout/activity_maps.xml" value="0.338768115942029" />
+        <entry key="..\:/Users/juani/Dropbox/Apps/GroceryAp/app/src/main/res/layout/activity_maps2.xml" value="0.1757852077001013" />
+        <entry key="..\:/Users/juani/Dropbox/Apps/GroceryAp/app/src/main/res/xml/layout_map.xml" value="0.3614583333333333" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
