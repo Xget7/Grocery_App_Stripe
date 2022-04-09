@@ -16,21 +16,21 @@ import lol.xget.groceryapp.data.repository.AuthRepoImpl
 import lol.xget.groceryapp.data.repository.UserRepoImpl
 import lol.xget.groceryapp.data.repository.SellerRepoImpl
 import lol.xget.groceryapp.domain.repository.AuthRepository
-import lol.xget.groceryapp.domain.repository.SellerRepository
-import lol.xget.groceryapp.domain.repository.UserRepository
+import lol.xget.groceryapp.homeSeller.repository.SellerRepository
+import lol.xget.groceryapp.homeUser.repository.UserRepository
 import lol.xget.groceryapp.domain.use_case.products.AddProductUseCase
 import lol.xget.groceryapp.domain.use_case.products.GetSpecificProductFromSeller
 import lol.xget.groceryapp.domain.use_case.products.UpdateProductUseCase
 import lol.xget.groceryapp.domain.use_case.auth.AuthUseCases
-import lol.xget.groceryapp.domain.use_case.auth.recover_pass_use_case.RecoverPasswordUseCase
-import lol.xget.groceryapp.domain.use_case.auth.login_use_case.LoginUseCase
-import lol.xget.groceryapp.domain.use_case.auth.register_use_case.RegisterUseCase
-import lol.xget.groceryapp.domain.use_case.homeSeller.*
-import lol.xget.groceryapp.domain.use_case.homeUser.GetShopsList
-import lol.xget.groceryapp.domain.use_case.homeUser.GetSpecificShopUseCase
+import lol.xget.groceryapp.recoverPassword.use_case.RecoverPasswordUseCase
+import lol.xget.groceryapp.login.use_case.LoginUseCase
+import lol.xget.groceryapp.register.use_case.RegisterUseCase
+import lol.xget.groceryapp.homeUser.use_case.GetShopsList
+import lol.xget.groceryapp.homeUser.use_case.GetSpecificShopUseCase
 import lol.xget.groceryapp.domain.use_case.profile.GetProfileUseCase
 import lol.xget.groceryapp.domain.use_case.profile.UserUseCases
 import lol.xget.groceryapp.domain.use_case.profile.UpdateProfileUseCase
+import lol.xget.groceryapp.homeSeller.use_case.*
 import javax.inject.Singleton
 
 @Module
@@ -113,7 +113,7 @@ object AppModule {
     @Singleton
     fun provideAuthUseCases(authRepository: AuthRepository): AuthUseCases {
         return AuthUseCases(
-            loginCase =LoginUseCase(authRepository),
+            loginCase = LoginUseCase(authRepository),
             registerCase = RegisterUseCase(authRepository),
             recoverPasswordUseCase = RecoverPasswordUseCase(authRepository)
         )

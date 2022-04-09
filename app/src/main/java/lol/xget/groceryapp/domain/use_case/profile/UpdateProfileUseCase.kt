@@ -1,7 +1,6 @@
 package lol.xget.groceryapp.domain.use_case.profile
 
 import android.net.Uri
-import android.util.Log
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.crashlytics.internal.model.CrashlyticsReport
@@ -11,13 +10,11 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import lol.xget.groceryapp.common.Resource
-import lol.xget.groceryapp.domain.model.UserModel
-import lol.xget.groceryapp.domain.repository.UserRepository
-import lol.xget.groceryapp.presentation.main.Seller.EditProducts.EditProductState
-import lol.xget.groceryapp.presentation.main.User.Account.ProfileState
+import lol.xget.groceryapp.homeUser.domain.User
+import lol.xget.groceryapp.homeUser.repository.UserRepository
+import lol.xget.groceryapp.profileUser.presentation.ProfileState
 import java.io.IOException
 import javax.inject.Inject
-import kotlin.math.log
 
 class UpdateProfileUseCase @Inject constructor(
     private val repo: UserRepository
@@ -26,7 +23,7 @@ class UpdateProfileUseCase @Inject constructor(
     private val currentUser = FirebaseAuth.getInstance().currentUser?.uid
 
     @ExperimentalCoroutinesApi
-    operator fun invoke(user: UserModel, profilePhotoUri: Uri?): Flow<Resource<ProfileState>> =
+    operator fun invoke(user: User, profilePhotoUri: Uri?): Flow<Resource<ProfileState>> =
         callbackFlow {
             try {
                 try {
@@ -48,7 +45,7 @@ class UpdateProfileUseCase @Inject constructor(
                                                 launch {
                                                     user.profilePhoto = it.toString()
                                                     repo.updateProfile(user,currentUser!!).addOnSuccessListener {
-                                                        trySend(Resource.Success(ProfileState(successUpdate = true, userModel = user)))
+                                                        trySend(Resource.Success(ProfileState(successUpdate = true, user = user)))
                                                     }.addOnFailureListener{
                                                         trySend(Resource.Error("Can't change your profile "))
                                                     }
@@ -65,7 +62,7 @@ class UpdateProfileUseCase @Inject constructor(
                                             launch {
                                                 user.profilePhoto = it.toString()
                                                 repo.updateProfile(user,currentUser!!).addOnSuccessListener {
-                                                    trySend(Resource.Success(ProfileState(successUpdate = true, userModel = user)))
+                                                    trySend(Resource.Success(ProfileState(successUpdate = true, user = user)))
                                                 }.addOnFailureListener{
                                                     trySend(Resource.Error("Can't upload your profile photo"))
                                                 }

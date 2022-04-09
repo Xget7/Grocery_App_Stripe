@@ -2,7 +2,6 @@ package lol.xget.groceryapp.domain.use_case.auth
 
 import android.app.Activity
 import android.app.Application
-import android.util.Log
 import androidx.compose.material.ExperimentalMaterialApi
 import com.google.firebase.FirebaseException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,8 +11,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import lol.xget.groceryapp.MainActivity
 import lol.xget.groceryapp.common.Resource
-import lol.xget.groceryapp.domain.location.LocationLiveData
-import lol.xget.groceryapp.presentation.auth.map_select_location.SelectLocationState
+import lol.xget.groceryapp.login.domain.LocationLiveData
+import lol.xget.groceryapp.mapLocalization.presentation.SelectLocationState
 import java.io.IOException
 
 class LocationUseCase {

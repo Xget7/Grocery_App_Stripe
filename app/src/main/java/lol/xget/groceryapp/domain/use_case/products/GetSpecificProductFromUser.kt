@@ -8,10 +8,9 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import lol.xget.groceryapp.common.Resource
-import lol.xget.groceryapp.domain.model.ProductModel
-import lol.xget.groceryapp.domain.repository.SellerRepository
-import lol.xget.groceryapp.domain.repository.UserRepository
-import lol.xget.groceryapp.presentation.main.User.Home.ProductDetail.ProductDetailState
+import lol.xget.groceryapp.homeSeller.domain.ProductModel
+import lol.xget.groceryapp.homeUser.repository.UserRepository
+import lol.xget.groceryapp.homeUser.presentation.ProductDetail.ProductDetailState
 import java.io.IOException
 import javax.inject.Inject
 

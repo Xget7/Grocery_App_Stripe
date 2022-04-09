@@ -44,7 +44,7 @@
             android:value="AIzaSyA_bCcuVoA-EvRfUFVmngWIuQzLWVtXpZU" />
 
         <activity
-            android:name=".presentation.auth.map_select_location.MapsActivity"
+            android:name=".mapLocalization.presentation.MapsActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity"
             android:label="@string/title_activity_maps" />

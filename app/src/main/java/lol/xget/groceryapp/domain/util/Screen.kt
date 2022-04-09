@@ -4,7 +4,7 @@ import lol.xget.groceryapp.common.Constants.LATITUDE
 import lol.xget.groceryapp.common.Constants.LONGITUDE
 import lol.xget.groceryapp.common.Constants.PARAM_PRODUCT
 import lol.xget.groceryapp.common.Constants.PARAM_SHOP
-import lol.xget.groceryapp.domain.model.ProductModel
+import lol.xget.groceryapp.homeSeller.domain.ProductModel
 
 
 sealed class Screen(val route : String, val productModel: ProductModel? = null){

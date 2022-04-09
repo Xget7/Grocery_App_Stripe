@@ -6,7 +6,7 @@
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.auth.map_select_location.MapsActivity">
+    tools:context=".mapLocalization.presentation.MapsActivity">
 
     <androidx.compose.ui.platform.ComposeView
         android:id="@+id/compose_view"

@@ -1,18 +1,11 @@
 package lol.xget.groceryapp.data.repository
 
-import android.content.Context
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import lol.xget.groceryapp.domain.model.ShopModel
-import lol.xget.groceryapp.domain.model.UserModel
-import lol.xget.groceryapp.domain.repository.UserRepository
+import lol.xget.groceryapp.homeUser.domain.User
+import lol.xget.groceryapp.homeUser.repository.UserRepository
 import org.kpropmap.asMap
 import javax.inject.Inject
 
@@ -24,7 +17,7 @@ class UserRepoImpl @Inject constructor(
     private val db2 = FirebaseDatabase.getInstance()
 
 
-    override suspend fun updateProfile(user: UserModel, userUid: String): Task<Void> {
+    override suspend fun updateProfile(user: User, userUid: String): Task<Void> {
         return db2.getReference(user.accountType + "s").child(userUid).updateChildren(user.asMap())
     }
 

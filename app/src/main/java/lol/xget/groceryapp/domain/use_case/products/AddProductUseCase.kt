@@ -1,21 +1,19 @@
 package lol.xget.groceryapp.domain.use_case.products
 
 import android.net.Uri
-import android.util.Log
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.crashlytics.internal.model.CrashlyticsReport
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import lol.xget.groceryapp.common.Resource
-import lol.xget.groceryapp.domain.model.ProductModel
-import lol.xget.groceryapp.domain.repository.SellerRepository
-import lol.xget.groceryapp.presentation.main.Seller.AddProducts.AddProductState
+import lol.xget.groceryapp.homeSeller.domain.ProductModel
+import lol.xget.groceryapp.homeSeller.repository.SellerRepository
+import lol.xget.groceryapp.homeSeller.presentation.AddProducts.AddProductState
 import org.kpropmap.asMap
 import java.io.IOException
 import javax.inject.Inject
