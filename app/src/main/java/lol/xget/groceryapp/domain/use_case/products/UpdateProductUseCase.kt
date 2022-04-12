@@ -12,9 +12,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import lol.xget.groceryapp.common.Resource
-import lol.xget.groceryapp.homeSeller.domain.ProductModel
-import lol.xget.groceryapp.homeSeller.repository.SellerRepository
-import lol.xget.groceryapp.homeSeller.presentation.EditProducts.EditProductState
+import lol.xget.groceryapp.mainSeller.domain.ProductModel
+import lol.xget.groceryapp.mainSeller.repository.SellerRepository
+import lol.xget.groceryapp.mainSeller.presentation.EditProducts.EditProductState
 import org.kpropmap.asMap
 import java.io.IOException
 import javax.inject.Inject

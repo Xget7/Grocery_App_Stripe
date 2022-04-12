@@ -4,9 +4,8 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import lol.xget.groceryapp.homeUser.domain.User
-import lol.xget.groceryapp.homeSeller.repository.SellerRepository
-import org.kpropmap.asMap
+import lol.xget.groceryapp.mainUser.domain.User
+import lol.xget.groceryapp.mainSeller.repository.SellerRepository
 import javax.inject.Inject
 
 
@@ -56,7 +55,7 @@ class SellerRepoImpl @Inject constructor(
 
     override suspend fun updateShopData(currentUser: String, newShopData: User): Task<Void> {
         return db.getReference(newShopData.accountType + "s").child(currentUser)
-            .updateChildren(newShopData.asMap())
+            .updateChildren(newShopData.toMap())
     }
 
     override suspend fun getShopData(currentShop: String): DatabaseReference {

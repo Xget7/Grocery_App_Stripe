@@ -39,9 +39,8 @@ import com.talhafaki.composablesweettoast.util.SweetToastUtil.SweetSuccess
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import lol.xget.groceryapp.R
-import lol.xget.groceryapp.homeUser.domain.User
+import lol.xget.groceryapp.mainUser.domain.User
 import lol.xget.groceryapp.domain.util.Screen
-import lol.xget.groceryapp.homeUser.domain.UserName
 import lol.xget.groceryapp.login.presentation.components.EventDialog
 import lol.xget.groceryapp.login.presentation.components.RoundedButton
 import lol.xget.groceryapp.login.presentation.components.TransparentTextField
@@ -294,7 +293,7 @@ fun SellerProfileScreen(
 
                         val user = User(
                             profilePhoto = profileImage.toString().ifEmpty { viewModel.shopImage.value },
-                            fullName = UserName(viewModel.fullNameValue.value) ,
+                            userName = viewModel.fullNameValue.value ,
                             accountType = viewModel.accountType.value,
                             phone = viewModel.phoneValue.value,
                             state = viewModel.stateValue.value,

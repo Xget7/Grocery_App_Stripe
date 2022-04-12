@@ -13,8 +13,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import lol.xget.groceryapp.common.Resource
-import lol.xget.groceryapp.homeUser.domain.User
-import lol.xget.groceryapp.domain.use_case.profile.UserUseCases
+import lol.xget.groceryapp.mainUser.domain.User
+import lol.xget.groceryapp.profileUser.use_case.UserUseCases
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -71,7 +71,7 @@ class ProfileViewModel @Inject constructor(
                 is Resource.Success -> {
                     state.value = state.value.copy(user = result.data!!.user)
                     state.value = state.value.copy(loading = false)
-                    fullNameValue.value = state.value.user!!.fullName.toString()
+                    fullNameValue.value = state.value.user!!.userName.toString()
                     phoneValue.value = state.value.user!!.phone.toString()
                     country.value = state.value.user!!.country.toString()
                     stateValue.value = state.value.user!!.state.toString()

@@ -4,8 +4,8 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import lol.xget.groceryapp.homeUser.domain.User
-import lol.xget.groceryapp.homeUser.repository.UserRepository
+import lol.xget.groceryapp.mainUser.domain.User
+import lol.xget.groceryapp.mainUser.repository.UserRepository
 import org.kpropmap.asMap
 import javax.inject.Inject
 

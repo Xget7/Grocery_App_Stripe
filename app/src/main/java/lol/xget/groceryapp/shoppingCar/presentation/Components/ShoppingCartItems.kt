@@ -1,8 +1,5 @@
 package lol.xget.groceryapp.shoppingCar.presentation.Components
 
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,34 +9,31 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.res.ResourcesCompat
 import com.skydoves.landscapist.glide.GlideImage
 import compose.icons.TablerIcons
 import compose.icons.tablericons.Minus
 import lol.xget.groceryapp.R
-import lol.xget.groceryapp.ui.GroceryAppTheme
+import lol.xget.groceryapp.data.localdb.CartItems
 import lol.xget.groceryapp.ui.LightGreen
 import lol.xget.groceryapp.ui.raleway
 
 @Composable
-fun ShoppingCartItems() {
+fun ShoppingCartItems(
+    product : CartItems,
+    onClickAdd :  () -> Unit,
+    onDeleteAdd :  () -> Unit
+) {
 
     Box(
         Modifier.fillMaxWidth()
@@ -66,7 +60,19 @@ fun ShoppingCartItems() {
                     shape = RoundedCornerShape(10),
                     elevation = 2.dp
                 ) {
-                    Image(painterResource(R.drawable.holder), "Product image")
+                    product.itemPhoto?.let {
+                        GlideImage(
+                            imageModel =it,
+                            // Crop, Fit, Inside, FillHeight, FillWidth, None
+                            contentScale = ContentScale.Crop,
+                            // shows an image with a circular revealed animation.
+                            // shows a placeholder ImageBitmap when loading.
+                            placeHolder = ImageBitmap.imageResource(R.drawable.holder),
+                            // shows an error ImageBitmap when the request failed.
+                            error = ImageBitmap.imageResource(R.drawable.error)
+                        )
+                    }
+
                 }
 
                 Column(
@@ -78,14 +84,15 @@ fun ShoppingCartItems() {
 
                     Text(
                         modifier = Modifier.padding(top = 15.dp),
-                        text = "Black Grape",
+                        text = product.itemName,
                         style = MaterialTheme.typography.h6,
                         color = MaterialTheme.colors.primaryVariant,
                         fontWeight = FontWeight.Light
                     )
+
                     Spacer(modifier = Modifier.height(3.dp))
                     Text(
-                        text = "$ 122 / kg",
+                        text = product.itemPrice + "/" + product.itemQuantity,
                         style = MaterialTheme.typography.caption,
                         color = Color.LightGray,
                         fontWeight = FontWeight.Light,
@@ -97,7 +104,7 @@ fun ShoppingCartItems() {
                     ) {
 
                         IconButton(
-                            onClick = { },
+                            onClick = onDeleteAdd ,
                             modifier = Modifier.align(Alignment.CenterVertically),
                             //enabled = productAmount.value >= 1
                         ) {
@@ -119,7 +126,7 @@ fun ShoppingCartItems() {
                         Spacer(modifier = Modifier.width(20.dp))
 
                         Text(
-                            text = "1",
+                            text = product.itemAmount.toString(),
                             fontSize = 20.sp,
                             color = Color.White,
                             modifier = Modifier
@@ -164,21 +171,14 @@ fun ShoppingCartItems() {
         }
 
         Text(
-            text = "$144",
+            text = product.itemPriceEach,
             fontSize = 20.sp,
             modifier = Modifier.align(Alignment.CenterEnd).padding(end = 2.dp),
             color = MaterialTheme.colors.primaryVariant,
 
-        )
+            )
     }
 
 
 }
 
-@Preview
-@Composable
-fun Preview() {
-    GroceryAppTheme {
-        ShoppingCartItems()
-    }
-}

@@ -1,6 +1,5 @@
 package lol.xget.groceryapp.register.presentation.register_seller
 
-import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.location.Geocoder
@@ -13,16 +12,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import lol.xget.groceryapp.common.Resource
-import lol.xget.groceryapp.homeUser.domain.User
-import lol.xget.groceryapp.domain.use_case.auth.LocationUseCase
+import lol.xget.groceryapp.mainUser.domain.User
 import lol.xget.groceryapp.register.use_case.RegisterUseCase
-import lol.xget.groceryapp.domain.util.RegistrationUtil
-import lol.xget.groceryapp.homeUser.domain.UserPassword
 import java.util.*
 import javax.inject.Inject
 
@@ -39,7 +35,7 @@ class RegisterSellerViewModel @Inject constructor(
     var open = MutableLiveData<Boolean>()
     var gpsStatus = MutableLiveData<Boolean>()
 
-    val fullNameValue = mutableStateOf("")
+    val userNameValue = mutableStateOf("")
     val uidValue = mutableStateOf("")
     val emailValue = mutableStateOf("")
     val shopNameValue = mutableStateOf("")
@@ -63,7 +59,7 @@ class RegisterSellerViewModel @Inject constructor(
 
 
     fun setLocationAddresses(latitude : Double, longitude: Double){
-        viewModelScope.launch(IO) {
+        viewModelScope.launch(Main) {
             open.value = true
             val geoCoder= Geocoder(application, Locale.getDefault())
             val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
@@ -82,16 +78,62 @@ class RegisterSellerViewModel @Inject constructor(
         }
     }
 
+    fun verifyUser(
+        email: String,
+        password: String,
+        confirmPassword: String,
+        user: User,
+    ): Boolean {
+        if (user.userName!!.isBlank()) {
+            _state.value = state.value.copy(errorMsg = "Name is empty.")
+            return false
+        }else if (!user.userName.matches(regex = Regex("(?=.*[A-Z]).*")) ){
+            _state.value = state.value.copy(errorMsg = "Name need at least 1 mayus.")
+            return false
+        } else if (!email.trim().matches(Regex("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"))) {
+            _state.value = state.value.copy(errorMsg = "Invalid email.")
+            return false
+        } else if (password.isBlank() || confirmPassword.isBlank()) {
+            _state.value = state.value.copy(errorMsg = "Passwords are empty.")
+            return false
+        }else if (password.length < 6) {
+            _state.value = state.value.copy(errorMsg = "Password need at least 6 characters.")
+            return false
+        } else if (password != confirmPassword) {
+            _state.value = state.value.copy(errorMsg = "Passwords don't match.")
+            return false
+        } else if (user.address!!.isBlank()) {
+            _state.value = state.value.copy(errorMsg = "Address is empty.")
+            return false
+        } else if (email.isBlank()) {
+            _state.value = state.value.copy(errorMsg = "Email is empty.")
+            return false
+        } else if (user.phone!!.isBlank()) {
+            _state.value = state.value.copy(errorMsg = "Phone is empty.")
+            return false
+        }else if (user.city!!.isBlank()) {
+            _state.value = state.value.copy(errorMsg = "City is empty.")
+            return false
+        }else if (user.state!!.isBlank()) {
+            _state.value = state.value.copy(errorMsg = "State is empty.")
+            return false
+        }
+        else if (user.country!!.isBlank()) {
+            _state.value = state.value.copy(errorMsg = "Country is empty.")
+            return false
+        }else return true
+    }
+
     @ExperimentalCoroutinesApi
     fun registerUser(user: User) {
-        if (RegistrationUtil.verifyUser(
-                emailValue.value,
-                UserPassword(passwordValue.value) ,
-                UserPassword(confirmPasswordValue.value),
+        if (verifyUser(
+                emailValue.value ,
+                passwordValue.value,
+                confirmPasswordValue.value,
                 user
             )
         ) {
-            regUseCase.invoke(emailValue.value, passwordValue.value, user).onEach { result ->
+            regUseCase.invoke(emailValue.value.trim(), passwordValue.value, user).onEach { result ->
                 when (result) {
                     is Resource.Success -> {
                         _state.value = _state.value.copy(successRegister = true, displayPb = false)

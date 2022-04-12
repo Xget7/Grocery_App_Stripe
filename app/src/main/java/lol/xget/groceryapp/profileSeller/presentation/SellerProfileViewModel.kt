@@ -12,9 +12,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import lol.xget.groceryapp.common.Resource
-import lol.xget.groceryapp.homeUser.domain.User
-import lol.xget.groceryapp.homeSeller.use_case.HomeSellerUseCases
-import lol.xget.groceryapp.homeUser.domain.UserName
+import lol.xget.groceryapp.mainUser.domain.User
+import lol.xget.groceryapp.mainSeller.use_case.HomeSellerUseCases
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -60,7 +59,7 @@ class SellerProfileViewModel @Inject constructor(
                     val userFb = state.value.user
                     shopNameValue.value = userFb?.shopName!!
                     accountType.value = userFb.accountType!!
-                    fullNameValue.value = userFb.fullName!!.value
+                    fullNameValue.value = userFb.userName!!
                     stateValue.value = userFb.state!!
 
                     userFb.deliveryFee?.let {

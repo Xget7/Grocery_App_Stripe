@@ -8,12 +8,13 @@ import androidx.room.PrimaryKey
 data class CartItems(
     @PrimaryKey(autoGenerate = true)
     var id: Int,
-
+    var itemPhoto : String? = null,
     var itemId: String,
+    var itemQuantity: String,
     var itemName: String,
     var itemPriceEach: String,
     var itemPrice: String,
-    var itemQuantity: String
+    var itemAmount: Int
 
 
 )

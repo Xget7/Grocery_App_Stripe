@@ -4,7 +4,7 @@ import lol.xget.groceryapp.common.Constants.LATITUDE
 import lol.xget.groceryapp.common.Constants.LONGITUDE
 import lol.xget.groceryapp.common.Constants.PARAM_PRODUCT
 import lol.xget.groceryapp.common.Constants.PARAM_SHOP
-import lol.xget.groceryapp.homeSeller.domain.ProductModel
+import lol.xget.groceryapp.mainSeller.domain.ProductModel
 
 
 sealed class Screen(val route : String, val productModel: ProductModel? = null){
@@ -29,5 +29,7 @@ sealed class Screen(val route : String, val productModel: ProductModel? = null){
             return "product_detail_screen/$shopId/$productId"
         }
     }
+    object ShoppingCar : Screen("shopping_car_screen")
+
 
 }

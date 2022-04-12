@@ -1,9 +1,13 @@
 package lol.xget.groceryapp.common
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.util.regex.Pattern
 
 object Constants {
+    val gson = Gson()
+
     val LONGITUDE = "longitude"
     val LATITUDE= "latitude"
     val EMAIL_ADDRESS_PATTERN: Pattern = Pattern.compile(
@@ -39,6 +43,17 @@ object Constants {
     fun <T> SnapshotStateList<T>.swapList(newList: List<T>){
         clear()
         addAll(newList)
+    }
+
+     inline fun <reified T> Map<String, Any?>.toDataClass(): T {
+
+        return convert()
+    }
+
+    //convert an object of type I to type O
+    inline fun <I, reified O> I.convert(): O {
+        val json = gson.toJson(this)
+        return gson.fromJson(json, object : TypeToken<O>() {}.type)
     }
 
 

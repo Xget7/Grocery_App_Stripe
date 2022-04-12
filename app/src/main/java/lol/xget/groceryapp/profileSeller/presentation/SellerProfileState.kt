@@ -1,7 +1,7 @@
 package lol.xget.groceryapp.profileSeller.presentation
 
-import lol.xget.groceryapp.homeSeller.domain.ShopModel
-import lol.xget.groceryapp.homeUser.domain.User
+import lol.xget.groceryapp.mainSeller.domain.ShopModel
+import lol.xget.groceryapp.mainUser.domain.User
 
 data class SellerProfileState(
     val successUpdate : Boolean? = false,

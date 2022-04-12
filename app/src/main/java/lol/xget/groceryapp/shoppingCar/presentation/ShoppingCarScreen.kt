@@ -1,11 +1,8 @@
 package lol.xget.groceryapp.shoppingCar.presentation
 
-import androidx.compose.compiler.plugins.kotlin.ComposeFqNames.remember
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -13,7 +10,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -26,20 +22,21 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import compose.icons.TablerIcons
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import lol.xget.groceryapp.shoppingCar.presentation.Components.ShoppingCartItems
-import lol.xget.groceryapp.ui.GroceryAppTheme
 import kotlin.math.roundToInt
 
 @Composable
-fun ShoppingCarScreen() {
+fun ShoppingCarScreen(
+    navController: NavController,
+    viewModel: ShoppingCarViewModel = hiltViewModel()
+) {
 
     val bottomBarHeight = 85.dp
     val bottomBarHeightPx = with(LocalDensity.current) {
@@ -91,7 +88,7 @@ fun ShoppingCarScreen() {
 
 
                         Text(
-                            text = "My Cart (4)",
+                            text = "My Cart (${viewModel.totalItems})",
                             fontSize = 25.sp,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center,
@@ -116,21 +113,21 @@ fun ShoppingCarScreen() {
                     Divider(thickness = 2.dp, color = Color.LightGray)
 
 
-                    //TODO(ADD spacers between items , implement bottom checkout button )
+
                     LazyColumn(
                         modifier = Modifier.padding(20.dp),
                         state = lazyListState,
                         contentPadding = PaddingValues(vertical = 4.dp)
                     ) {
-                        item {
-                            ShoppingCartItems()
-                            ShoppingCartItems()
-                            ShoppingCartItems()
-                            ShoppingCartItems()
-                            ShoppingCartItems()
-                            ShoppingCartItems()
-                            ShoppingCartItems()
-                            ShoppingCartItems()
+                        items(viewModel.shopCartItems) {
+                            ShoppingCartItems(product = it,
+                                onClickAdd = {
+
+                                },
+                                onDeleteAdd = {
+                                    viewModel.deleteItem(it)
+                                }
+                            )
                         }
                     }
 
@@ -149,34 +146,34 @@ fun ShoppingCarScreen() {
                         IntOffset(x = 0, y = -bottomBarOffsetHeightPx.value.roundToInt())
                     },
                 cutoutShape = RoundedCornerShape(50),
-                content = {
+            ) {
 
-                    Row(
-                        horizontalArrangement = Arrangement.End,
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                ) {
+
+                    Text(
+                        text = "Total: ${viewModel.totalItemsPrice}",
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colors.primaryVariant,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                    Button(
+                        onClick = { /*TODO*/ },
+                        shape = CircleShape,
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = MaterialTheme.colors.onSecondary
+                        ),
                     ) {
-                        Button(
-                            onClick = { /*TODO*/ },
-                            shape = CircleShape,
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = MaterialTheme.colors.onSecondary
-                            ),
-                        ) {
-                            Text(text = "Checkout")
-                        }
+                        Text(text = "Checkout")
                     }
-
-
                 }
-            )
+
+
+            }
+
         }
     )
-}
-
-
-@Preview
-@Composable
-private fun preview() {
-    GroceryAppTheme {
-        ShoppingCarScreen()
-    }
 }

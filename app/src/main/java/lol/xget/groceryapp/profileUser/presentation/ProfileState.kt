@@ -1,6 +1,6 @@
 package lol.xget.groceryapp.profileUser.presentation
 
-import lol.xget.groceryapp.homeUser.domain.User
+import lol.xget.groceryapp.mainUser.domain.User
 
 data class ProfileState(
     val successUpdate : Boolean? = false,

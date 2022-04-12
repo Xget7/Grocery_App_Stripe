@@ -44,10 +44,8 @@ import com.talhafaki.composablesweettoast.util.SweetToastUtil
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import lol.xget.groceryapp.homeUser.domain.User
+import lol.xget.groceryapp.mainUser.domain.User
 import lol.xget.groceryapp.domain.util.Screen
-import lol.xget.groceryapp.homeUser.domain.UserEmail
-import lol.xget.groceryapp.homeUser.domain.UserName
 import lol.xget.groceryapp.login.presentation.components.EventDialog
 import lol.xget.groceryapp.login.presentation.components.TransparentTextField
 import lol.xget.groceryapp.mapLocalization.presentation.MapsActivityResultContract
@@ -348,13 +346,13 @@ fun RegistrationScreen(
                     ),
                     onClick = {
                         val user = User(
-                            fullName = UserName(viewModel.fullNameValue.value),
+                            userName = viewModel.fullNameValue.value,
                             phone = viewModel.phoneValue.value,
                             state = viewModel.stateValue.value,
                             city = viewModel.cityValue.value,
                             address = viewModel.addressValue.value,
                             accountType = "user",
-                            email = UserEmail(viewModel.emailValue.value),
+                            email = viewModel.emailValue.value,
                             country = viewModel.countryValue.value,
                             uid = viewModel.userUid.value,
                             latitude = userLatLng.latitude.toFloat(),

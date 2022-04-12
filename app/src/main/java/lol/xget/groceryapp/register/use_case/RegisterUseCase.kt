@@ -1,6 +1,5 @@
 package lol.xget.groceryapp.register.use_case
 
-import android.util.Log
 import com.google.firebase.FirebaseException
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -10,10 +9,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import lol.xget.groceryapp.common.Resource
 import lol.xget.groceryapp.domain.repository.AuthRepository
-import lol.xget.groceryapp.homeUser.domain.User
-import lol.xget.groceryapp.homeUser.domain.UserEmail
+import lol.xget.groceryapp.mainUser.domain.User
 import lol.xget.groceryapp.register.presentation.register_user.RegisterUserState
-import org.kpropmap.asMap
 import java.io.IOException
 import javax.inject.Inject
 
@@ -26,7 +23,7 @@ class RegisterUseCase @Inject constructor(
     operator fun invoke (email : String, password : String, user: User) : Flow<Resource<RegisterUserState>> =
         callbackFlow {
             val db = FirebaseDatabase.getInstance()
-            UserEmail(email)
+            user.email = email
             try {
                 trySend(Resource.Loading())
                 repository.register(email, password).addOnSuccessListener { result ->
@@ -36,7 +33,7 @@ class RegisterUseCase @Inject constructor(
                         try {
                             if (user.accountType!! == "seller") {
                                 db.getReference("sellers").child(userUid)
-                                    .updateChildren(user.asMap()).addOnSuccessListener {
+                                    .updateChildren(user.toMap()).addOnSuccessListener {
                                     try {
                                         trySend(Resource.Success(RegisterUserState(successRegister = true)))
                                     } catch (e: Exception) {
@@ -45,7 +42,7 @@ class RegisterUseCase @Inject constructor(
                                 }
                             } else if (user.accountType == "user") {
                                 db.getReference("users").child(userUid)
-                                    .updateChildren(user.asMap()).addOnSuccessListener {
+                                    .updateChildren(user.toMap()).addOnSuccessListener {
                                     try {
                                         trySend(Resource.Success(RegisterUserState(successRegister = true)))
                                     } catch (e: Exception) {

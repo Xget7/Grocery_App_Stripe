@@ -16,8 +16,8 @@ import lol.xget.groceryapp.data.repository.AuthRepoImpl
 import lol.xget.groceryapp.data.repository.UserRepoImpl
 import lol.xget.groceryapp.data.repository.SellerRepoImpl
 import lol.xget.groceryapp.domain.repository.AuthRepository
-import lol.xget.groceryapp.homeSeller.repository.SellerRepository
-import lol.xget.groceryapp.homeUser.repository.UserRepository
+import lol.xget.groceryapp.mainSeller.repository.SellerRepository
+import lol.xget.groceryapp.mainUser.repository.UserRepository
 import lol.xget.groceryapp.domain.use_case.products.AddProductUseCase
 import lol.xget.groceryapp.domain.use_case.products.GetSpecificProductFromSeller
 import lol.xget.groceryapp.domain.use_case.products.UpdateProductUseCase
@@ -25,12 +25,12 @@ import lol.xget.groceryapp.domain.use_case.auth.AuthUseCases
 import lol.xget.groceryapp.recoverPassword.use_case.RecoverPasswordUseCase
 import lol.xget.groceryapp.login.use_case.LoginUseCase
 import lol.xget.groceryapp.register.use_case.RegisterUseCase
-import lol.xget.groceryapp.homeUser.use_case.GetShopsList
-import lol.xget.groceryapp.homeUser.use_case.GetSpecificShopUseCase
-import lol.xget.groceryapp.domain.use_case.profile.GetProfileUseCase
-import lol.xget.groceryapp.domain.use_case.profile.UserUseCases
-import lol.xget.groceryapp.domain.use_case.profile.UpdateProfileUseCase
-import lol.xget.groceryapp.homeSeller.use_case.*
+import lol.xget.groceryapp.mainUser.use_case.GetShopsList
+import lol.xget.groceryapp.mainUser.use_case.GetSpecificShopUseCase
+import lol.xget.groceryapp.profileUser.use_case.GetProfileUseCase
+import lol.xget.groceryapp.profileUser.use_case.UserUseCases
+import lol.xget.groceryapp.profileUser.use_case.UpdateProfileUseCase
+import lol.xget.groceryapp.mainSeller.use_case.*
 import javax.inject.Singleton
 
 @Module

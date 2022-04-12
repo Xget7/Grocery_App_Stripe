@@ -20,15 +20,16 @@ import lol.xget.groceryapp.recoverPassword.presentation.RecoverPassword
 import lol.xget.groceryapp.login.presentation.LoginScreen
 import lol.xget.groceryapp.register.presentation.register_seller.RegistrationSellerScreen
 import lol.xget.groceryapp.register.presentation.register_user.RegistrationScreen
-import lol.xget.groceryapp.homeSeller.presentation.AddProducts.AddProductScreen
-import lol.xget.groceryapp.homeSeller.presentation.EditProducts.EditProductScreen
-import lol.xget.groceryapp.homeSeller.presentation.SellerHomeScreen
+import lol.xget.groceryapp.mainSeller.presentation.AddProducts.AddProductScreen
+import lol.xget.groceryapp.mainSeller.presentation.EditProducts.EditProductScreen
+import lol.xget.groceryapp.mainSeller.presentation.SellerHomeScreen
 import lol.xget.groceryapp.profileSeller.presentation.SellerProfileScreen
 import lol.xget.groceryapp.presentation.main.SplashScreen
 import lol.xget.groceryapp.profileUser.presentation.ProfileScreen
-import lol.xget.groceryapp.homeUser.presentation.ProductDetail.ProductDetailScreen
-import lol.xget.groceryapp.homeUser.presentation.ShopDetails.ShopDetailScreen
-import lol.xget.groceryapp.homeUser.presentation.UserHomeScreen
+import lol.xget.groceryapp.mainUser.presentation.ProductDetail.ProductDetailScreen
+import lol.xget.groceryapp.mainUser.presentation.ShopDetails.ShopDetailScreen
+import lol.xget.groceryapp.mainUser.presentation.UserHomeScreen
+import lol.xget.groceryapp.shoppingCar.presentation.ShoppingCarScreen
 import lol.xget.groceryapp.ui.GroceryAppTheme
 
 @ExperimentalCoroutinesApi
@@ -117,6 +118,11 @@ class MainActivity : ComponentActivity() {
                             route = Screen.ProductDetailScreen.route
                         ) {
                             ProductDetailScreen(navController)
+                        }
+                        composable(
+                            route = Screen.ShoppingCar.route
+                        ) {
+                            ShoppingCarScreen(navController)
                         }
                     }
 
