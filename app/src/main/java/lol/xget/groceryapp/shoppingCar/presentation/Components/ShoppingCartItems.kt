@@ -1,5 +1,6 @@
 package lol.xget.groceryapp.shoppingCar.presentation.Components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,6 +11,9 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,6 +27,8 @@ import androidx.compose.ui.unit.sp
 import com.skydoves.landscapist.glide.GlideImage
 import compose.icons.TablerIcons
 import compose.icons.tablericons.Minus
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import lol.xget.groceryapp.R
 import lol.xget.groceryapp.data.localdb.CartItems
 import lol.xget.groceryapp.ui.LightGreen
@@ -30,10 +36,11 @@ import lol.xget.groceryapp.ui.raleway
 
 @Composable
 fun ShoppingCartItems(
-    product : CartItems,
-    onClickAdd :  () -> Unit,
-    onDeleteAdd :  () -> Unit
+    product: CartItems,
+    onClickAdd: () -> Unit,
+    onDeleteAdd: () -> Unit
 ) {
+
 
     Box(
         Modifier.fillMaxWidth()
@@ -62,7 +69,7 @@ fun ShoppingCartItems(
                 ) {
                     product.itemPhoto?.let {
                         GlideImage(
-                            imageModel =it,
+                            imageModel = it,
                             // Crop, Fit, Inside, FillHeight, FillWidth, None
                             contentScale = ContentScale.Crop,
                             // shows an image with a circular revealed animation.
@@ -104,7 +111,7 @@ fun ShoppingCartItems(
                     ) {
 
                         IconButton(
-                            onClick = onDeleteAdd ,
+                            onClick = onDeleteAdd,
                             modifier = Modifier.align(Alignment.CenterVertically),
                             //enabled = productAmount.value >= 1
                         ) {
@@ -141,7 +148,7 @@ fun ShoppingCartItems(
                         Spacer(modifier = Modifier.width(20.dp))
 
                         IconButton(
-                            onClick = { /*viewModel.addItem()*/ },
+                            onClick = onClickAdd,
                             modifier = Modifier.align(Alignment.CenterVertically)
                         ) {
                             Icon(
@@ -173,7 +180,9 @@ fun ShoppingCartItems(
         Text(
             text = product.itemPriceEach,
             fontSize = 20.sp,
-            modifier = Modifier.align(Alignment.CenterEnd).padding(end = 2.dp),
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 2.dp),
             color = MaterialTheme.colors.primaryVariant,
 
             )

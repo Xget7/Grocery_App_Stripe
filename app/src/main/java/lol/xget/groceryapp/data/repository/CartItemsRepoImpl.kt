@@ -22,6 +22,10 @@ class CartItemsRepoImpl @Inject constructor(
         cartItemsDao.delete(item)
     }
 
+    suspend fun update(item: CartItems){
+        cartItemsDao.update(item)
+    }
+
 
 
 }

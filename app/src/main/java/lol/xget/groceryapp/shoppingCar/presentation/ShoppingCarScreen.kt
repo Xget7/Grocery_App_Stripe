@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import kotlinx.coroutines.flow.collect
+import lol.xget.groceryapp.data.localdb.CartItems
 import lol.xget.groceryapp.shoppingCar.presentation.Components.ShoppingCartItems
 import kotlin.math.roundToInt
 
@@ -54,6 +57,11 @@ fun ShoppingCarScreen(
         }
     }
 
+    val shoppingCarItems = viewModel._shopCartItems
+
+    val itemsPrice = viewModel.getTotalPriceItems().collectAsState(initial = 0.0)
+    val totalItemsInCart = viewModel.totalItems.collectAsState(initial = 0)
+
     val lazyListState = rememberLazyListState()
     val scrollState = rememberScrollState()
     val scaffoldState = rememberScaffoldState()
@@ -65,10 +73,7 @@ fun ShoppingCarScreen(
         scaffoldState = scaffoldState,
         content = {
             Box(
-
             ) {
-
-
                 Column() {
                     Row(
                         //topBar
@@ -88,7 +93,7 @@ fun ShoppingCarScreen(
 
 
                         Text(
-                            text = "My Cart (${viewModel.totalItems})",
+                            text = "My Cart (${totalItemsInCart.value})",
                             fontSize = 25.sp,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center,
@@ -119,10 +124,10 @@ fun ShoppingCarScreen(
                         state = lazyListState,
                         contentPadding = PaddingValues(vertical = 4.dp)
                     ) {
-                        items(viewModel.shopCartItems) {
+                        items(viewModel._shopCartItems) {
                             ShoppingCartItems(product = it,
                                 onClickAdd = {
-
+                                    viewModel.addItem(it)
                                 },
                                 onDeleteAdd = {
                                     viewModel.deleteItem(it)
@@ -153,13 +158,17 @@ fun ShoppingCarScreen(
                 ) {
 
                     Text(
-                        text = "Total: ${viewModel.totalItemsPrice}",
+                        text = "Total: ${
+                            itemsPrice.value
+                        }",
                         fontSize = 25.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
                         color = MaterialTheme.colors.primaryVariant,
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
+
+
                     Button(
                         onClick = { /*TODO*/ },
                         shape = CircleShape,

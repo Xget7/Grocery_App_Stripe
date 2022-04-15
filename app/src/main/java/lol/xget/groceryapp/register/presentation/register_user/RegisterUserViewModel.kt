@@ -10,7 +10,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import lol.xget.groceryapp.common.Resource
@@ -18,6 +20,7 @@ import lol.xget.groceryapp.mapLocalization.domain.LocationModel
 import lol.xget.groceryapp.mainUser.domain.User
 import lol.xget.groceryapp.domain.use_case.auth.AuthUseCases
 import lol.xget.groceryapp.register.presentation.register_seller.RegisterSellerState
+import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
 
@@ -122,15 +125,21 @@ class RegisterUserViewModel @Inject constructor(
 
 
     fun setLocationAddresses(latitude : Double, longitude: Double){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
             open.value = true
             if (latitude != 0.0 && longitude != 0.0){
-                val geoCoder= Geocoder(application, Locale.getDefault())
-                val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
-                countryValue.value =  addresses[0].countryName
-                stateValue.value =  addresses[0].adminArea
-                cityValue.value = addresses[0].locality
-                addressValue.value =  addresses[0].getAddressLine(0)
+                try {
+                    val geoCoder= Geocoder(application, Locale.getDefault())
+                    val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
+                    delay(2000)
+                    countryValue.value =  addresses[0].countryName
+                    stateValue.value =  addresses[0].adminArea
+                    cityValue.value = addresses[0].locality
+                    addressValue.value =  addresses[0].getAddressLine(0)
+                }catch (e: Exception){
+                    _state.value = _state.value.copy(errorMsg = "Error with location")
+                    hideErrorDialog()
+                }
             }else{
                 _state.value = _state.value.copy(errorMsg = "Cannot get location")
                 hideErrorDialog()

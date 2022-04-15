@@ -14,11 +14,13 @@ import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import lol.xget.groceryapp.common.Resource
 import lol.xget.groceryapp.mainUser.domain.User
 import lol.xget.groceryapp.register.use_case.RegisterUseCase
+import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
 
@@ -60,14 +62,23 @@ class RegisterSellerViewModel @Inject constructor(
 
     fun setLocationAddresses(latitude : Double, longitude: Double){
         viewModelScope.launch(Main) {
-            open.value = true
-            val geoCoder= Geocoder(application, Locale.getDefault())
-            val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
-            countryValue.value =  addresses[0].countryName
-            stateValue.value =  addresses[0].adminArea
-            cityValue.value = addresses[0].locality
-            addressValue.value =  addresses[0].getAddressLine(0)
-            closeDialog()
+            if (latitude != 0.0 && longitude != 0.0){
+                try {
+                    val geoCoder= Geocoder(application, Locale.getDefault())
+                    val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
+                    delay(1000)
+                    countryValue.value =  addresses[0].countryName
+                    stateValue.value =  addresses[0].adminArea
+                    cityValue.value = addresses[0].locality
+                    addressValue.value =  addresses[0].getAddressLine(0)
+                }catch (e: Exception){
+                    _state.value = _state.value.copy(errorMsg = "Error with location")
+                    hideErrorDialog()
+                }
+            }else{
+                _state.value = _state.value.copy(errorMsg = "Cannot get location")
+                hideErrorDialog()
+            }
         }
     }
 
