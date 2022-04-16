@@ -1,5 +1,6 @@
 package lol.xget.groceryapp.mapLocalization.presentation
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -55,9 +56,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         finish()
     }
 
-    init {
-
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,8 +66,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this@MapsActivity)
-
-
 
 
         // Grab our reference to the ComposeView from our layout.
@@ -83,22 +79,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxSize()
                 ) {
-
-                    IconButton(
-
-                        onClick = {
-
-                        },
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-
-                        Icon(
-                            imageVector = Icons.Default.MyLocation,
-                            tint = Color.Black,
-                            modifier = Modifier.size(24.dp),
-                            contentDescription = "My Location"
-                        )
-                    }
 
                     OutlinedButton(
                         modifier = Modifier
@@ -128,10 +108,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
+    @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
+
         mMap = googleMap
         val locationData = LocationLiveData(application)
         fun getLocationData() = locationData
+
         getLocationData().observe(this) {
             userLatitude.value = it.latitude
             userLongitude.value = it.longitude

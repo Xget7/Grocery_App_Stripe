@@ -61,7 +61,7 @@ class RegisterSellerViewModel @Inject constructor(
 
 
     fun setLocationAddresses(latitude : Double, longitude: Double){
-        viewModelScope.launch(Main) {
+        viewModelScope.launch {
             if (latitude != 0.0 && longitude != 0.0){
                 try {
                     val geoCoder= Geocoder(application, Locale.getDefault())

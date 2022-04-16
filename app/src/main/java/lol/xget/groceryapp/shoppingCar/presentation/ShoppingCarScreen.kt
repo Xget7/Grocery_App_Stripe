@@ -59,7 +59,8 @@ fun ShoppingCarScreen(
 
     val shoppingCarItems = viewModel._shopCartItems
 
-    val itemsPrice = viewModel.getTotalPriceItems().collectAsState(initial = 0.0)
+    val itemsPrice = viewModel.totalItemsPrice.value
+
     val totalItemsInCart = viewModel.totalItems.collectAsState(initial = 0)
 
     val lazyListState = rememberLazyListState()
@@ -125,6 +126,7 @@ fun ShoppingCarScreen(
                         contentPadding = PaddingValues(vertical = 4.dp)
                     ) {
                         items(viewModel._shopCartItems) {
+
                             ShoppingCartItems(product = it,
                                 onClickAdd = {
                                     viewModel.addItem(it)
@@ -158,15 +160,18 @@ fun ShoppingCarScreen(
                 ) {
 
                     Text(
-                        text = "Total: ${
-                            itemsPrice.value
-                        }",
+                        text = "Total: $itemsPrice",
                         fontSize = 25.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
                         color = MaterialTheme.colors.primaryVariant,
-                        modifier = Modifier.align(Alignment.CenterVertically)
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .width(200.dp)
                     )
+
+                    Spacer(modifier = Modifier.width(100.dp))
+
 
 
                     Button(

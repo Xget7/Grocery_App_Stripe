@@ -87,7 +87,7 @@ fun ProductDetailScreen(
                         }
                         withStyle(
                             style = SpanStyle(
-                                color = MaterialTheme.colors.background,
+                                color = Color.Black,
                                 fontWeight = FontWeight.Bold
                             ),
                         ) {
@@ -121,7 +121,7 @@ fun ProductDetailScreen(
                             itemId = viewModel.productId.value,
                             itemName = viewModel.productTitle.value,
                             itemPriceEach = viewModel.productPrice.value,
-                            itemPrice = productFinalPrice.value.toString(),
+                            itemPriceTotal = productFinalPrice.value.toString(),
                             itemAmount = productAmount.value,
                             itemPhoto = viewModel.productPhoto.value,
                             itemQuantity =  viewModel.productQuantity.value

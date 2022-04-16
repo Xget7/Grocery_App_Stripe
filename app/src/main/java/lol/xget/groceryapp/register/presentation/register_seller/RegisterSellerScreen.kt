@@ -68,6 +68,7 @@ fun RegistrationSellerScreen(
     }
 
     val launchMap = rememberLauncherForActivityResult(MapsActivityResultContract()) {
+
         viewModel.setLocationAddresses(it.latitude, it.longitude)
         userLatLng = it
     }
@@ -105,6 +106,7 @@ fun RegistrationSellerScreen(
                 } else {
                     warningToastActivateGps = true
                 }
+
             } else {
                 warningToastRejectedPermissions = true
             }

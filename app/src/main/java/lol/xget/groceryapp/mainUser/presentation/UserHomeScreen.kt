@@ -47,6 +47,8 @@ fun UserHomeScreen(
     viewModel: UserHomeScreenViewModel = hiltViewModel()
 ) {
 
+    TODO("MAKE NAVBAR PRO")
+
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )

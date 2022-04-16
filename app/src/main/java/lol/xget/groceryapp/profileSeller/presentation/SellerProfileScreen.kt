@@ -56,12 +56,27 @@ fun SellerProfileScreen(
         mutableStateOf<Uri?>(null)
     }
 
+    var shopImage by remember {
+        mutableStateOf<Uri?>(null)
+    }
+
     val context = LocalContext.current
-    val launcher =
+
+    val profileImageLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
             profileImage = uri
         }
-    val bitmap = remember {
+
+    val ShopImageLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
+            shopImage = uri
+        }
+
+    val profilePhotoBitmap = remember {
+        mutableStateOf<Bitmap?>(null)
+    }
+    TODO("ADD OPtion TO add shop photo")
+    val ShopImageBitmap = remember {
         mutableStateOf<Bitmap?>(null)
     }
 
@@ -75,11 +90,11 @@ fun SellerProfileScreen(
         profileImage?.let {
 
             if (Build.VERSION.SDK_INT < 28) {
-                bitmap.value = MediaStore.Images
+                profilePhotoBitmap.value = MediaStore.Images
                     .Media.getBitmap(context.contentResolver, it)
             } else {
                 val source = ImageDecoder.createSource(context.contentResolver, it)
-                bitmap.value = ImageDecoder.decodeBitmap(source)
+                profilePhotoBitmap.value = ImageDecoder.decodeBitmap(source)
             }
 
 
@@ -133,14 +148,13 @@ fun SellerProfileScreen(
                             .size(100.dp)
                             .testTag(tag = "circle")
                             .clickable(
-                                onClick = { launcher.launch("image/*") }
-                            )
-                            ,
+                                onClick = { profileImageLauncher.launch("image/*") }
+                            ),
                         shape = CircleShape,
                         elevation = 12.dp
                     ) {
-                        if (bitmap.value != null){
-                            bitmap.value?.let {
+                        if (profilePhotoBitmap.value != null) {
+                            profilePhotoBitmap.value?.let {
                                 Image(
                                     bitmap = it.asImageBitmap(),
                                     contentDescription = "Profile Image",
@@ -148,7 +162,7 @@ fun SellerProfileScreen(
                                     modifier = Modifier.fillMaxSize(),
                                 )
                             }
-                        }else{
+                        } else {
                             GlideImage(
                                 imageModel = viewModel.shopImage.value,
                                 // Crop, Fit, Inside, FillHeight, FillWidth, None
@@ -292,8 +306,9 @@ fun SellerProfileScreen(
 
 
                         val user = User(
-                            profilePhoto = profileImage.toString().ifEmpty { viewModel.shopImage.value },
-                            userName = viewModel.fullNameValue.value ,
+                            profilePhoto = profileImage.toString()
+                                .ifEmpty { viewModel.shopImage.value },
+                            userName = viewModel.fullNameValue.value,
                             accountType = viewModel.accountType.value,
                             phone = viewModel.phoneValue.value,
                             state = viewModel.stateValue.value,
@@ -302,7 +317,7 @@ fun SellerProfileScreen(
                             country = viewModel.countryValue.value,
                             uid = viewModel.currentUser,
                             deliveryFee = viewModel.deliveryFee.value,
-                            shopName = viewModel.shopNameValue.value
+                            shopName = viewModel.shopNameValue.value,
                         )
 
 
@@ -320,16 +335,21 @@ fun SellerProfileScreen(
                 }
             }
         }
-            //TODO("ADD BANNER IMG ")
+        //TODO("ADD BANNER IMG ")
 
-        if (viewModel.state.value.successUpdate!!){
-            SweetSuccess(message = "Success Update!", duration = Toast.LENGTH_SHORT, padding = PaddingValues(top = 16.dp), contentAlignment = Alignment.TopCenter)
-            LaunchedEffect(viewModel.state.value.successUpdate){
+        if (viewModel.state.value.successUpdate!!) {
+            SweetSuccess(
+                message = "Success Update!",
+                duration = Toast.LENGTH_SHORT,
+                padding = PaddingValues(top = 16.dp),
+                contentAlignment = Alignment.TopCenter
+            )
+            LaunchedEffect(viewModel.state.value.successUpdate) {
                 delay(500)
                 navController.navigate(
-                     Screen.SellerHomeScreen.route
-                 )
-             }
+                    Screen.SellerHomeScreen.route
+                )
+            }
         }
 
         if (viewModel.state.value.loading!!) {

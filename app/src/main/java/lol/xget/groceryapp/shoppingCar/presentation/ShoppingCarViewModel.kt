@@ -1,14 +1,11 @@
 package lol.xget.groceryapp.shoppingCar.presentation
 
-import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import lol.xget.groceryapp.data.localdb.CartItems
@@ -22,47 +19,62 @@ class ShoppingCarViewModel @Inject constructor(
 ) : ViewModel() {
 
     val _shopCartItems = mutableStateListOf<CartItems>()
-     fun getTotalPriceItems() = flow{
+    var totalItemsPrice = mutableStateOf(0)
+
+    fun getTotalPriceItems(){
         var totalPrice = 0.0
-        for (item in _shopCartItems){
+        for (item in _shopCartItems) {
             totalPrice += (item.itemPriceEach.toFloat() * item.itemAmount)
         }
-        emit(totalPrice.roundToInt())
+      totalItemsPrice.value = totalPrice.roundToInt()
     }
+
+
     val totalItems = flow {
         emit(_shopCartItems.size)
     }
 
     init {
         getItemsFromUser()
+
     }
 
 
-     fun deleteItem(item : CartItems) {
+    fun deleteItem(item: CartItems) {
         viewModelScope.launch(IO) {
-            if (item.itemAmount > 1){
-                var itemPriceInt = item.itemPriceEach.toFloat()
+            if (item.itemAmount > 1) {
+                var originalItemPrice = item.itemPriceEach.toFloat()
+                var newItemPriceFloat = item.itemPriceTotal.toFloat()
+
                 item.itemAmount -= 1
-                itemPriceInt -= itemPriceInt
-                item.itemPriceEach = itemPriceInt.toString()
+                newItemPriceFloat -= originalItemPrice
+
+                item.itemPriceTotal = newItemPriceFloat.toString()
+
+
                 shoppingCartDb.update(item)
-            }else{
+
+            } else {
                 shoppingCartDb.deleteItem(item)
             }
-
         }
+        getTotalPriceItems()
     }
 
-    fun addItem(item : CartItems) {
+    fun addItem(item: CartItems) {
         viewModelScope.launch(IO) {
-            var itemPriceInt = item.itemPriceEach.toFloat()
+            var originalItemPrice = item.itemPriceEach.toFloat()
+            var newItemPriceFloat = item.itemPriceTotal.toFloat()
+
 
             item.itemAmount += 1
-            itemPriceInt += itemPriceInt
+            newItemPriceFloat += originalItemPrice
 
-            item.itemPriceEach = itemPriceInt.toString()
+
+            item.itemPriceTotal = newItemPriceFloat.toString()
             shoppingCartDb.update(item)
         }
+        getTotalPriceItems()
     }
 
     private fun getItemsFromUser() {

@@ -1,6 +1,5 @@
 package lol.xget.groceryapp.shoppingCar.presentation.Components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,9 +10,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,8 +23,6 @@ import androidx.compose.ui.unit.sp
 import com.skydoves.landscapist.glide.GlideImage
 import compose.icons.TablerIcons
 import compose.icons.tablericons.Minus
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 import lol.xget.groceryapp.R
 import lol.xget.groceryapp.data.localdb.CartItems
 import lol.xget.groceryapp.ui.LightGreen
@@ -41,9 +35,8 @@ fun ShoppingCartItems(
     onDeleteAdd: () -> Unit
 ) {
 
-
     Box(
-        Modifier.fillMaxWidth()
+        Modifier.fillMaxWidth().padding(top = 10.dp)
     ) {
         Card(
             modifier = Modifier
@@ -99,7 +92,7 @@ fun ShoppingCartItems(
 
                     Spacer(modifier = Modifier.height(3.dp))
                     Text(
-                        text = product.itemPrice + "/" + product.itemQuantity,
+                        text = product.itemPriceEach + "/" + product.itemQuantity,
                         style = MaterialTheme.typography.caption,
                         color = Color.LightGray,
                         fontWeight = FontWeight.Light,
@@ -178,7 +171,7 @@ fun ShoppingCartItems(
         }
 
         Text(
-            text = product.itemPriceEach,
+            text = product.itemPriceTotal,
             fontSize = 20.sp,
             modifier = Modifier
                 .align(Alignment.CenterEnd)

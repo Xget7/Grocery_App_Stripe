@@ -26,7 +26,6 @@ class MapsActivityResultContract : ActivityResultContract<LatLng, LatLng>() {
                 intent?.getDoubleExtra(Constants.LATITUDE, 0.0)!!,
                 intent.getDoubleExtra(Constants.LONGITUDE, 0.0)
             )
-                ?: LatLng(0.1, 0.1)
         } else {
             LatLng(0.2, 0.2)
         }

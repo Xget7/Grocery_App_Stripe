@@ -13,7 +13,7 @@ data class CartItems(
     var itemQuantity: String,
     var itemName: String,
     var itemPriceEach: String,
-    var itemPrice: String,
+    var itemPriceTotal: String,
     var itemAmount: Int
 
 
