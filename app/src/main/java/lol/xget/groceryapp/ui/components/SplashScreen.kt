@@ -1,24 +1,19 @@
 package lol.xget.groceryapp.presentation.main
 
-import android.util.Log
 import android.view.animation.OvershootInterpolator
-import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.delay
 import lol.xget.groceryapp.domain.util.LoginUtil.UserType.getUserType
-import lol.xget.groceryapp.domain.util.Screen
 
 @Composable
 fun SplashScreen(navController: NavController, currentUser: FirebaseUser?){

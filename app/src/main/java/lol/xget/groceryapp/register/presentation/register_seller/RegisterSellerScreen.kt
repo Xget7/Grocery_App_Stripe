@@ -43,8 +43,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.talhafaki.composablesweettoast.util.SweetToastUtil.SweetWarning
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-import lol.xget.groceryapp.mainUser.domain.User
-import lol.xget.groceryapp.domain.util.Screen
+import lol.xget.groceryapp.domain.util.Destinations
 import lol.xget.groceryapp.login.presentation.components.EventDialog
 import lol.xget.groceryapp.login.presentation.components.TransparentTextField
 import lol.xget.groceryapp.mapLocalization.presentation.MapsActivityResultContract
@@ -130,7 +129,7 @@ fun RegistrationSellerScreen(
 
                 IconButton(
                     onClick = {
-                        navController.navigate(Screen.LoginScreen.route)
+                        navController.navigate(Destinations.LoginDestinations.route)
                     }
                 ) {
                     Icon(
@@ -377,7 +376,7 @@ fun RegistrationSellerScreen(
                         )
                     ),
                     onClick = {
-                        val user = User(
+                        val user = lol.xget.groceryapp.user.mainUser.domain.User(
                             userName = viewModel.userNameValue.value,
                             phone = viewModel.phoneValue.value,
                             state = viewModel.stateValue.value,
@@ -446,7 +445,7 @@ fun RegistrationSellerScreen(
 
         if (viewModel._state.value.successRegister) {
             //testing
-            LaunchedEffect(viewModel._state.value.successRegister) { navController?.navigate(Screen.SellerHomeScreen.route) }
+            LaunchedEffect(viewModel._state.value.successRegister) { navController?.navigate(Destinations.SellerHomeDestinations.route) }
 
         }
 

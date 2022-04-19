@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import lol.xget.groceryapp.domain.util.Screen
+import lol.xget.groceryapp.domain.util.Destinations
 import lol.xget.groceryapp.login.presentation.components.EventDialog
 import lol.xget.groceryapp.login.presentation.components.GoogleButton
 import lol.xget.groceryapp.login.presentation.components.TransparentTextField
@@ -186,7 +186,7 @@ fun LoginScreen(
                                     color = MaterialTheme.colors.primaryVariant
                                 )
                             ) {
-                                navController.navigate(Screen.RecoverPasswordScreen.route)
+                                navController.navigate(Destinations.RecoverPasswordDestinations.route)
                             }
                         }
                         Spacer(modifier = Modifier.height(12.dp))
@@ -253,7 +253,7 @@ fun LoginScreen(
                                     }
                                 }
                             ) {
-                                navController.navigate(Screen.RegisterUserScreen.route)
+                                navController.navigate(Destinations.RegisterUserDestinations.route)
                             }
                         }
                     }

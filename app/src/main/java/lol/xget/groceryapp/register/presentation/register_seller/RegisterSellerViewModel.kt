@@ -12,13 +12,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import lol.xget.groceryapp.common.Resource
-import lol.xget.groceryapp.mainUser.domain.User
 import lol.xget.groceryapp.register.use_case.RegisterUseCase
 import java.lang.Exception
 import java.util.*
@@ -93,7 +91,7 @@ class RegisterSellerViewModel @Inject constructor(
         email: String,
         password: String,
         confirmPassword: String,
-        user: User,
+        user: lol.xget.groceryapp.user.mainUser.domain.User,
     ): Boolean {
         if (user.userName!!.isBlank()) {
             _state.value = state.value.copy(errorMsg = "Name is empty.")
@@ -136,7 +134,7 @@ class RegisterSellerViewModel @Inject constructor(
     }
 
     @ExperimentalCoroutinesApi
-    fun registerUser(user: User) {
+    fun registerUser(user: lol.xget.groceryapp.user.mainUser.domain.User) {
         if (verifyUser(
                 emailValue.value ,
                 passwordValue.value,

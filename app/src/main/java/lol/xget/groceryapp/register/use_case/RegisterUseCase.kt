@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import lol.xget.groceryapp.common.Resource
 import lol.xget.groceryapp.domain.repository.AuthRepository
-import lol.xget.groceryapp.mainUser.domain.User
 import lol.xget.groceryapp.register.presentation.register_user.RegisterUserState
 import java.io.IOException
 import javax.inject.Inject
@@ -20,7 +19,7 @@ class RegisterUseCase @Inject constructor(
 
 
     @ExperimentalCoroutinesApi
-    operator fun invoke (email : String, password : String, user: User) : Flow<Resource<RegisterUserState>> =
+    operator fun invoke (email : String, password : String, user: lol.xget.groceryapp.user.mainUser.domain.User) : Flow<Resource<RegisterUserState>> =
         callbackFlow {
             val db = FirebaseDatabase.getInstance()
             user.email = email

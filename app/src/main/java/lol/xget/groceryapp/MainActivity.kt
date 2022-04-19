@@ -15,22 +15,23 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import lol.xget.groceryapp.domain.util.Screen
+import lol.xget.groceryapp.domain.util.Destinations
 import lol.xget.groceryapp.recoverPassword.presentation.RecoverPassword
 import lol.xget.groceryapp.login.presentation.LoginScreen
 import lol.xget.groceryapp.register.presentation.register_seller.RegistrationSellerScreen
 import lol.xget.groceryapp.register.presentation.register_user.RegistrationScreen
-import lol.xget.groceryapp.mainSeller.presentation.AddProducts.AddProductScreen
-import lol.xget.groceryapp.mainSeller.presentation.EditProducts.EditProductScreen
-import lol.xget.groceryapp.mainSeller.presentation.SellerHomeScreen
-import lol.xget.groceryapp.profileSeller.presentation.SellerProfileScreen
+
+import lol.xget.groceryapp.seller.profileSeller.presentation.SellerProfileScreen
 import lol.xget.groceryapp.presentation.main.SplashScreen
-import lol.xget.groceryapp.profileUser.presentation.ProfileScreen
-import lol.xget.groceryapp.mainUser.presentation.ProductDetail.ProductDetailScreen
-import lol.xget.groceryapp.mainUser.presentation.ShopDetails.ShopDetailScreen
-import lol.xget.groceryapp.mainUser.presentation.UserHomeScreen
-import lol.xget.groceryapp.shoppingCar.presentation.ShoppingCarScreen
+import lol.xget.groceryapp.seller.mainSeller.presentation.AddProducts.AddProductScreen
+import lol.xget.groceryapp.seller.mainSeller.presentation.EditProducts.EditProductScreen
+import lol.xget.groceryapp.seller.mainSeller.presentation.SellerHomeScreen
 import lol.xget.groceryapp.ui.GroceryAppTheme
+import lol.xget.groceryapp.user.mainUser.presentation.ProductDetail.ProductDetailScreen
+import lol.xget.groceryapp.user.mainUser.presentation.ShopDetails.ShopDetailScreen
+import lol.xget.groceryapp.user.mainUser.presentation.UserHomeScreen
+import lol.xget.groceryapp.user.profileUser.presentation.ProfileScreen
+import lol.xget.groceryapp.user.shoppingCar.presentation.ShoppingCarScreen
 
 @ExperimentalCoroutinesApi
 @ExperimentalMaterialApi
@@ -38,6 +39,7 @@ import lol.xget.groceryapp.ui.GroceryAppTheme
 class MainActivity : ComponentActivity() {
 
     var mAuth = FirebaseAuth.getInstance()
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,81 +48,82 @@ class MainActivity : ComponentActivity() {
         setContent {
             GroceryAppTheme {
                 Surface(color = MaterialTheme.colors.background) {
+
                     val navController = rememberNavController()
                     NavHost(
                         navController = navController,
-                        startDestination = Screen.SplashScreen.route
+                        startDestination = Destinations.SplashDestinations.route
                     ) {
                         composable(
-                            route = Screen.LoginScreen.route
+                            route = Destinations.LoginDestinations.route
                         ) {
                             LoginScreen(navController)
                         }
 
                         composable(
-                            route = Screen.RegisterUserScreen.route
+                            route = Destinations.RegisterUserDestinations.route
                         ) {
                             RegistrationScreen(navController, activity = this@MainActivity)
                         }
 
                         composable(
-                            route = Screen.RegisterSellerScreen.route,
+                            route = Destinations.RegisterSellerDestinations.route,
                         ) {
                             RegistrationSellerScreen(navController, activity = this@MainActivity)
 
                         }
                         composable(
-                            route = Screen.RecoverPasswordScreen.route
+                            route = Destinations.RecoverPasswordDestinations.route
                         ) {
                             RecoverPassword(navController)
                         }
                         composable(
-                            route = Screen.ProfileUserScreen.route
+                            route = Destinations.ProfileUserDestinations.route
                         ) {
                             ProfileScreen(navController)
                         }
                         composable(
-                            route = Screen.SellerAddProductScreen.route
+                            route = Destinations.SellerAddProductDestinations.route
                         ) {
                             AddProductScreen(navController)
                         }
                         composable(
-                            route = Screen.SellerHomeScreen.route
+                            route = Destinations.SellerHomeDestinations.route
                         ) {
                             SellerHomeScreen(navController)
                         }
                         composable(
-                            route = Screen.SellerProfileScreen.route
+                            route = Destinations.SellerProfileDestinations.route
                         ) {
                             SellerProfileScreen(navController)
                         }
                         composable(
-                            route = Screen.SellerEditProductScreen.route + "/{productId}"
+                            route = Destinations.SellerEditProductDestinations.route + "/{productId}"
                         ) {
                             EditProductScreen(navController)
                         }
                         composable(
-                            route = Screen.UserHomeScreen.route
+                            route = Destinations.UserHomeDestinations.route
                         ) {
                             UserHomeScreen(navController)
                         }
                         composable(
-                            route = Screen.SplashScreen.route
+                            route = Destinations.SplashDestinations.route
                         ) {
                             SplashScreen(navController, user)
                         }
                         composable(
-                            route = Screen.ShopDetailScreen.route + "/{shopId}"
+                            route = Destinations.ShopDetailDestinations.route + "/{shopId}"
                         ) {
                             ShopDetailScreen(navController, activity = this@MainActivity)
                         }
                         composable(
-                            route = Screen.ProductDetailScreen.route
+                            route = Destinations.ProductDetailDestinations.route
                         ) {
                             ProductDetailScreen(navController)
                         }
                         composable(
-                            route = Screen.ShoppingCar.route
+                            route = Destinations.ShoppingCar.route
                         ) {
                             ShoppingCarScreen(navController)
                         }

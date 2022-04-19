@@ -44,8 +44,7 @@ import com.talhafaki.composablesweettoast.util.SweetToastUtil
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import lol.xget.groceryapp.mainUser.domain.User
-import lol.xget.groceryapp.domain.util.Screen
+import lol.xget.groceryapp.domain.util.Destinations
 import lol.xget.groceryapp.login.presentation.components.EventDialog
 import lol.xget.groceryapp.login.presentation.components.TransparentTextField
 import lol.xget.groceryapp.mapLocalization.presentation.MapsActivityResultContract
@@ -127,7 +126,7 @@ fun RegistrationScreen(
                 IconButton(
                     onClick = {
                         //oNBAck
-                        navController.navigate(Screen.LoginScreen.route)
+                        navController.navigate(Destinations.LoginDestinations.route)
                     }
                 ) {
                     Icon(
@@ -345,7 +344,7 @@ fun RegistrationScreen(
                         )
                     ),
                     onClick = {
-                        val user = User(
+                        val user = lol.xget.groceryapp.user.mainUser.domain.User(
                             userName = viewModel.fullNameValue.value,
                             phone = viewModel.phoneValue.value,
                             state = viewModel.stateValue.value,
@@ -416,7 +415,7 @@ fun RegistrationScreen(
                     },
                     onClick = {
                         navController.navigate(
-                            Screen.RegisterSellerScreen.passLatitudeLatitude(
+                            Destinations.RegisterSellerDestinations.passLatitudeLatitude(
                                 0.0,
                                 0.0
                             )
@@ -448,7 +447,7 @@ fun RegistrationScreen(
         }
 
         if (viewModel._state.value.successRegister && inProfileScreen.equals(false)) {
-            navController.navigate(Screen.UserHomeScreen.route)
+            navController.navigate(Destinations.UserHomeDestinations.route)
             inProfileScreen = true
         }
 

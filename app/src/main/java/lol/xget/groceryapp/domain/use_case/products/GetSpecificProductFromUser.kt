@@ -8,9 +8,8 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import lol.xget.groceryapp.common.Resource
-import lol.xget.groceryapp.mainSeller.domain.ProductModel
-import lol.xget.groceryapp.mainUser.repository.UserRepository
-import lol.xget.groceryapp.mainUser.presentation.ProductDetail.ProductDetailState
+import lol.xget.groceryapp.user.mainUser.presentation.ProductDetail.ProductDetailState
+import lol.xget.groceryapp.user.mainUser.repository.UserRepository
 import java.io.IOException
 import javax.inject.Inject
 
@@ -26,7 +25,7 @@ class GetSpecificProductFromUser @Inject constructor(
                 trySend(Resource.Loading())
                 repo.getCurrentProduct(shopId,currentProduct).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        val specificProduct = task.result.getValue(ProductModel::class.java)
+                        val specificProduct = task.result.getValue(lol.xget.groceryapp.seller.mainSeller.domain.ProductModel::class.java)
                         Log.e("specificProduct", specificProduct.toString())
                         trySend(
                             Resource.Success(

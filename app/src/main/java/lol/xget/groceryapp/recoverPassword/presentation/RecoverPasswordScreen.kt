@@ -24,7 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import lol.xget.groceryapp.R
-import lol.xget.groceryapp.domain.util.Screen
+import lol.xget.groceryapp.domain.util.Destinations
 import lol.xget.groceryapp.login.presentation.components.EventDialog
 import lol.xget.groceryapp.login.presentation.components.RoundedButton
 import lol.xget.groceryapp.login.presentation.components.TransparentTextField
@@ -45,7 +45,7 @@ fun RecoverPassword(
         IconButton(
             onClick = {
                 //oNBAck
-                navController.navigate(Screen.LoginScreen.route)
+                navController.navigate(Destinations.LoginDestinations.route)
             }
         ) {
             Icon(

@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginUtil {
 
@@ -18,15 +17,15 @@ class LoginUtil {
                             val document = task.result
                             if (document.exists()) {
                                 Log.e("RESULTSCREEN", "Exists in user")
-                                navController.navigate(Screen.UserHomeScreen.route)
+                                navController.navigate(Destinations.UserHomeDestinations.route)
                             } else {
                                 Log.e("RESULTSCREEN", "Dont in user , its a seller")
-                                navController.navigate(Screen.SellerHomeScreen.route)
+                                navController.navigate(Destinations.SellerHomeDestinations.route)
                             }
                         }
                     }
             } else {
-                navController.navigate(Screen.LoginScreen.route)
+                navController.navigate(Destinations.LoginDestinations.route)
             }
         }
     }

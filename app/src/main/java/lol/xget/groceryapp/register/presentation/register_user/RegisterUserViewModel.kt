@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import lol.xget.groceryapp.common.Resource
 import lol.xget.groceryapp.mapLocalization.domain.LocationModel
-import lol.xget.groceryapp.mainUser.domain.User
 import lol.xget.groceryapp.domain.use_case.auth.AuthUseCases
 import lol.xget.groceryapp.register.presentation.register_seller.RegisterSellerState
 import java.lang.Exception
@@ -57,7 +56,7 @@ class RegisterUserViewModel @Inject constructor(
         email: String,
         password: String,
         confirmPassword: String,
-        user: User,
+        user: lol.xget.groceryapp.user.mainUser.domain.User,
     ): Boolean {
 
         if (user.userName!!.isBlank()) {
@@ -101,7 +100,7 @@ class RegisterUserViewModel @Inject constructor(
     }
 
     @ExperimentalCoroutinesApi
-    fun registerUser(user: User) {
+    fun registerUser(user: lol.xget.groceryapp.user.mainUser.domain.User) {
         if (verifyUser(emailValue.value, passwordValue.value, confirmPasswordValue.value, user)) {
             regUseCase.registerCase.invoke(emailValue.value, passwordValue.value, user)
                 .onEach { result ->
