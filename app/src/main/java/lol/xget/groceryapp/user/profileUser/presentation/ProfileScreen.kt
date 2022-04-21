@@ -43,6 +43,7 @@ import lol.xget.groceryapp.domain.util.Destinations
 import lol.xget.groceryapp.login.presentation.components.EventDialog
 import lol.xget.groceryapp.login.presentation.components.RoundedButton
 import lol.xget.groceryapp.login.presentation.components.TransparentTextField
+import lol.xget.groceryapp.ui.BottomNavigationBar
 
 @ExperimentalCoroutinesApi
 @Composable
@@ -58,66 +59,58 @@ fun ProfileScreen(
     }
 
     val context = LocalContext.current
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()){ uri->
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
 
-        profileImage = uri
-    }
+            profileImage = uri
+        }
     val bitmap = remember {
         mutableStateOf<Bitmap?>(null)
     }
 
     val focusManager = LocalFocusManager.current
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.background)
-    ){
-        profileImage?.let {
+    val navigationItems = listOf(
+        Destinations.UserHomeDestinations,
+        Destinations.ProfileUserDestinations
+    )
 
-            if (Build.VERSION.SDK_INT < 28){
-                bitmap.value = MediaStore.Images
-                    .Media.getBitmap(context.contentResolver, it)
-            }else{
-                val source = ImageDecoder.createSource(context.contentResolver, it)
-                bitmap.value = ImageDecoder.decodeBitmap(source)
-            }
-
-
-        }
-        IconButton(
-            onClick = {
-                //oNBAck
-
-            }
-        ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Back Icon",
-                tint = MaterialTheme.colors.primary
-            )
-        }
-
-
-
-        Text(
-            modifier = Modifier.padding(start = 165.dp, top = 14.dp),
-            text = "Profile",
-            style = MaterialTheme.typography.h6.copy(
-                color = MaterialTheme.colors.primaryVariant
-            )
-        )
-
-
+    Scaffold(
+    ) {
         Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background)
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
+            profileImage?.let {
+                if (Build.VERSION.SDK_INT < 28) {
+                    bitmap.value = MediaStore.Images
+                        .Media.getBitmap(context.contentResolver, it)
+                } else {
+                    val source = ImageDecoder.createSource(context.contentResolver, it)
+                    bitmap.value = ImageDecoder.decodeBitmap(source)
+                }
+            }
 
+
+            Text(
+                modifier = Modifier.padding(start = 165.dp, top = 14.dp),
+                text = "Profile",
+                style = MaterialTheme.typography.h5.copy(
+                    color = MaterialTheme.colors.primaryVariant
+                )
+            )
+
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top
+
+                ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -135,7 +128,7 @@ fun ProfileScreen(
                             shape = CircleShape,
                             elevation = 12.dp
                         ) {
-                            if (bitmap.value != null){
+                            if (bitmap.value != null) {
                                 bitmap.value?.let { btm ->
                                     Image(
                                         bitmap = btm.asImageBitmap(),
@@ -144,22 +137,21 @@ fun ProfileScreen(
                                         modifier = Modifier.fillMaxSize(),
                                     )
                                 }
-                            }else{
+                            } else {
 
                                 GlideImage(
-                                        imageModel = viewModel.profilePhoto.value,
-                                        // Crop, Fit, Inside, FillHeight, FillWidth, None
-                                        contentScale = ContentScale.Crop,
-                                        // shows an image with a circular revealed animation.
-                                        // shows a placeholder ImageBitmap when loading.
-                                        placeHolder = ImageBitmap.imageResource(R.drawable.holder),
-                                        // shows an error ImageBitmap when the request failed.
-                                        error = ImageBitmap.imageResource(R.drawable.error)
+                                    imageModel = viewModel.profilePhoto.value,
+                                    // Crop, Fit, Inside, FillHeight, FillWidth, None
+                                    contentScale = ContentScale.Crop,
+                                    // shows an image with a circular revealed animation.
+                                    // shows a placeholder ImageBitmap when loading.
+                                    placeHolder = ImageBitmap.imageResource(R.drawable.holder),
+                                    // shows an error ImageBitmap when the request failed.
+                                    error = ImageBitmap.imageResource(R.drawable.error)
                                 )
 
 
                             }
-
 
 
                         }
@@ -185,12 +177,12 @@ fun ProfileScreen(
 
 
                             TransparentTextField(
-                                singleLine = true ,
+                                singleLine = true,
                                 textFieldValue = viewModel.fullNameValue,
                                 textLabel = "Name",
                                 keyboardType = KeyboardType.Text,
                                 keyboardActions = KeyboardActions(
-                                    onNext = {focusManager.moveFocus(FocusDirection.Down)}
+                                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
                                 ),
                                 imeAction = ImeAction.Next
                             )
@@ -296,26 +288,23 @@ fun ProfileScreen(
 
             }
 
-        if (viewModel.state.value.successUpdate!!){
-            SweetToastUtil.SweetSuccess(
-                message = "Success Update!",
-                duration = Toast.LENGTH_SHORT,
-                padding = PaddingValues(top = 16.dp),
-                contentAlignment = Alignment.TopCenter
-            )
-            LaunchedEffect(viewModel.state.value.successUpdate){
-                delay(500)
-                navController.navigate(
-                    Destinations.UserHomeDestinations.route
+            if (viewModel.state.value.successUpdate!!) {
+                SweetToastUtil.SweetSuccess(
+                    message = "Success Update!",
+                    duration = Toast.LENGTH_SHORT,
+                    padding = PaddingValues(top = 16.dp),
+                    contentAlignment = Alignment.TopCenter
                 )
             }
-        }
 
 
-            if (viewModel.state.value.errorMsg != null){
-                EventDialog(errorMessage = viewModel.state.value.errorMsg, onDismiss = {viewModel.hideErrorDialog()}) }
+            if (viewModel.state.value.errorMsg != null) {
+                EventDialog(
+                    errorMessage = viewModel.state.value.errorMsg,
+                    onDismiss = { viewModel.hideErrorDialog() })
+            }
         }
     }
-
+}
 
 

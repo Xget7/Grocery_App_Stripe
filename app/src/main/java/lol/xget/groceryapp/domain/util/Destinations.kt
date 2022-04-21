@@ -21,6 +21,7 @@ sealed class Destinations(val route : String, val productModel: lol.xget.grocery
     object SellerHomeDestinations : Destinations("seller_home_screen")
     object SellerProfileDestinations : Destinations("seller_profile_screen")
     object SellerEditProductDestinations : Destinations("seller_edit_product_screen")
+    object UserMainDestination : Destinations("user_main_screen")
     object UserHomeDestinations : Destinations("user_home_screen")
     object ShopDetailDestinations : Destinations("user_shop_detail_screen")
     object ProductDetailDestinations : Destinations("product_detail_screen/{$PARAM_SHOP}/{$PARAM_PRODUCT}"){

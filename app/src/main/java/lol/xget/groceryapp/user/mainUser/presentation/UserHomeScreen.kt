@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -23,8 +25,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -40,7 +46,8 @@ import lol.xget.groceryapp.ui.BottomNavigationBar
 import lol.xget.groceryapp.user.mainUser.presentation.components.ShopListItem
 
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class,
+@OptIn(
+    ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class,
     ExperimentalCoroutinesApi::class
 )
 @Composable
@@ -50,7 +57,6 @@ fun UserHomeScreen(
 ) {
 
 
-
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
@@ -58,6 +64,7 @@ fun UserHomeScreen(
 
     val user = FirebaseAuth.getInstance().currentUser
 
+    val query = viewModel.query.value
 
     val lazyListState = rememberLazyListState()
 
@@ -73,7 +80,6 @@ fun UserHomeScreen(
     )
 
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController = navController, items = navigationItems) }
     ) {
 
         Box(
@@ -95,64 +101,61 @@ fun UserHomeScreen(
                             shape = RoundedCornerShape(bottomStart = 25.dp, bottomEnd = 25.dp)
                         )
                         .fillMaxWidth()
-                        .height(134.dp)
+                        .height(119.dp)
 
 
                 ) {
-                    Card(
-                        modifier = Modifier
-                            .size(80.dp)
-                            .testTag(tag = "circle")
-                            .padding(5.dp, top = 10.dp),
-                        shape = CircleShape,
-                        elevation = 12.dp
-                    ) {
-                        GlideImage(
-                            imageModel = viewModel.userData.value.profilePhoto,
-                            // Crop, Fit, Inside, FillHeight, FillWidth, None
-                            contentScale = ContentScale.Crop,
-                            // shows an image with a circular revealed animation.
-                            // shows a placeholder ImageBitmap when loading.
-                            placeHolder = ImageBitmap.imageResource(R.drawable.holder),
-                            // shows an error ImageBitmap when the request failed.
-                            error = ImageBitmap.imageResource(R.drawable.error)
-                        )
-
-                    }
 
                     Column {
                         Row(
                             horizontalArrangement = Arrangement.Start,
                             modifier = Modifier
-                                .width(300.dp)
-                                .height(25.dp)
+                                .width(400.dp)
+                                .height(35.dp)
                                 .padding(top = 6.dp)
                         ) {
-                            viewModel.userData.value.userName?.let {
-                                Text(
-                                    text = it,
-                                    modifier = Modifier
-                                        .padding(start = 13.dp)
-                                        .width(60.dp),
-                                    fontWeight = FontWeight.Bold, fontSize = 16.sp,
-                                    color = Color.White,
-                                    textAlign = TextAlign.Center
-                                )
+                            Column() {
+                                viewModel.userData.value.userName?.let {
+                                    Text(
+                                        text = it,
+                                        modifier = Modifier
+                                            .padding(start = 13.dp)
+                                            .width(140.dp),
+                                        fontWeight = FontWeight.Bold, fontSize = 24.sp,
+                                        color = Color.White,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(10.dp))
+                                viewModel.userData.value.address?.let {
+                                    Text(
+                                        text = it,
+                                        modifier = Modifier
+                                            .padding(start = 13.dp)
+                                            .width(100.dp),
+                                        fontWeight = FontWeight.Bold, fontSize = 16.sp,
+                                        color = Color.White,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
                             }
 
 
-                            Spacer(modifier = Modifier.padding(start = 100.dp))
+
+
+                            Spacer(modifier = Modifier.padding(start = 130.dp))
+
                             IconButton(
                                 onClick = {
                                     navController.navigate(ProfileUserDestinations.route)
                                 }
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Edit,
+                                    imageVector = Icons.Default.Person,
                                     tint = MaterialTheme.colors.onSecondary,
                                     modifier = Modifier
-                                        .width(20.dp)
-                                        .height(20.dp),
+                                        .width(25.dp)
+                                        .height(25.dp),
                                     contentDescription = "Edit icon",
                                 )
                             }
@@ -167,32 +170,67 @@ fun UserHomeScreen(
                                     imageVector = Icons.Default.Logout,
                                     tint = MaterialTheme.colors.onSecondary,
                                     modifier = Modifier
-                                        .width(20.dp)
-                                        .height(20.dp),
+                                        .width(25.dp)
+                                        .height(25.dp),
                                     contentDescription = "Logout icon",
                                 )
                             }
                         }
+                        Spacer(modifier = Modifier.padding(top = 20.dp))
 
-                        user?.let {
-                            Text(
-                                text = it.email.toString(),
-                                modifier = Modifier.padding(top = 3.dp, start = 16.dp),
-                                fontSize = 14.sp, color = Color.White
-                            )
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp),
+                            color = MaterialTheme.colors.background,
+                            shape = CircleShape,
+                        ) {
+                            Row(modifier = Modifier.fillMaxWidth()) {
+                                OutlinedTextField(
+                                    modifier = Modifier.width(400.dp),
+                                    shape = CircleShape,
+                                    textStyle = TextStyle(
+                                        color = Color.White,
+                                    ),
+                                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                                        focusedBorderColor = MaterialTheme.colors.onSecondary,
+                                        leadingIconColor = MaterialTheme.colors.onSecondary
+                                    ),
+                                    singleLine = true,
+                                    value = query,
+                                    onValueChange = {
+                                        viewModel.onQueryChanged(it)
+                                        viewModel.newSearch()
+                                    },
+                                    label = {
+                                        Text(
+                                            text = "Search",
+                                            color = MaterialTheme.colors.primaryVariant
+                                        )
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Text,
+                                        imeAction = ImeAction.Done,
+                                    ),
+                                    keyboardActions = KeyboardActions(
+                                        //TODO()ONBack = charge all normaly
+                                        onDone = {
+                                            keyboardController?.hide()
+                                        }
+                                    ),
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Filled.Search,
+                                            contentDescription = "search",
+                                            tint = MaterialTheme.colors.primaryVariant
+                                        )
+                                    },
+
+                                    )
+                            }
                         }
-
-                        viewModel.userData.value.phone?.let {
-                            Text(
-                                text = it,
-                                modifier = Modifier.padding(top = 5.dp, start = 16.dp),
-                                fontSize = 14.sp, color = Color.White
-                            )
-                        }
-
 
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
 
@@ -200,47 +238,17 @@ fun UserHomeScreen(
             Row(
                 modifier = Modifier.padding(top = 86.dp, start = 30.dp, end = 30.dp)
             ) {
-                TextButton(
-                    onClick = { /*TODO()*/ },
-                    modifier = Modifier
-                        .background(
-                            MaterialTheme.colors.onSecondary,
-                            shape = RoundedCornerShape(50)
-                        )
-                        .width(165.dp)
-                        .height(40.dp)
-
-                ) {
-                    Text(
-                        text = "Products",
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colors.primaryVariant
-                    )
-                }
 
                 Spacer(modifier = Modifier.width(5.dp))
-
-                TextButton(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier
-                        .background(
-                            MaterialTheme.colors.onSecondary,
-                            shape = RoundedCornerShape(50)
-                        )
-                        .width(165.dp)
-                        .height(40.dp),
-                ) {
-                    Text(
-                        text = "Orders",
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colors.primaryVariant
-                    )
-                }
 
             }
 
 
         }
+
+
+
+
 
         Box(
             modifier = Modifier
@@ -251,22 +259,36 @@ fun UserHomeScreen(
         ) {
             Column {
 
-                LazyColumn(
-                    state = lazyListState,
-                    contentPadding = PaddingValues(vertical = 4.dp),
-                ) {
-                    items(viewModel.shopList) {
-                        ShopListItem(shop = it) {
-                            viewModel.currentItem.value = it
-                            shopClicked.value = true
+                //TOp stores  = score < 4
+                //nearby stores
+                if (!viewModel.state.value.searchError!!){
+                    LazyColumn(
+                        state = lazyListState,
+                        contentPadding = PaddingValues(vertical = 4.dp),
+                    ) {
+                        items(viewModel.shopList) {
+                            ShopListItem(shop = it) {
+                                viewModel.currentItem.value = it
+                                shopClicked.value = true
+                            }
                         }
                     }
-                }
 
-                if (shopClicked.value) {
-                    shopClicked.value = false
-                    navController.navigate(ShopDetailDestinations.route + "/${viewModel.currentItem.value.uid!!}")
+                    if (shopClicked.value) {
+                        shopClicked.value = false
+                        navController.navigate(ShopDetailDestinations.route + "/${viewModel.currentItem.value.uid!!}")
+                    }
+                }else{
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(imageVector = Icons.Filled.Cancel, contentDescription = "Error", tint = Color.Red)
+                        Text(text = "Shop not found ", color = Color.Red)
+                    }
+
                 }
+                
 
 
                 if (viewModel.state.value.errorMsg != null) {

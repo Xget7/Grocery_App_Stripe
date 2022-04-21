@@ -16,11 +16,18 @@ class LoginUtil {
                         if (task.isSuccessful) {
                             val document = task.result
                             if (document.exists()) {
-                                Log.e("RESULTSCREEN", "Exists in user")
-                                navController.navigate(Destinations.UserHomeDestinations.route)
+                                navController.navigate(Destinations.UserMainDestination.route) {
+                                    popUpTo(Destinations.LoginDestinations.route) {
+                                        inclusive = true
+                                    }
+                                }
                             } else {
-                                Log.e("RESULTSCREEN", "Dont in user , its a seller")
-                                navController.navigate(Destinations.SellerHomeDestinations.route)
+                                navController.navigate(Destinations.SellerHomeDestinations.route){
+                                    popUpTo(Destinations.LoginDestinations.route){
+                                        inclusive = true
+                                    }
+                                }
+
                             }
                         }
                     }

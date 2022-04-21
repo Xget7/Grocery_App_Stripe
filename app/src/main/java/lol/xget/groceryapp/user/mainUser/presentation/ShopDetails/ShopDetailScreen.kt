@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -25,6 +27,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -64,7 +67,6 @@ fun ShopDetailScreen(
 
 
     val lazyListState = rememberLazyListState()
-    val scrollState = rememberScrollState()
 
     val query = viewModel.query.value
 
@@ -320,12 +322,15 @@ fun ShopDetailScreen(
     }
 
 
+
     if (!viewModel.state.value.errorMsg.isNullOrEmpty()) {
         EventDialog(
             errorMessage = viewModel.state.value.errorMsg,
             onDismiss = { viewModel.hideErrorDialog() })
     }
 }
+
+
 
 
 

@@ -34,19 +34,17 @@ class LoginViewModel @Inject constructor(
                 useCase.loginCase.invoke(email, password).onEach { result ->
                     when (result) {
                         is Resource.Success -> {
-                            Log.e("MAIN", "Sucess")
                             state.value = state.value.copy(email = email, password = password)
                             state.value = state.value.copy(successLogin = true)
                             val user = FirebaseAuth.getInstance().currentUser
                             getUserType(user, navController)
+
                         }
                         is Resource.Error -> {
-                            Log.e("MAIN", "Error")
                             state.value = state.value.copy(displayPb = false)
                             state.value = state.value.copy(errorMsg = result.message)
                         }
                         is Resource.Loading -> {
-                            Log.e("MAIN", "Loading")
                             state.value = state.value.copy(displayPb = true)
                         }
                     }

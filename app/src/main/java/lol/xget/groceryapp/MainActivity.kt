@@ -27,6 +27,7 @@ import lol.xget.groceryapp.seller.mainSeller.presentation.AddProducts.AddProduct
 import lol.xget.groceryapp.seller.mainSeller.presentation.EditProducts.EditProductScreen
 import lol.xget.groceryapp.seller.mainSeller.presentation.SellerHomeScreen
 import lol.xget.groceryapp.ui.GroceryAppTheme
+import lol.xget.groceryapp.user.UserMainScreen
 import lol.xget.groceryapp.user.mainUser.presentation.ProductDetail.ProductDetailScreen
 import lol.xget.groceryapp.user.mainUser.presentation.ShopDetails.ShopDetailScreen
 import lol.xget.groceryapp.user.mainUser.presentation.UserHomeScreen
@@ -65,7 +66,11 @@ class MainActivity : ComponentActivity() {
                         ) {
                             RegistrationScreen(navController, activity = this@MainActivity)
                         }
-
+                        composable(
+                            route = Destinations.UserMainDestination.route
+                        ) {
+                            UserMainScreen()
+                        }
                         composable(
                             route = Destinations.RegisterSellerDestinations.route,
                         ) {
@@ -77,11 +82,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             RecoverPassword(navController)
                         }
-                        composable(
-                            route = Destinations.ProfileUserDestinations.route
-                        ) {
-                            ProfileScreen(navController)
-                        }
+
                         composable(
                             route = Destinations.SellerAddProductDestinations.route
                         ) {
@@ -101,11 +102,6 @@ class MainActivity : ComponentActivity() {
                             route = Destinations.SellerEditProductDestinations.route + "/{productId}"
                         ) {
                             EditProductScreen(navController)
-                        }
-                        composable(
-                            route = Destinations.UserHomeDestinations.route
-                        ) {
-                            UserHomeScreen(navController)
                         }
                         composable(
                             route = Destinations.SplashDestinations.route

@@ -44,6 +44,7 @@ import lol.xget.groceryapp.login.presentation.components.EventDialog
 import lol.xget.groceryapp.login.presentation.components.RoundedButton
 import lol.xget.groceryapp.login.presentation.components.TransparentTextField
 import lol.xget.groceryapp.ui.components.DialogBoxLoading
+import lol.xget.groceryapp.user.mainUser.domain.User
 
 @ExperimentalCoroutinesApi
 @Composable
@@ -304,7 +305,7 @@ fun SellerProfileScreen(
                         )
 
 
-                        val user = lol.xget.groceryapp.user.mainUser.domain.User(
+                        val user = User(
                             profilePhoto = profileImage.toString()
                                 .ifEmpty { viewModel.shopImage.value },
                             userName = viewModel.fullNameValue.value,
