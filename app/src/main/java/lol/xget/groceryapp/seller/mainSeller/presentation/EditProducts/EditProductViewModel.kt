@@ -49,9 +49,8 @@ class EditProductViewModel @Inject constructor(
 
 
     init {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.Main) {
             state.value = state.value.copy(displayPb  = true)
-            delay(3000)
             savedStateHandle.get<String>(Constants.PARAM_PRODUCT)?.let { product ->
                 getProduct(id = product)
             }

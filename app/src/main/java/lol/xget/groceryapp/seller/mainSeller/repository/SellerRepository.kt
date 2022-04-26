@@ -3,6 +3,7 @@ package lol.xget.groceryapp.seller.mainSeller.repository
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
+import lol.xget.groceryapp.user.mainUser.domain.User
 
 interface SellerRepository {
 
@@ -15,7 +16,8 @@ interface SellerRepository {
 
     //profile/shop
     suspend fun getProfile(userUid: String, accountType: String) : Task<DataSnapshot>
-    suspend fun updateShopData(currentUser: String, newShopData: lol.xget.groceryapp.user.mainUser.domain.User) : Task<Void>
+    suspend fun updateShopData(currentUser: String, newShopData: User) : Task<Void>
+    suspend fun updateShopBanners(currentUser: String, newShopData: User) : Task<Void>
     suspend fun getShopData(currentShop : String) : DatabaseReference
 
 

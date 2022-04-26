@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +14,7 @@ import kotlinx.coroutines.launch
 import lol.xget.groceryapp.common.Constants.swapList
 import lol.xget.groceryapp.common.Resource
 import lol.xget.groceryapp.seller.mainSeller.domain.ShopModel
-import lol.xget.groceryapp.user.mainUser.presentation.components.categories.getFoodCategory
+import lol.xget.groceryapp.user.mainUser.domain.User
 import lol.xget.groceryapp.user.profileUser.use_case.UserUseCases
 import java.util.*
 import javax.inject.Inject
@@ -27,13 +26,13 @@ class UserHomeScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     val state: MutableState<UserHomeScreenState> = mutableStateOf(UserHomeScreenState())
-    val userData = mutableStateOf(lol.xget.groceryapp.user.mainUser.domain.User())
+    val userData = mutableStateOf(User())
     val shopList = mutableStateListOf<ShopModel>()
 
-    val shopListFilteredByLocation = mutableStateListOf<ShopModel>()
+    var shopListFilteredByLocation = mutableStateListOf<ShopModel>()
+    val shopListFilteredByRating = mutableStateListOf<ShopModel>()
 
-    val originalShopList = mutableStateListOf<ShopModel>()
-
+    private val _originalShopList = mutableStateListOf<ShopModel>()
 
     val currentItem = mutableStateOf(ShopModel())
 
@@ -43,30 +42,54 @@ class UserHomeScreenViewModel @Inject constructor(
     init {
         getUser()
         getShopsList()
+
     }
 
+
+
+
+    //ADD FILTERSSSS
     private fun getShopsList() {
+
         repo.getShopsList.invoke().onEach { result ->
             when (result) {
                 is Resource.Loading -> {
                     state.value = state.value.copy(loading = true)
                 }
                 is Resource.Success -> {
+
                     state.value = state.value.copy(successLoad = result.data!!.successLoad)
                     state.value = state.value.copy(shopModel = result.data.shopModel)
 
                     //getting shops data into ShopList
                     state.value.shopModel?.let { list ->
                         shopList.swapList(list)
-                        originalShopList.swapList(list)
+                        _originalShopList.swapList(list)
+                        val listFilteredByLocation = list.filter  { it.city?.contains(userData.value.city!!)!! }
+                        shopListFilteredByLocation.swapList(listFilteredByLocation)
+                        state.value = state.value.copy(loading = false)
+
                     }
                 }
                 is Resource.Error -> {
+                    state.value = state.value.copy(loading = false)
+
                     state.value = state.value.copy(errorMsg = result.message)
                 }
             }
         }.launchIn(viewModelScope)
     }
+
+    fun bannersFromShopListFilteredByRating() : List<String> {
+        val mutableList = mutableListOf<String>()
+            for (banner in _originalShopList){
+                banner.shopAdBanner?.let {
+                    mutableList.add(it)
+                }
+            }
+        return mutableList
+    }
+
 
     private fun getUser() {
         repo.getProfileInfo.invoke("user").onEach { result ->
@@ -77,7 +100,6 @@ class UserHomeScreenViewModel @Inject constructor(
                 is Resource.Success -> {
                     state.value = state.value.copy(successLoad = result.data!!.successUpdate)
                     state.value = state.value.copy(user = result.data.user)
-
                     //getting user firebase data into UserData
                     state.value.user?.let {
                         userData.value = it
@@ -86,6 +108,7 @@ class UserHomeScreenViewModel @Inject constructor(
 
                 }
                 is Resource.Error -> {
+                    state.value = state.value.copy(loading = false)
                     state.value = state.value.copy(errorMsg = result.message)
                 }
             }
@@ -96,7 +119,7 @@ class UserHomeScreenViewModel @Inject constructor(
         viewModelScope.launch {
             query.value.lowercase(Locale.ROOT)
             if (query.value.isNotEmpty()) {
-                shopList.swapList(originalShopList)
+                shopList.swapList(_originalShopList)
                 val result = shopList.filter {
                     it.shopName!!.lowercase(Locale.ROOT).contains(query.value, true)
                 }
@@ -104,7 +127,7 @@ class UserHomeScreenViewModel @Inject constructor(
                     shopList.swapList(result)
                     state.value = state.value.copy(searchError = false)
                 } else if (query.value == "" || query.value == " "){
-                    shopList.swapList(originalShopList)
+                    shopList.swapList(_originalShopList)
                     state.value = state.value.copy(searchError = false)
 
                 }else{
@@ -112,7 +135,7 @@ class UserHomeScreenViewModel @Inject constructor(
                 }
             } else if (query.value == ""){
                 state.value = state.value.copy(searchError = false)
-                shopList.swapList(originalShopList)
+                shopList.swapList(_originalShopList)
             }
         }
     }

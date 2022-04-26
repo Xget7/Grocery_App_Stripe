@@ -11,8 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import lol.xget.groceryapp.MainActivity
 import lol.xget.groceryapp.common.Resource
-import lol.xget.groceryapp.login.domain.LocationLiveData
-import lol.xget.groceryapp.mapLocalization.presentation.SelectLocationState
+import lol.xget.groceryapp.auth.mapLocalization.presentation.SelectLocationState
 import java.io.IOException
 
 class LocationUseCase {
@@ -20,7 +19,7 @@ class LocationUseCase {
 
     @OptIn(ExperimentalCoroutinesApi::class, ExperimentalMaterialApi::class)
     operator fun invoke(activity: Activity, application: Application): Flow<Resource<SelectLocationState>> = callbackFlow {
-        val locationData = LocationLiveData(application)
+        val locationData = lol.xget.groceryapp.auth.login.domain.LocationLiveData(application)
         fun getLocationData() = locationData
         try {
             try {

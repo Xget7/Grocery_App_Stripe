@@ -11,6 +11,7 @@ data class HomeSellerUseCases (
     val deleteProducts : DeleteProduct,
     val updateProduct: UpdateProductUseCase,
     val updateShopData: UpdateShopData,
+    val updateShopBanners: UpdateShopBanners,
     val addProduct: AddProductUseCase,
     val getSpecificProduct: GetSpecificProductFromSeller,
     val getSpecificShop: GetSpecificShopUseCase,

@@ -77,7 +77,7 @@ fun ShopListItem(shop: lol.xget.groceryapp.seller.mainSeller.domain.ShopModel, o
                         modifier = Modifier.width(200.dp)
                     )
 
-                    Spacer(modifier = Modifier.width(30.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
 
                     shop.shopOpen?.let {
                         if (!it) {

@@ -19,6 +19,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
@@ -35,8 +37,8 @@ import androidx.navigation.NavController
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import lol.xget.groceryapp.R
+import lol.xget.groceryapp.auth.login.presentation.components.EventDialog
 import lol.xget.groceryapp.domain.util.Destinations
-import lol.xget.groceryapp.login.presentation.components.EventDialog
 import lol.xget.groceryapp.ui.components.DialogBoxLoading
 import lol.xget.groceryapp.ui.raleway
 import lol.xget.groceryapp.user.mainUser.presentation.components.CategoryChip
@@ -51,14 +53,14 @@ import lol.xget.groceryapp.user.mainUser.presentation.components.categories.getA
 @Composable
 fun ShopDetailScreen(
     navController: NavController,
+    navController2: NavController,
     viewModel: ShopDetailViewModel = hiltViewModel(),
     activity: Activity
 
 
 ) {
 
-    //TODO(BACK BUTTOn)
-    // Create a scrollable
+    //TODO(Location into detail  , popup)
 
     // Make the Intent explicit by setting the Google Maps package
     val mapIntent = Intent(Intent.ACTION_VIEW, viewModel.gmmIntentUri.value)
@@ -76,6 +78,8 @@ fun ShopDetailScreen(
 
     val scrollUpState = viewModel.scrollUp.observeAsState()
 
+
+
     viewModel.updateScrollPosition(lazyListState.firstVisibleItemIndex)
 
 
@@ -91,12 +95,13 @@ fun ShopDetailScreen(
                 .background(color = MaterialTheme.colors.background)
 
         ) {
+//            TODO("SLIDER TOP SHOPS")
 
             GlideImage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(160.dp),
-                imageModel = viewModel.backgGroundImage.value,
+                imageModel = viewModel.shopBannerImage.value,
                 // Crop, Fit, Inside, FillHeight, FillWidth, None
                 contentScale = ContentScale.Crop,
                 // shows an image with a circular revealed animation.
@@ -105,6 +110,7 @@ fun ShopDetailScreen(
                 // shows an error ImageBitmap when the request failed.
                 error = ImageBitmap.imageResource(R.drawable.error),
             )
+
 
 
             Column() {
@@ -122,15 +128,15 @@ fun ShopDetailScreen(
                             modifier = Modifier
                                 .size(60.dp)
                                 .testTag(tag = "circle")
-                                .align(Alignment.CenterVertically),
+                                .align(Alignment.CenterVertically)
+                                .blur(30.dp),
                             shape = CircleShape,
                             elevation = 12.dp
                         ) {
-                            //blur image
                             GlideImage(
-                                imageModel = viewModel.profilePhoto.value,
+                                imageModel = viewModel.shopBannerImage.value,
                                 // Crop, Fit, Inside, FillHeight, FillWidth, None
-                                contentScale = ContentScale.Crop,
+                                contentScale = ContentScale.FillWidth,
                                 // shows an image with a circular revealed animation.
                                 // shows a placeholder ImageBitmap when loading.
                                 placeHolder = ImageBitmap.imageResource(R.drawable.holder),
@@ -270,6 +276,7 @@ fun ShopDetailScreen(
 
 
                     }
+                    Spacer(modifier = Modifier.height(20.dp))
 
 
                     LazyRow(modifier = Modifier.fillMaxWidth()) {
@@ -302,7 +309,7 @@ fun ShopDetailScreen(
                         SellProductsList(product = product, onClick = {
                             viewModel.currentProduct.value = product
                         }, onAddToCart = {
-                            navController.navigate(
+                            navController2.navigate(
                                 Destinations.ProductDetailDestinations.passProduct(
                                     viewModel.shopIdSaved.value,
                                     product.productId!!

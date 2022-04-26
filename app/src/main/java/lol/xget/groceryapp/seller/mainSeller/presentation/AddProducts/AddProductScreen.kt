@@ -36,11 +36,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import lol.xget.groceryapp.auth.login.presentation.components.EventDialog
+import lol.xget.groceryapp.auth.login.presentation.components.RoundedButton
+import lol.xget.groceryapp.auth.login.presentation.components.TransparentTextField
 import lol.xget.groceryapp.common.Constants
 import lol.xget.groceryapp.domain.util.Destinations
-import lol.xget.groceryapp.login.presentation.components.EventDialog
-import lol.xget.groceryapp.login.presentation.components.RoundedButton
-import lol.xget.groceryapp.login.presentation.components.TransparentTextField
 import lol.xget.groceryapp.ui.components.DialogBoxLoading
 import java.text.DateFormat
 import java.text.SimpleDateFormat

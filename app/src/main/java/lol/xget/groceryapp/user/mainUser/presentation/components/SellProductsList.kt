@@ -1,5 +1,8 @@
 package lol.xget.groceryapp.user.mainUser.presentation.components
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,23 +10,32 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.Transition
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.glide.GlideImage
 import lol.xget.groceryapp.R
 import lol.xget.groceryapp.ui.raleway
 import java.util.*
+import com.bumptech.glide.request.transition.Transition as Transition1
 
 @Composable
 fun SellProductsList(
@@ -31,6 +43,14 @@ fun SellProductsList(
     onClick: () -> Unit,
     onAddToCart: () -> Unit,
 ) {
+    val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
+    var sizeImage by remember { mutableStateOf(IntSize.Zero) }
+
+    val gradient = Brush.verticalGradient(
+        colors = listOf(Color.Transparent, Color.Black),
+        startY = 210f/3,  // 1/3
+        endY = 640f
+    )
 
     Card(
         modifier = Modifier
@@ -44,15 +64,29 @@ fun SellProductsList(
 
         ) {
         product.productPhoto?.let {
-            GlideImage(
-                imageModel = it,
-                contentScale = ContentScale.Crop,
-                placeHolder = ImageBitmap.imageResource(R.drawable.holder),
-                // shows an error ImageBitmap when the request failed.
-                error = ImageBitmap.imageResource(R.drawable.error),
-                modifier = Modifier.background(color = Color(0x56757575)),
-                circularReveal = CircularReveal(1)
-            )
+            Glide.with(LocalContext.current).asBitmap().load(it).into(
+                object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition1<in Bitmap>?) {
+                        bitmapState.value = resource
+                    }
+                    override fun onLoadCleared(placeholder: Drawable?) {
+
+                    }
+                })
+            bitmapState.value?.let {
+                Box(){
+                    Image(bitmap = it.asImageBitmap(),
+                        contentDescription = "",
+                        modifier = Modifier.onGloballyPositioned { coordinates ->
+                            sizeImage = coordinates.size
+                        },
+                        contentScale = ContentScale.Crop
+                    )
+                    Box(modifier = Modifier.matchParentSize().background(gradient))
+                }
+            }
+
+
         }
 
 

@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import lol.xget.groceryapp.common.Constants
 import lol.xget.groceryapp.common.Constants.swapList
 import lol.xget.groceryapp.common.Resource
+import lol.xget.groceryapp.seller.mainSeller.domain.ShopModel
 import lol.xget.groceryapp.seller.mainSeller.use_case.HomeSellerUseCases
 import lol.xget.groceryapp.user.mainUser.presentation.components.categories.Categories
 import lol.xget.groceryapp.user.mainUser.presentation.components.categories.getFoodCategory
@@ -29,7 +30,7 @@ class ShopDetailViewModel @Inject constructor(
 
     val state: MutableState<ShopDetailScreenState> = mutableStateOf(ShopDetailScreenState())
 
-    val currentShop = mutableStateOf(lol.xget.groceryapp.seller.mainSeller.domain.ShopModel())
+    val currentShop = mutableStateOf(ShopModel())
 
     val query = mutableStateOf("")
 
@@ -51,8 +52,7 @@ class ShopDetailViewModel @Inject constructor(
     val address = mutableStateOf("")
     val profilePhoto = mutableStateOf("")
 
-    //TODO(upload custom background image)
-    val backgGroundImage = mutableStateOf("https://thumbs.dreamstime.com/b/homemade-black-burger-cheese-cheeseburger-black-bun-dark-wooden-background-close-up-shot-delicious-meat-92838092.jpg")
+    val shopBannerImage = mutableStateOf("")
 
 
     val longitude = mutableStateOf(0.0)
@@ -108,11 +108,14 @@ class ShopDetailViewModel @Inject constructor(
 
     }
 
-    private fun parseResults(shopFb: lol.xget.groceryapp.seller.mainSeller.domain.ShopModel?) {
+    private fun parseResults(shopFb: ShopModel?) {
         shopOpen.value = shopFb?.shopOpen!!
         deliveryFee.value = shopFb.deliveryFee!!
         shopName.value = shopFb.shopName!!
         phone.value = shopFb.phone!!
+        shopFb.shopBanner?.let {
+            shopBannerImage.value = it
+        }
         shopFb.gmail?.let {
             gmail.value = it
         }

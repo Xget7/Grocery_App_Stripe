@@ -13,6 +13,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import lol.xget.groceryapp.common.Resource
+import lol.xget.groceryapp.user.mainUser.domain.User
 import lol.xget.groceryapp.user.profileUser.use_case.UserUseCases
 import javax.inject.Inject
 
@@ -30,6 +31,8 @@ class ProfileViewModel @Inject constructor(
     var cityValue = mutableStateOf("")
     var addressValue = mutableStateOf("")
     var phoneValue = mutableStateOf("")
+    var latitude = mutableStateOf(0f)
+    var longitude = mutableStateOf(0f)
     var country = mutableStateOf("")
     val firebaseAuthCurrentUser = FirebaseAuth.getInstance().currentUser?.uid
 
@@ -41,7 +44,7 @@ class ProfileViewModel @Inject constructor(
 
     @ExperimentalCoroutinesApi
 
-    fun updateUserProfile(user : lol.xget.groceryapp.user.mainUser.domain.User, profilePhoto: Uri? ){
+    fun updateUserProfile(user : User, profilePhoto: Uri? ){
             repo.updateProfile.invoke(user, profilePhoto).onEach { result ->
                 when(result){
                     is Resource.Loading -> {
@@ -76,6 +79,12 @@ class ProfileViewModel @Inject constructor(
                     stateValue.value = state.value.user!!.state.toString()
                     cityValue.value = state.value.user!!.city.toString()
                     addressValue.value = state.value.user!!.address.toString()
+                    state.value.user!!.latitude?.let {
+                        latitude.value = it.toFloat()
+                    }
+                    state.value.user!!.longitude?.let {
+                        longitude.value = it.toFloat()
+                    }
 
                     state.value.user!!.profilePhoto?.let{
                         profilePhoto.value = it

@@ -10,6 +10,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import lol.xget.groceryapp.auth.login.use_case.LoginUseCase
+import lol.xget.groceryapp.auth.recoverPassword.use_case.RecoverPasswordUseCase
+import lol.xget.groceryapp.auth.register.use_case.RegisterUseCase
+import lol.xget.groceryapp.seller.mainSeller.repository.SellerRepository
 import lol.xget.groceryapp.data.localdb.CartItemsDao
 import lol.xget.groceryapp.data.localdb.CartItemsDatabase
 import lol.xget.groceryapp.data.repository.AuthRepoImpl
@@ -21,10 +25,6 @@ import lol.xget.groceryapp.domain.use_case.products.AddProductUseCase
 import lol.xget.groceryapp.domain.use_case.products.GetSpecificProductFromSeller
 import lol.xget.groceryapp.domain.use_case.products.UpdateProductUseCase
 import lol.xget.groceryapp.domain.use_case.auth.AuthUseCases
-import lol.xget.groceryapp.recoverPassword.use_case.RecoverPasswordUseCase
-import lol.xget.groceryapp.login.use_case.LoginUseCase
-import lol.xget.groceryapp.register.use_case.RegisterUseCase
-import lol.xget.groceryapp.seller.mainSeller.repository.SellerRepository
 import lol.xget.groceryapp.seller.mainSeller.use_case.*
 import lol.xget.groceryapp.user.mainUser.repository.UserRepository
 import lol.xget.groceryapp.user.mainUser.use_case.GetShopsList
@@ -96,7 +96,8 @@ object AppModule {
             getSpecificProduct = GetSpecificProductFromSeller(sellerRepo),
             getSellerProfile = GetSellerProfileUseCase(sellerRepo),
             updateShopData = UpdateShopData(sellerRepo),
-            getSpecificShop = GetSpecificShopUseCase(sellerRepo)
+            getSpecificShop = GetSpecificShopUseCase(sellerRepo),
+            updateShopBanners = UpdateShopBanners(sellerRepo)
         )
     }
 

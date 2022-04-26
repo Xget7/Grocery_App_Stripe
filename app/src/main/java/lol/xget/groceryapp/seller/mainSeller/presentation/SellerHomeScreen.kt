@@ -38,8 +38,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.launch
 import lol.xget.groceryapp.R
+import lol.xget.groceryapp.auth.login.presentation.components.EventDialog
 import lol.xget.groceryapp.domain.util.Destinations
-import lol.xget.groceryapp.login.presentation.components.EventDialog
 import lol.xget.groceryapp.presentation.main.Seller.Home.ProductListItem
 import lol.xget.groceryapp.presentation.main.Seller.Home.products.ProductBottomSheetDetail
 import lol.xget.groceryapp.ui.components.DialogBoxLoading
@@ -131,16 +131,16 @@ fun SellerHomeScreen(
                         Spacer(modifier = Modifier.padding(start = 100.dp))
                         IconButton(
                             onClick = {
-                                navController.navigate(Destinations.SellerProfileDestinations.route)
+                                navController.navigate(Destinations.SellerAccountDestinations.route)
                             }
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Edit,
+                                imageVector = Icons.Default.Settings,
                                 tint = Color.White,
                                 modifier = Modifier
                                     .width(20.dp)
                                     .height(20.dp),
-                                contentDescription = "Edit icon",
+                                contentDescription = "Configuration icon",
                             )
                         }
                         IconButton(

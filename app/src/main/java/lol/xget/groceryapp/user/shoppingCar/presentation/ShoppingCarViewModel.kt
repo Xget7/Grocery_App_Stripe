@@ -21,7 +21,7 @@ class ShoppingCarViewModel @Inject constructor(
     val _shopCartItems = mutableStateListOf<CartItems>()
     var totalItemsPrice = mutableStateOf(0)
 
-    fun getTotalPriceItems(){
+    private fun getTotalPriceItems(){
         var totalPrice = 0.0
         for (item in _shopCartItems) {
             totalPrice += (item.itemPriceEach.toFloat() * item.itemAmount)
@@ -30,9 +30,7 @@ class ShoppingCarViewModel @Inject constructor(
     }
 
 
-    val totalItems = flow {
-        emit(_shopCartItems.size)
-    }
+    val totalItems = mutableStateOf(0)
 
     init {
         getItemsFromUser()
@@ -82,6 +80,7 @@ class ShoppingCarViewModel @Inject constructor(
             shoppingCartDb.readAllItems.collect {
                 _shopCartItems.clear()
                 for (item in it) {
+                    totalItems.value = it.size
                     _shopCartItems.add(item)
                 }
                 getTotalPriceItems()

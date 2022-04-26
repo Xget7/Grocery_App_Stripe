@@ -11,6 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -23,8 +24,11 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,7 +63,7 @@ fun ShoppingCarScreen(
 
     val itemsPrice = viewModel.totalItemsPrice.value
 
-    val totalItemsInCart = viewModel.totalItems.collectAsState(initial = 0)
+    val totalItemsInCart = viewModel.totalItems
 
     val lazyListState = rememberLazyListState()
     val scrollState = rememberScrollState()
@@ -80,7 +84,9 @@ fun ShoppingCarScreen(
                         horizontalArrangement = Arrangement.Start,
                         modifier = Modifier.padding(8.dp)
                     ) {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = {
+                            navController.navigateUp()
+                        }) {
                             Icon(
                                 imageVector = Icons.Default.Cancel,
                                 contentDescription = "Back button",
@@ -154,11 +160,35 @@ fun ShoppingCarScreen(
             ) {
 
                 Row(
-                    horizontalArrangement = Arrangement.End,
+                    horizontalArrangement = Arrangement.Start,
                 ) {
 
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(imageVector = Icons.Default.Info , contentDescription = "More info")
+                    }
+
                     Text(
-                        text = "Total: $itemsPrice",
+                        text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp
+                            )
+                            ) {
+                                append("Total: ")
+                            }
+                            
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Green)) {
+                                append("$")
+                            }
+                            withStyle(style = SpanStyle(
+                                fontWeight = FontWeight.Light,
+                                fontSize = 10.sp
+                            )) {
+                                append("$itemsPrice")
+                            }
+                        },
                         fontSize = 25.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
@@ -168,7 +198,7 @@ fun ShoppingCarScreen(
                             .width(200.dp)
                     )
 
-                    Spacer(modifier = Modifier.width(100.dp))
+                    Spacer(modifier = Modifier.width(60.dp))
 
 
 

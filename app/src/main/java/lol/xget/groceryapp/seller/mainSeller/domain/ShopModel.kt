@@ -3,6 +3,8 @@ package lol.xget.groceryapp.seller.mainSeller.domain
 data class ShopModel(
     val uid : String? = null,
     val shopOpen :Boolean? = null,
+    val shopBanner :String? = null,
+    val shopAdBanner :String? = null,
     val deliveryFee : String? = null,
     val shopName: String? = null,
     val phone : String? = null,

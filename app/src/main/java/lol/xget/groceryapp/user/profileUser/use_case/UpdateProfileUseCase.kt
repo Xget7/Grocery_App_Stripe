@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import lol.xget.groceryapp.common.Resource
+import lol.xget.groceryapp.user.mainUser.domain.User
 import lol.xget.groceryapp.user.mainUser.repository.UserRepository
 import lol.xget.groceryapp.user.profileUser.presentation.ProfileState
 import java.io.IOException
@@ -24,7 +25,7 @@ class UpdateProfileUseCase @Inject constructor(
     private val currentUser = FirebaseAuth.getInstance().currentUser?.uid
 
     @ExperimentalCoroutinesApi
-    operator fun invoke(user: lol.xget.groceryapp.user.mainUser.domain.User, profilePhotoUri: Uri?): Flow<Resource<ProfileState>> =
+    operator fun invoke(user: User, profilePhotoUri: Uri?): Flow<Resource<ProfileState>> =
         callbackFlow {
             try {
                 try {
@@ -32,8 +33,10 @@ class UpdateProfileUseCase @Inject constructor(
                     trySend(Resource.Loading())
                     val profImgRef = ref.getReference("profileImages").child(user.accountType!!)
                         .child(user.uid!!).child("photo")
+
                     val imgRef =
                         ref.getReference("profileImages").child(user.accountType).child(user.uid!!)
+
                     if (profilePhotoUri != null) {
                         try {
                             imgRef.listAll().addOnSuccessListener {

@@ -26,6 +26,7 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:hardwareAccelerated="false"
         android:theme="@style/Theme.GroceryApp">
 
         <!--
@@ -44,7 +45,7 @@
             android:value="AIzaSyA_bCcuVoA-EvRfUFVmngWIuQzLWVtXpZU" />
 
         <activity
-            android:name=".mapLocalization.presentation.MapsActivity"
+            android:name=".auth.mapLocalization.presentation.MapsActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity"
             android:label="@string/title_activity_maps" />

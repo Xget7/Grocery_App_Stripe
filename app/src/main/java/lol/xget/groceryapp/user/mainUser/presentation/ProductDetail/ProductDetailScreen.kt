@@ -37,9 +37,9 @@ import com.talhafaki.composablesweettoast.util.SweetToastUtil.SweetSuccess
 import compose.icons.TablerIcons
 import compose.icons.tablericons.Minus
 import lol.xget.groceryapp.R
+import lol.xget.groceryapp.auth.login.presentation.components.EventDialog
 import lol.xget.groceryapp.data.localdb.CartItems
 import lol.xget.groceryapp.domain.util.Destinations
-import lol.xget.groceryapp.login.presentation.components.EventDialog
 import lol.xget.groceryapp.ui.components.DialogBoxLoading
 import lol.xget.groceryapp.ui.raleway
 

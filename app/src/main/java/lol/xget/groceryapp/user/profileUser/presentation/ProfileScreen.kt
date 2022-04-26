@@ -37,13 +37,12 @@ import androidx.navigation.NavController
 import com.skydoves.landscapist.glide.GlideImage
 import com.talhafaki.composablesweettoast.util.SweetToastUtil
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import lol.xget.groceryapp.R
 import lol.xget.groceryapp.domain.util.Destinations
-import lol.xget.groceryapp.login.presentation.components.EventDialog
-import lol.xget.groceryapp.login.presentation.components.RoundedButton
-import lol.xget.groceryapp.login.presentation.components.TransparentTextField
-import lol.xget.groceryapp.ui.BottomNavigationBar
+import lol.xget.groceryapp.auth.login.presentation.components.EventDialog
+import lol.xget.groceryapp.auth.login.presentation.components.RoundedButton
+import lol.xget.groceryapp.auth.login.presentation.components.TransparentTextField
+import lol.xget.groceryapp.user.mainUser.domain.User
 
 @ExperimentalCoroutinesApi
 @Composable
@@ -261,8 +260,12 @@ fun ProfileScreen(
                                 imeAction = ImeAction.Next
                             )
 
-                            val user = lol.xget.groceryapp.user.mainUser.domain.User(
-                                profilePhoto = profileImage.toString(),
+                            val user = User(
+                                profilePhoto = if (profileImage == null) {
+                                    viewModel.profilePhoto.value
+                                }else {
+                                    profileImage.toString()
+                                },
                                 accountType = "user",
                                 userName = viewModel.fullNameValue.value,
                                 phone = viewModel.phoneValue.value,
@@ -270,7 +273,9 @@ fun ProfileScreen(
                                 city = viewModel.cityValue.value,
                                 address = viewModel.addressValue.value,
                                 country = viewModel.country.value,
-                                uid = viewModel.firebaseAuthCurrentUser
+                                uid = viewModel.firebaseAuthCurrentUser,
+
+
                             )
 
                             Spacer(modifier = Modifier.height(6.dp))
