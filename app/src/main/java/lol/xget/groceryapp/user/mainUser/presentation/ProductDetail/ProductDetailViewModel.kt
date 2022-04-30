@@ -36,6 +36,7 @@ class ProductDetailViewModel @Inject constructor(
     val productQuantity = mutableStateOf("")
     val productDescription = mutableStateOf("")
     val productId = mutableStateOf("")
+    val currentShopId = mutableStateOf("")
     val productPrice = mutableStateOf("")
     val productPhoto = mutableStateOf("")
 
@@ -43,10 +44,13 @@ class ProductDetailViewModel @Inject constructor(
     val productFinalPrice = MutableStateFlow(0f)
 
     init {
-        val currentShopId = savedStateHandle.get<String>(Constants.PARAM_SHOP)
+        val _currentShopId = savedStateHandle.get<String>(Constants.PARAM_SHOP)
+        if (_currentShopId != null) {
+            currentShopId.value = _currentShopId
+        }
         val currentProductId = savedStateHandle.get<String>(Constants.PARAM_PRODUCT)
-        if (currentProductId != null && currentShopId != null){
-            getProduct(currentShopId, currentProductId)
+        if (currentProductId != null && _currentShopId != null){
+            getProduct(_currentShopId, currentProductId)
 
         }
     }

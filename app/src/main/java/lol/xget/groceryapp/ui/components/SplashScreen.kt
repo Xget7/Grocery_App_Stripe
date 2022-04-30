@@ -1,6 +1,7 @@
 package lol.xget.groceryapp.presentation.main
 
 import android.view.animation.OvershootInterpolator
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -20,7 +21,7 @@ fun SplashScreen(navController: NavController, currentUser: FirebaseUser?){
 
 
     val scale = remember {
-        androidx.compose.animation.core.Animatable(0f)
+        Animatable(0f)
     }
     LaunchedEffect(key1 = true){
         scale.animateTo(
@@ -41,7 +42,5 @@ fun SplashScreen(navController: NavController, currentUser: FirebaseUser?){
     Box(modifier = Modifier
         .background(Color.Cyan)
         .fillMaxSize())
-
-
 }
 

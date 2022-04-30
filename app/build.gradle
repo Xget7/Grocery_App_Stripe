@@ -169,6 +169,8 @@ dependencies {
 
     //icons
     implementation("br.com.devsrsouza.compose.icons.android:tabler-icons:1.0.0")
+//location search
+    implementation 'com.google.android.libraries.places:places:2.6.0'
 
     //paggin
     implementation "com.google.accompanist:accompanist-pager:0.13.0"

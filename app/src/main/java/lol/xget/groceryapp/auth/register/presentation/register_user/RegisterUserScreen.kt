@@ -2,9 +2,17 @@ package lol.xget.groceryapp.auth.register.presentation.register_user
 
 import android.Manifest
 import android.app.Activity
+import android.app.PendingIntent.getActivity
+import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View.inflate
+import android.widget.FrameLayout
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.resources.Compatibility.Api21Impl.inflate
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 
@@ -26,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -37,18 +46,37 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentContainer
+import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.findFragment
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.android.gms.common.api.Status
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.talhafaki.composablesweettoast.util.SweetToastUtil
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import lol.xget.groceryapp.MainActivity
+import lol.xget.groceryapp.R
 import lol.xget.groceryapp.domain.util.Destinations
 import lol.xget.groceryapp.auth.login.presentation.components.EventDialog
 import lol.xget.groceryapp.auth.login.presentation.components.TransparentTextField
 import lol.xget.groceryapp.auth.mapLocalization.presentation.MapsActivityResultContract
+import lol.xget.groceryapp.databinding.ActivityMainBinding.inflate
+import lol.xget.groceryapp.databinding.ActivityMapsBinding.inflate
+import lol.xget.groceryapp.databinding.AutoCompleteSupportFragmentBinding.inflate
 import lol.xget.groceryapp.ui.components.DialogBoxLoading
 
 
@@ -62,22 +90,8 @@ fun RegistrationScreen(
 
 ) {
 
-    var userLatLng by remember {
-        mutableStateOf(LatLng(0.0, 0.0))
-    }
 
-    val launchMap = rememberLauncherForActivityResult(MapsActivityResultContract()) {
-        viewModel.setLocationAddresses(it.latitude, it.longitude)
-        userLatLng = it
-    }
 
-    val openDialog by viewModel.open.observeAsState(false)
-
-    val gpsStatus by viewModel.gpsStatus.observeAsState(false)
-
-    var latlng = viewModel.userLatLngflow.collectAsState(userLatLng)
-
-    val scope = rememberCoroutineScope()
 
 
     var inProfileScreen by remember { mutableStateOf(false) }
@@ -91,27 +105,12 @@ fun RegistrationScreen(
     }
     var warningToastRejectedPermissions by remember { mutableStateOf(false) }
 
-    val requestPermission =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                viewModel.locationEnabled()
-                if (gpsStatus) {
-                    scope.launch {
-                        viewModel.open.value = true
-                        delay(2000)
-                        launchMap.launch(userLatLng)
-                    }
-                } else {
-                    warningToastActivateGps = true
-                }
-            } else {
-                warningToastRejectedPermissions = true
-            }
-        }
+
 
 
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .background(MaterialTheme.colors.background)
     ) {
         Column(
@@ -145,35 +144,6 @@ fun RegistrationScreen(
                     )
                 )
 
-                IconButton(
-                    modifier = Modifier.padding(start = 150.dp),
-                    onClick = {
-                        when (PackageManager.PERMISSION_GRANTED) {
-                            ContextCompat.checkSelfPermission(
-                                activity,
-                                Manifest.permission.ACCESS_FINE_LOCATION
-                            ) -> {
-                                viewModel.locationEnabled()
-                                if (gpsStatus){
-                                    launchMap.launch(latlng.value)
-                                } else {
-                                    warningToastActivateGps = true
-                                }
-                            }
-                            else -> {
-                                // Asking for permission
-                                requestPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                            }
-                        }
-                    }
-                ) {
-                    Icon(
-
-                        imageVector = Icons.Default.MyLocation,
-                        contentDescription = "Location icon",
-                        tint = MaterialTheme.colors.primaryVariant
-                    )
-                }
             }
 
             Column(
@@ -215,74 +185,6 @@ fun RegistrationScreen(
                     ),
                     imeAction = ImeAction.Next
                 )
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-
-                ) {
-
-                    TransparentTextField(
-                        modifier = Modifier
-                            .width(100.dp)
-                            .height(50.dp),
-                        textFieldValue = viewModel.countryValue,
-                        textLabel = "Country",
-                        keyboardType = KeyboardType.Text,
-                        keyboardActions = KeyboardActions(
-                            onNext = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        ),
-                        imeAction = ImeAction.Next
-                    )
-
-                    TransparentTextField(
-                        modifier = Modifier
-                            .width(100.dp)
-                            .height(50.dp),
-                        textFieldValue = viewModel.stateValue,
-                        textLabel = "State",
-                        keyboardType = KeyboardType.Text,
-                        keyboardActions = KeyboardActions(
-                            onNext = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        ),
-                        imeAction = ImeAction.Next
-                    )
-
-                    TransparentTextField(
-                        modifier = Modifier
-                            .width(100.dp)
-                            .height(50.dp),
-                        textFieldValue = viewModel.cityValue,
-                        textLabel = "City",
-                        keyboardType = KeyboardType.Text,
-                        keyboardActions = KeyboardActions(
-                            onNext = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        ),
-                        imeAction = ImeAction.Next
-                    )
-
-
-                }
-
-                TransparentTextField(
-                    textFieldValue = viewModel.addressValue,
-                    textLabel = " Address",
-                    keyboardType = KeyboardType.Text,
-                    keyboardActions = KeyboardActions(
-                        onNext = {
-                            focusManager.moveFocus(FocusDirection.Down)
-                        }
-                    ),
-                    imeAction = ImeAction.Next
-                )
-
-
 
                 TransparentTextField(
                     textFieldValue = viewModel.passwordValue,
@@ -356,8 +258,8 @@ fun RegistrationScreen(
                             email = viewModel.emailValue.value,
                             country = viewModel.countryValue.value,
                             uid = viewModel.userUid.value,
-                            latitude = userLatLng.latitude.toFloat(),
-                            longitude = userLatLng.longitude.toFloat()
+                            latitude = 0f,
+                            longitude = 0f
 
                         )
                         viewModel.registerUser(user)

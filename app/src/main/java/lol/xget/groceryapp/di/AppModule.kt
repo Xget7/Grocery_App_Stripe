@@ -32,6 +32,9 @@ import lol.xget.groceryapp.user.mainUser.use_case.GetSpecificShopUseCase
 import lol.xget.groceryapp.user.profileUser.use_case.GetProfileUseCase
 import lol.xget.groceryapp.user.profileUser.use_case.UpdateProfileUseCase
 import lol.xget.groceryapp.user.profileUser.use_case.UserUseCases
+import lol.xget.groceryapp.user.shoppingCar.use_case.GetShopData
+import lol.xget.groceryapp.user.shoppingCar.use_case.GetUserData
+import lol.xget.groceryapp.user.shoppingCar.use_case.PlaceOrderUseCase
 
 import javax.inject.Singleton
 
@@ -108,7 +111,10 @@ object AppModule {
         return UserUseCases(
             updateProfile = UpdateProfileUseCase(profileUserRepository),
             getProfileInfo = GetProfileUseCase(profileUserRepository),
-            getShopsList = GetShopsList(profileUserRepository)
+            getShopsList = GetShopsList(profileUserRepository),
+            getShop = GetShopData(profileUserRepository),
+            getUSerData = GetUserData(profileUserRepository),
+            placeOrder = PlaceOrderUseCase(profileUserRepository)
         )
     }
 

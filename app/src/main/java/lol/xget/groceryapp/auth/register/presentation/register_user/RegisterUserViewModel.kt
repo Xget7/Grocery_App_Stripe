@@ -4,17 +4,21 @@ import android.app.Application
 import android.content.Context
 import android.location.Geocoder
 import android.location.LocationManager
+import android.provider.Settings.Global.getString
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import lol.xget.groceryapp.BuildConfig.MAPS_API_KEY
+import lol.xget.groceryapp.R
 import lol.xget.groceryapp.common.Resource
 import lol.xget.groceryapp.auth.mapLocalization.domain.LocationModel
 import lol.xget.groceryapp.domain.use_case.auth.AuthUseCases
@@ -28,6 +32,7 @@ class RegisterUserViewModel @Inject constructor(
     private val regUseCase: AuthUseCases,
     val application: Application
 ) : ViewModel() {
+
 
     val _state =  mutableStateOf(RegisterSellerState())
 
@@ -45,9 +50,7 @@ class RegisterUserViewModel @Inject constructor(
     val passwordValue = mutableStateOf("")
     val confirmPasswordValue = mutableStateOf("")
 
-    val locationStateFlow = MutableStateFlow(LocationModel(0.0,0.0))
     private val _userLatLngflow = MutableSharedFlow<LatLng>(replay = 10)
-    val userLatLngflow = _userLatLngflow.asSharedFlow()
 
     var open = MutableLiveData<Boolean>()
     var gpsStatus = MutableLiveData<Boolean>()
@@ -123,37 +126,6 @@ class RegisterUserViewModel @Inject constructor(
     }
 
 
-    fun setLocationAddresses(latitude : Double, longitude: Double){
-        viewModelScope.launch(Dispatchers.Main) {
-            open.value = true
-            if (latitude != 0.0 && longitude != 0.0){
-                try {
-                    val geoCoder= Geocoder(application, Locale.getDefault())
-                    val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
-                    delay(2000)
-                    countryValue.value =  addresses[0].countryName
-                    stateValue.value =  addresses[0].adminArea
-                    cityValue.value = addresses[0].locality
-                    addressValue.value =  addresses[0].getAddressLine(0)
-                }catch (e: Exception){
-                    _state.value = _state.value.copy(errorMsg = "Error with location")
-                    hideErrorDialog()
-                }
-            }else{
-                _state.value = _state.value.copy(errorMsg = "Cannot get location")
-                hideErrorDialog()
-            }
-            closeDialog()
-        }
-
-    }
-
-
-
-    fun locationEnabled() {
-        val locationManager = application.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        gpsStatus.value = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-    }
 
     fun hideErrorDialog() {
         _state.value = _state.value.copy(

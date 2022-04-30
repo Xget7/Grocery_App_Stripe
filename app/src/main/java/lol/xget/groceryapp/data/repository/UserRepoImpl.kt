@@ -5,6 +5,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import lol.xget.groceryapp.user.mainUser.repository.UserRepository
+import lol.xget.groceryapp.user.shoppingCar.domain.Order
 import org.kpropmap.asMap
 import javax.inject.Inject
 
@@ -27,6 +28,14 @@ class UserRepoImpl @Inject constructor(
     override suspend fun getShopsList(): DatabaseReference {
         //get shops from sellers
         return db2.getReference("sellers")
+    }
+
+    override suspend fun getShopData(currentShop: String): DatabaseReference {
+        return db2.getReference("sellers").child(currentShop)
+    }
+
+    override suspend fun placeOrder(shopId: String, orderInfo: Order): DatabaseReference {
+        return db2.getReference("sellers").child(shopId).child("orders")
     }
 
     override suspend fun getCurrentProduct(

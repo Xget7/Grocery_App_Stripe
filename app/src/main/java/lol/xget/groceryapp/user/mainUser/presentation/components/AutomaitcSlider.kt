@@ -71,7 +71,7 @@ fun AutoSliding(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(240.dp)
+            .height(250.dp)
     ) {
         Spacer(modifier = Modifier.height(30.dp))
         HorizontalPager(
@@ -94,15 +94,15 @@ fun AutoSliding(
                         }
                     }
                     .fillMaxWidth()
-                    .height(260.dp)
-                    .padding(15.dp, 0.dp, 15.dp, 0.dp),
-                shape = RoundedCornerShape(20.dp)
+                    .height(270.dp)
+                    .padding(8.dp, 0.dp, 8.dp, 0.dp),
+                shape = RoundedCornerShape(10.dp)
             ) {
                 val image = banners[page]
 
                 Box(
                     modifier = Modifier
-                        .height(280.dp)
+                        .height(290.dp)
                         .width(300.dp)
                         .background(Color.LightGray)
                         .align(Alignment.Center)

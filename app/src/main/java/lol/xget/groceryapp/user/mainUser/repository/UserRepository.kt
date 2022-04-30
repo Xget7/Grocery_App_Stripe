@@ -3,6 +3,7 @@ package lol.xget.groceryapp.user.mainUser.repository
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
+import lol.xget.groceryapp.user.shoppingCar.domain.Order
 
 interface UserRepository {
 
@@ -11,6 +12,10 @@ interface UserRepository {
     suspend fun getProfile(userUid: String, accountType: String) : Task<DataSnapshot>
 
     suspend fun getShopsList() : DatabaseReference
+
+    suspend fun getShopData(currentShop : String) : DatabaseReference
+
+    suspend fun placeOrder(shopId: String, orderInfo : Order) : DatabaseReference
 
     suspend fun getCurrentProduct(shopId : String, currentProduct : String) : Task<DataSnapshot>
 

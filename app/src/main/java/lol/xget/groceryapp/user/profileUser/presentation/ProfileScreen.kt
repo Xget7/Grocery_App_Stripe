@@ -1,10 +1,12 @@
 package lol.xget.groceryapp.user.profileUser.presentation
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,6 +36,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.AutocompleteActivity
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.skydoves.landscapist.glide.GlideImage
 import com.talhafaki.composablesweettoast.util.SweetToastUtil
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -48,10 +54,10 @@ import lol.xget.groceryapp.user.mainUser.domain.User
 @Composable
 fun ProfileScreen(
     navController: NavController,
+    activity : Activity,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
 
-    //TODO(fix upload progile photo and loading box and nav to menu when succesfull)
 
     var profileImage by remember {
         mutableStateOf<Uri?>(null)
@@ -60,12 +66,50 @@ fun ProfileScreen(
     val context = LocalContext.current
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
-
             profileImage = uri
         }
     val bitmap = remember {
         mutableStateOf<Bitmap?>(null)
     }
+
+    val resultPlacesError = remember {
+        mutableStateOf(false)
+    }
+    // Set the fields to specify which types of place data to
+    // return after the user has made a selection.
+    val fields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
+
+    // Start the autocomplete intent.
+    val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+        .build(activity)
+
+    val launchPlaces = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()){
+            when (it.resultCode) {
+                Activity.RESULT_OK -> {
+                    it.data?.let { _ ->
+
+                        val place = Autocomplete.getPlaceFromIntent(it.data!!)
+                        viewModel.addressValue.value = place.address!!
+                        viewModel.longitude.value = place.latLng?.longitude!!.toFloat()
+                        viewModel.latitude.value = place.latLng?.latitude!!.toFloat()
+                    }
+                }
+
+                AutocompleteActivity.RESULT_ERROR -> {
+                    // TODO: Handle the error.
+                    it.data?.let { intent ->
+                        val status = Autocomplete.getStatusFromIntent(it.data!!)
+                        resultPlacesError.value = true
+                    }
+                }
+                Activity.RESULT_CANCELED -> {
+                    // The user canceled the operation.
+                }
+            }
+
+
+    }
+
 
     val focusManager = LocalFocusManager.current
 
@@ -197,57 +241,6 @@ fun ProfileScreen(
                                 imeAction = ImeAction.Next
                             )
 
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-
-                            ) {
-                                TransparentTextField(
-                                    modifier = Modifier
-                                        .width(100.dp)
-                                        .height(50.dp),
-                                    textFieldValue = viewModel.country,
-                                    textLabel = "Country",
-                                    keyboardType = KeyboardType.Text,
-                                    keyboardActions = KeyboardActions(
-                                        onNext = {
-                                            focusManager.moveFocus(FocusDirection.Down)
-                                        }
-                                    ),
-                                    imeAction = ImeAction.Next
-                                )
-
-                                TransparentTextField(
-                                    modifier = Modifier
-                                        .width(100.dp)
-                                        .height(50.dp),
-                                    textFieldValue = viewModel.stateValue,
-                                    textLabel = "State",
-                                    keyboardType = KeyboardType.Text,
-                                    keyboardActions = KeyboardActions(
-                                        onNext = {
-                                            focusManager.moveFocus(FocusDirection.Down)
-                                        }
-                                    ),
-                                    imeAction = ImeAction.Next
-                                )
-
-                                TransparentTextField(
-                                    modifier = Modifier
-                                        .width(100.dp)
-                                        .height(50.dp),
-                                    textFieldValue = viewModel.cityValue,
-                                    textLabel = "City",
-                                    keyboardType = KeyboardType.Text,
-                                    keyboardActions = KeyboardActions(
-                                        onNext = {
-                                            focusManager.moveFocus(FocusDirection.Down)
-                                        }
-                                    ),
-                                    imeAction = ImeAction.Next
-                                )
-                            }
-
                             TransparentTextField(
                                 textFieldValue = viewModel.addressValue,
                                 textLabel = " Address",
@@ -259,6 +252,19 @@ fun ProfileScreen(
                                 ),
                                 imeAction = ImeAction.Next
                             )
+
+                            if (viewModel.longitude.value == 0f && viewModel.latitude.value == 0f){
+                                OutlinedButton(onClick = { launchPlaces.launch(intent) }) {
+                                    Text(text = "Put your location")
+                                }
+                            }else{
+                                OutlinedButton(onClick = { launchPlaces.launch(intent) }) {
+                                    Text(text = "Update location")
+                                }
+                            }
+
+
+
 
                             val user = User(
                                 profilePhoto = if (profileImage == null) {
@@ -274,8 +280,8 @@ fun ProfileScreen(
                                 address = viewModel.addressValue.value,
                                 country = viewModel.country.value,
                                 uid = viewModel.firebaseAuthCurrentUser,
-
-
+                                latitude =viewModel.latitude.value,
+                                longitude = viewModel.longitude.value
                             )
 
                             Spacer(modifier = Modifier.height(6.dp))
@@ -290,7 +296,6 @@ fun ProfileScreen(
                         }
                     }
                 }
-
             }
 
             if (viewModel.state.value.successUpdate!!) {
@@ -301,7 +306,15 @@ fun ProfileScreen(
                     contentAlignment = Alignment.TopCenter
                 )
             }
-
+            if (resultPlacesError.value) {
+                SweetToastUtil.SweetError(
+                    message = "Error getting place!",
+                    duration = Toast.LENGTH_SHORT,
+                    padding = PaddingValues(top = 16.dp),
+                    contentAlignment = Alignment.TopCenter
+                )
+                resultPlacesError.value = false
+            }
 
             if (viewModel.state.value.errorMsg != null) {
                 EventDialog(
@@ -311,5 +324,6 @@ fun ProfileScreen(
         }
     }
 }
+
 
 

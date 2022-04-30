@@ -57,7 +57,6 @@ fun ProductDetailScreen(
     val productAmount = viewModel.currentProductAmount.collectAsState()
     val productFinalPrice = viewModel.productFinalPrice.collectAsState()
 
-
     //total product price
 
     Surface(color = White, modifier = Modifier.fillMaxSize()) {
@@ -119,6 +118,7 @@ fun ProductDetailScreen(
                         val item = CartItems(
                             0,
                             itemId = viewModel.productId.value,
+                            shopId = viewModel.currentShopId.value,
                             itemName = viewModel.productTitle.value,
                             itemPriceEach = viewModel.productPrice.value,
                             itemPriceTotal = productFinalPrice.value.toString(),

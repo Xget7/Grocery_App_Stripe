@@ -35,7 +35,7 @@ fun UserNavHost(
         composable(
             route = Destinations.ProfileUserDestinations.route
         ) {
-            ProfileScreen(navHostController)
+            ProfileScreen(navHostController,activity = activity)
         }
 
         composable(
