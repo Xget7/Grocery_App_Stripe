@@ -153,6 +153,7 @@ fun RegistrationScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
+                Spacer(modifier = Modifier.height(20.dp))
                 TransparentTextField(
                     textFieldValue = viewModel.fullNameValue,
                     textLabel = "Name",
@@ -164,6 +165,7 @@ fun RegistrationScreen(
                     ),
                     imeAction = ImeAction.Next
                 )
+                Spacer(modifier = Modifier.height(20.dp))
 
                 TransparentTextField(
                     textFieldValue = viewModel.emailValue,
@@ -174,6 +176,7 @@ fun RegistrationScreen(
                     ),
                     imeAction = ImeAction.Next
                 )
+                Spacer(modifier = Modifier.height(20.dp))
 
                 TransparentTextField(
                     textFieldValue = viewModel.phoneValue,
@@ -185,6 +188,7 @@ fun RegistrationScreen(
                     ),
                     imeAction = ImeAction.Next
                 )
+                Spacer(modifier = Modifier.height(20.dp))
 
                 TransparentTextField(
                     textFieldValue = viewModel.passwordValue,
@@ -210,6 +214,7 @@ fun RegistrationScreen(
                     },
                     visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation()
                 )
+                Spacer(modifier = Modifier.height(20.dp))
 
                 TransparentTextField(
                     textFieldValue = viewModel.confirmPasswordValue,
@@ -251,8 +256,6 @@ fun RegistrationScreen(
                         val user = lol.xget.groceryapp.user.mainUser.domain.User(
                             userName = viewModel.fullNameValue.value,
                             phone = viewModel.phoneValue.value,
-                            state = viewModel.stateValue.value,
-                            city = viewModel.cityValue.value,
                             address = viewModel.addressValue.value,
                             accountType = "user",
                             email = viewModel.emailValue.value,
@@ -289,8 +292,7 @@ fun RegistrationScreen(
                         }
                     },
                     onClick = {
-                        //TODO()
-                        //onBack()
+                       navController.navigate(Destinations.LoginDestinations.route)
                     }
                 )
 

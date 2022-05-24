@@ -38,6 +38,15 @@ class UserRepoImpl @Inject constructor(
         return db2.getReference("sellers").child(shopId).child("orders")
     }
 
+    override suspend fun getOrders(shopId: String, orderIdFrom: String): DatabaseReference {
+        return db2.getReference("sellers").child(shopId).child("orders")
+    }
+
+    override suspend fun getOrderbyId(shopId: String, orderId: String): DatabaseReference {
+        return db2.getReference("sellers").child(shopId).child("orders").child(orderId)
+
+    }
+
     override suspend fun getCurrentProduct(
         shopId: String,
         currentProduct: String

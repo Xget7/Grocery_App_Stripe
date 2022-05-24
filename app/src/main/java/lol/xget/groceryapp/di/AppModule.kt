@@ -29,6 +29,7 @@ import lol.xget.groceryapp.seller.mainSeller.use_case.*
 import lol.xget.groceryapp.user.mainUser.repository.UserRepository
 import lol.xget.groceryapp.user.mainUser.use_case.GetShopsList
 import lol.xget.groceryapp.user.mainUser.use_case.GetSpecificShopUseCase
+import lol.xget.groceryapp.user.profileUser.use_case.GetOrdersUseCase
 import lol.xget.groceryapp.user.profileUser.use_case.GetProfileUseCase
 import lol.xget.groceryapp.user.profileUser.use_case.UpdateProfileUseCase
 import lol.xget.groceryapp.user.profileUser.use_case.UserUseCases
@@ -114,7 +115,8 @@ object AppModule {
             getShopsList = GetShopsList(profileUserRepository),
             getShop = GetShopData(profileUserRepository),
             getUSerData = GetUserData(profileUserRepository),
-            placeOrder = PlaceOrderUseCase(profileUserRepository)
+            placeOrder = PlaceOrderUseCase(profileUserRepository),
+            getOrders = GetOrdersUseCase(profileUserRepository)
         )
     }
 

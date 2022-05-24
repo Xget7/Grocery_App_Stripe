@@ -32,6 +32,7 @@ sealed class Destinations(val route : String, val productModel: lol.xget.grocery
         }
     }
     object ShoppingCar : Destinations("shopping_car_screen")
+    object UserOrdersScreen : Destinations("user_orders_screen")
 
 
 }

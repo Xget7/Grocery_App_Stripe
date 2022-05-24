@@ -1,16 +1,14 @@
-package lol.xget.groceryapp.user.mainUser.presentation.orders
+package lol.xget.groceryapp.user.mainUser.presentation.orders.ordersDetails
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -22,14 +20,12 @@ import lol.xget.groceryapp.ui.components.DialogBoxLoading
 import lol.xget.groceryapp.user.mainUser.presentation.components.OrderList
 
 @Composable
-fun UserOrdersScreen(
+fun UserOrdersDetailScreen(
     navController: NavController,
-    viewModel: UserOrdersViewModel = hiltViewModel()
+    viewModel: UserOrderDetailViewModel = hiltViewModel()
 ) {
     val scrollLazyListState = rememberLazyListState()
-    val orderList = remember() {
-        viewModel.ordersList
-    }
+
     if (viewModel.state.value.loading == true){
         Column(
             Modifier.fillMaxSize(),
@@ -58,26 +54,7 @@ fun UserOrdersScreen(
                     color = MaterialTheme.colors.primaryVariant,
                     fontWeight = FontWeight.Medium
                 )
-
-
-
-                if (viewModel.state.value.successLoadOders == true){
-                    LazyColumn(
-                        state = scrollLazyListState
-                    ){
-                        items(orderList) { order ->
-                            Spacer(modifier = Modifier.height(10.dp))
-                            OrderList(
-                                order = order,
-                                shopName = viewModel.getShopTitleFromOrder(order.orderTo!!)
-                            ){
-
-                            }
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                        }
-                    }
-                }
+                TODO(ORDERSCREEN)
             }
 
 

@@ -23,6 +23,7 @@ object Constants {
 
     const val PARAM_PRODUCT = "productId"
     const val PARAM_SHOP = "shopId"
+    const val PARAM_ORDER= "orderId"
 
 
     val listOfCategories = listOf(
@@ -55,6 +56,8 @@ object Constants {
         val json = gson.toJson(this)
         return gson.fromJson(json, object : TypeToken<O>() {}.type)
     }
+
+
 
 
 }

@@ -55,7 +55,7 @@ class RegisterUserViewModel @Inject constructor(
     var open = MutableLiveData<Boolean>()
     var gpsStatus = MutableLiveData<Boolean>()
 
-    fun verifyUser(
+    private fun verifyUser(
         email: String,
         password: String,
         confirmPassword: String,
@@ -65,7 +65,7 @@ class RegisterUserViewModel @Inject constructor(
         if (user.userName!!.isBlank()) {
             _state.value = _state.value.copy(errorMsg = "Name is empty.")
             return false
-        }else if (!user.userName!!.matches(regex = Regex("(?=.*[A-Z]).*")) ){
+        }else if (!user.userName.matches(regex = Regex("(?=.*[A-Z]).*")) ){
             _state.value = _state.value.copy(errorMsg = "Name need at least 1 mayus.")
             return false
         } else if (!email.trim().matches(Regex("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"))) {
@@ -80,24 +80,11 @@ class RegisterUserViewModel @Inject constructor(
         } else if (password != confirmPassword) {
             _state.value = _state.value.copy(errorMsg = "Passwords don't match.")
             return false
-        } else if (user.address!!.isBlank()) {
-            _state.value = _state.value.copy(errorMsg = "Address is empty.")
-            return false
         } else if (email.isBlank()) {
             _state.value = _state.value.copy(errorMsg = "Email is empty.")
             return false
         } else if (user.phone!!.isBlank()) {
             _state.value = _state.value.copy(errorMsg = "Phone is empty.")
-            return false
-        }else if (user.city!!.isBlank()) {
-            _state.value = _state.value.copy(errorMsg = "City is empty.")
-            return false
-        }else if (user.state!!.isBlank()) {
-            _state.value = _state.value.copy(errorMsg = "State is empty.")
-            return false
-        }
-        else if (user.country!!.isBlank()) {
-            _state.value = _state.value.copy(errorMsg = "Country is empty.")
             return false
         }else return true
     }

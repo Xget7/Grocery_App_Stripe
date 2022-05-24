@@ -12,5 +12,7 @@ data class UserUseCases(
     val getShop: GetShopData,
     val getUSerData : GetUserData,
     val placeOrder : PlaceOrderUseCase,
+    val getOrders : GetOrdersUseCase,
+    val getOrderById : GetOrderByIdUseCase,
 
-)
+    )

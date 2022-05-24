@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import lol.xget.groceryapp.common.Resource
+import lol.xget.groceryapp.seller.mainSeller.domain.ShopModel
 import lol.xget.groceryapp.user.mainUser.presentation.UserHomeScreenState
 import lol.xget.groceryapp.user.mainUser.repository.UserRepository
 import java.io.IOException
@@ -22,23 +23,22 @@ class GetShopsList @Inject constructor(
     private val repo : UserRepository
 ) {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(): Flow<Resource<UserHomeScreenState>> = callbackFlow {
-        var fbShopsList = mutableListOf<lol.xget.groceryapp.seller.mainSeller.domain.ShopModel>()
+        var fbShopsList = mutableListOf<ShopModel>()
         try {
             try {
                 trySend(Resource.Loading())
-                //TODO(Filter by city)
+
                 repo.getShopsList().addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         fbShopsList.clear()
                         for (ds in snapshot.children) {
-                            val shop = ds.getValue(lol.xget.groceryapp.seller.mainSeller.domain.ShopModel::class.java)
+                            val shop = ds.getValue(ShopModel::class.java)
                             fbShopsList.add(shop!!)
                         }
                         launch {
                             delay(2000)
-                            trySend(Resource.Success(UserHomeScreenState(shopModel = fbShopsList)))
+                            trySend(Resource.Success(UserHomeScreenState(shopModel = fbShopsList , loading = false)))
                         }
                     }
 

@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import lol.xget.groceryapp.common.Constants.swapList
 import lol.xget.groceryapp.common.Resource
+import lol.xget.groceryapp.domain.util.Utils.Companion.distance
 import lol.xget.groceryapp.seller.mainSeller.domain.ShopModel
 import lol.xget.groceryapp.user.mainUser.domain.User
 import lol.xget.groceryapp.user.profileUser.use_case.UserUseCases
@@ -27,6 +28,7 @@ class UserHomeScreenViewModel @Inject constructor(
     val repo: UserUseCases
 ) : ViewModel() {
 
+
     val state: MutableState<UserHomeScreenState> = mutableStateOf(UserHomeScreenState())
     val userData = mutableStateOf(User())
     val shopList = mutableStateListOf<ShopModel>()
@@ -35,15 +37,14 @@ class UserHomeScreenViewModel @Inject constructor(
     val shopListFilteredByRating = mutableStateListOf<ShopModel>()
 
     private val _originalShopList = mutableStateListOf<ShopModel>()
-
     val currentItem = mutableStateOf(ShopModel())
-
     val query = mutableStateOf("")
 
 
     init {
         getUser()
         getShopsList()
+
     }
 
 
@@ -77,7 +78,7 @@ class UserHomeScreenViewModel @Inject constructor(
     }
 
     private fun filterListByLocation(shopList: List<ShopModel> , user: User) : List<ShopModel>{
-        if (user.latitude == 0f && user.longitude == 0f){
+        if (user.latitude!! <= 0f && user.longitude!! <= 0f){
             return emptyList()
         }
 
@@ -90,7 +91,6 @@ class UserHomeScreenViewModel @Inject constructor(
                 shop.latitude!!.toDouble(),
                 shop.longitude!!.toDouble()
             )
-            Log.e("DistanceBEtweenShop = ", distanceBetweenUserAndShop.toString())
             if (distanceBetweenUserAndShop < 15){
                 filteredList.add(shop)
             }
@@ -99,26 +99,7 @@ class UserHomeScreenViewModel @Inject constructor(
         return filteredList
     }
 
-    private fun distance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
-        val theta = lon1 - lon2
-        var dist = (Math.sin(deg2rad(lat1))
-                * Math.sin(deg2rad(lat2))
-                + (Math.cos(deg2rad(lat1))
-                * Math.cos(deg2rad(lat2))
-                * Math.cos(deg2rad(theta))))
-        dist = Math.acos(dist)
-        dist = rad2deg(dist)
-        dist *= 60 * 1.1515
-        return dist
-    }
 
-    private fun deg2rad(deg: Double): Double {
-        return deg * Math.PI / 180.0
-    }
-
-    private fun rad2deg(rad: Double): Double {
-        return rad * 180.0 / Math.PI
-    }
 
     fun bannersFromShopListFilteredByRating() : List<String> {
         val mutableList = mutableListOf<String>()
@@ -189,7 +170,6 @@ class UserHomeScreenViewModel @Inject constructor(
     val scrollUp: LiveData<Boolean> = _scrollUp
 
     fun updateScrollPosition(newScrollIndex: Int) {
-        TODO("Last scroll fix")
 
         if (newScrollIndex == lastScrollIndex) return
 

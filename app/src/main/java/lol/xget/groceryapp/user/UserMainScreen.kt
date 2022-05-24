@@ -27,6 +27,7 @@ fun UserMainScreen(
 
     val navigationItems = listOf(
         Destinations.UserHomeDestinations,
+        Destinations.UserOrdersScreen,
         Destinations.ProfileUserDestinations
     )
 

@@ -12,6 +12,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import compose.icons.TablerIcons
+import compose.icons.tablericons.Box
 import compose.icons.tablericons.User
 import lol.xget.groceryapp.domain.util.Destinations
 
@@ -21,44 +22,52 @@ fun BottomNavigationBar(
     items: List<Destinations>
 ) {
 
-    val currenRoute = currenRoute( navController)
+    val currenRoute = currenRoute(navController)
     BottomNavigation(
-
     ) {
         BottomNavigationItem(
             icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home") },
             selected = currenRoute == Destinations.UserHomeDestinations.route,
             onClick =
             {
-                navController.navigate(Destinations.UserHomeDestinations.route){
-                    popUpTo(navController.graph.findStartDestination().id){
+                navController.navigate(Destinations.UserHomeDestinations.route) {
+                    popUpTo(navController.graph.findStartDestination().id) {
                         //DELETE NAVBACKSTACK
                         saveState = true
                     }
                     launchSingleTop = true
                 }
             },
-            label = {Text("Home")}
-            )
+        )
+
+
+        BottomNavigationItem(
+            icon = { Icon(imageVector = TablerIcons.Box, contentDescription = "Orders") },
+            selected = currenRoute == Destinations.UserOrdersScreen.route,
+            onClick =
+            {
+                navController.navigate(Destinations.UserOrdersScreen.route) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                }
+            },
+        )
 
         BottomNavigationItem(
             icon = { Icon(imageVector = TablerIcons.User, contentDescription = "Profile") },
             selected = currenRoute == Destinations.ProfileUserDestinations.route,
             onClick =
             {
-                navController.navigate(Destinations.ProfileUserDestinations.route){
-                    popUpTo(navController.graph.findStartDestination().id){
-                        //DELETE NAVBACKSTACK
+                navController.navigate(Destinations.ProfileUserDestinations.route) {
+                    popUpTo(navController.graph.findStartDestination().id) {
                         saveState = true
                     }
                     launchSingleTop = true
                 }
             },
-            label = {Text("Profile")}
         )
-
-
-
     }
 }
 

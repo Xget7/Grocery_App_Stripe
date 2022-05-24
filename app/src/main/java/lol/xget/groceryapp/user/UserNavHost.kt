@@ -9,10 +9,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import lol.xget.groceryapp.MainActivity
+import lol.xget.groceryapp.auth.login.presentation.LoginScreen
 import lol.xget.groceryapp.domain.util.Destinations
 import lol.xget.groceryapp.user.mainUser.presentation.ProductDetail.ProductDetailScreen
 import lol.xget.groceryapp.user.mainUser.presentation.ShopDetails.ShopDetailScreen
 import lol.xget.groceryapp.user.mainUser.presentation.UserHomeScreen
+import lol.xget.groceryapp.user.mainUser.presentation.orders.UserOrdersScreen
 import lol.xget.groceryapp.user.profileUser.presentation.ProfileScreen
 import lol.xget.groceryapp.user.shoppingCar.presentation.ShoppingCarScreen
 
@@ -48,6 +50,12 @@ fun UserNavHost(
             route = Destinations.ShoppingCar.route
         ) {
             ShoppingCarScreen(navHostController)
+        }
+
+        composable(
+            route = Destinations.UserOrdersScreen.route
+        ) {
+            UserOrdersScreen(navHostController)
         }
 
     }

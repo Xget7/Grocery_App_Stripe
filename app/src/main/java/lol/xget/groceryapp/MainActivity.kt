@@ -38,7 +38,6 @@ class MainActivity : ComponentActivity() {
 
     private var mAuth = FirebaseAuth.getInstance()
 
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

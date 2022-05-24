@@ -1,10 +1,10 @@
 package lol.xget.groceryapp.user.shoppingCar.domain
 
 data class Order(
-    val orderId : String,
-    val orderTime : String,
-    val orderStatus : String,
-    val orderCost : String,
-    val orderBy: String,
-    val orderTo: String,
+    val orderId : String? = null,
+    val orderTime : String? = null,
+    val orderStatus : String? = null,
+    val orderCost : String? = null,
+    val orderBy: String? = null,
+    val orderTo: String? = null,
 )
