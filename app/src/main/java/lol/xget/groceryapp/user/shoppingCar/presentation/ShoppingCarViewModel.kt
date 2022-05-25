@@ -40,6 +40,7 @@ class ShoppingCarViewModel @Inject constructor(
     val currentShop = mutableStateOf(ShopModel())
 
     val timesTamp = System.currentTimeMillis()
+    val hola = ""
 
     val currentUser = mutableStateOf(User())
 
