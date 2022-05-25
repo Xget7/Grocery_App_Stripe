@@ -46,7 +46,7 @@ class ShoppingCarViewModel @Inject constructor(
     private fun getTotalPriceItems() {
         var totalPrice = 0.0
         for (item in _shopCartItems) {
-            totalPrice += (item.itemPriceEach.toFloat() * item.itemAmount)
+            totalPrice += (item.itemPriceEach?.toFloat()?.times(item.itemAmount!!)!!)
         }
         totalItemsPrice.value = totalPrice.roundToInt()
     }
@@ -97,8 +97,7 @@ class ShoppingCarViewModel @Inject constructor(
                         state.value = state.value.copy(displayPb = true)
                     }
                     is Resource.Success -> {
-                        state.value = state.value.copy(successPlacedOrder = true)
-                        state.value = state.value.copy(displayPb = false)
+                        state.value = state.value.copy(successPlacedOrder = true,displayPb = false)
                         //Manaege ssucess
 
                     }
@@ -156,12 +155,12 @@ class ShoppingCarViewModel @Inject constructor(
 
     fun deleteItem(item: CartItems) {
         viewModelScope.launch(IO) {
-            if (item.itemAmount > 1) {
-                var originalItemPrice = item.itemPriceEach.toFloat()
-                var newItemPriceFloat = item.itemPriceTotal.toFloat()
+            if (item.itemAmount!! > 1) {
+                var originalItemPrice = item.itemPriceEach?.toFloat()
+                var newItemPriceFloat = item.itemPriceTotal?.toFloat()
 
-                item.itemAmount -= 1
-                newItemPriceFloat -= originalItemPrice
+                item.itemAmount = item.itemAmount?.minus(1)
+                newItemPriceFloat = newItemPriceFloat?.minus(originalItemPrice!!)
 
                 item.itemPriceTotal = newItemPriceFloat.toString()
 
@@ -177,11 +176,11 @@ class ShoppingCarViewModel @Inject constructor(
 
     fun addItem(item: CartItems) {
         viewModelScope.launch(IO) {
-            var originalItemPrice = item.itemPriceEach.toFloat()
-            var newItemPriceFloat = item.itemPriceTotal.toFloat()
+            var originalItemPrice = item.itemPriceEach?.toFloat()
+            var newItemPriceFloat = item.itemPriceTotal?.toFloat()
 
-            item.itemAmount += 1
-            newItemPriceFloat += originalItemPrice
+            item.itemAmount = item.itemAmount?.plus(1)
+            newItemPriceFloat = originalItemPrice?.let { newItemPriceFloat?.plus(it) }
 
 
             item.itemPriceTotal = newItemPriceFloat.toString()
@@ -198,7 +197,7 @@ class ShoppingCarViewModel @Inject constructor(
                     totalItems.value = it.size
                     _shopCartItems.add(item)
                 }
-                getShop(_shopCartItems[0].shopId)
+                _shopCartItems[0].shopId?.let { it1 -> getShop(it1) }
                 getTotalPriceItems()
             }
         }

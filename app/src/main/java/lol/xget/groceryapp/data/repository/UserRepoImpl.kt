@@ -17,7 +17,10 @@ class UserRepoImpl @Inject constructor(
     private val db2 = FirebaseDatabase.getInstance()
 
 
-    override suspend fun updateProfile(user: lol.xget.groceryapp.user.mainUser.domain.User, userUid: String): Task<Void> {
+    override suspend fun updateProfile(
+        user: lol.xget.groceryapp.user.mainUser.domain.User,
+        userUid: String
+    ): Task<Void> {
         return db2.getReference(user.accountType + "s").child(userUid).updateChildren(user.asMap())
     }
 
@@ -42,16 +45,22 @@ class UserRepoImpl @Inject constructor(
         return db2.getReference("sellers").child(shopId).child("orders")
     }
 
-    override suspend fun getOrderbyId(shopId: String, orderId: String): DatabaseReference {
+    override suspend fun getOrderById(shopId: String, orderId: String): DatabaseReference {
         return db2.getReference("sellers").child(shopId).child("orders").child(orderId)
 
+    }
+
+    override suspend fun getItemsByOrderId(shopId: String, orderId: String): DatabaseReference {
+        return db2.getReference("sellers").child(shopId).child("orders").child(orderId)
+            .child("items")
     }
 
     override suspend fun getCurrentProduct(
         shopId: String,
         currentProduct: String
     ): Task<DataSnapshot> {
-        return db2.getReference("sellers").child(shopId).child("products").child(currentProduct).get()//?
+        return db2.getReference("sellers").child(shopId).child("products").child(currentProduct)
+            .get()//?
     }
 
 
