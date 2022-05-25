@@ -1,7 +1,6 @@
 package lol.xget.groceryapp.user.mainUser.presentation.orders.ordersDetails
 
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -10,11 +9,9 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import lol.xget.groceryapp.common.Constants
-import lol.xget.groceryapp.common.Constants.swapList
 import lol.xget.groceryapp.common.Resource
-import lol.xget.groceryapp.seller.mainSeller.domain.ShopModel
-import lol.xget.groceryapp.user.mainUser.presentation.UserHomeScreenState
 import lol.xget.groceryapp.user.profileUser.use_case.UserUseCases
 import lol.xget.groceryapp.user.shoppingCar.domain.Order
 import javax.inject.Inject
@@ -27,18 +24,25 @@ class UserOrderDetailViewModel  @Inject constructor(
     val state: MutableState<UserOrdersDetailState> = mutableStateOf(UserOrdersDetailState())
 
     val currentOrderId = mutableStateOf("")
+    val currentShopId = mutableStateOf("")
+    val currentOrder = mutableStateOf(Order())
     private val currentUser = FirebaseAuth.getInstance().currentUser?.uid
-
-
 
     init {
         savedStateHandle.get<String>(Constants.PARAM_ORDER)?.let { orderId ->
             currentOrderId.value = orderId
         }
+        savedStateHandle.get<String>(Constants.PARAM_SHOP)?.let { shopId ->
+            currentShopId.value = shopId
+        }
+        if (currentOrderId.value.isNotBlank() && currentShopId.value.isNotBlank()){
+            getOrdersFromId()
+        }
+
     }
 
     private fun getOrdersFromId(){
-        repo.getOrderById.invoke(currentOrderId, currentUser!!).onEach { result ->
+        repo.getOrderById.invoke(currentOrderId.value,currentShopId.value).onEach { result ->
             when (result) {
                 is Resource.Loading -> {
                     state.value = state.value.copy(loading = true)
@@ -46,29 +50,45 @@ class UserOrderDetailViewModel  @Inject constructor(
                 is Resource.Success -> {
                     state.value = state.value.copy(
                         success = result.data!!.success,
-                        orders = result.data.orders ,
-                        successLoadOders = result.data.successLoadOders,
+                        order = result.data.order ,
+                        loading = false
                     )
                     //getting shops data into ShopList
-                    result.data.orders?.let { list ->
-                        ordersList.swapList(list)
-                        state.value = state.value.copy(loading = false)
+                    result.data.order?.let { order ->
+                        currentOrder.value = order
+                        order.orderId?.let { orderId -> getItemsByOrderId(orderId) }
                     }
-
-
                 }
                 is Resource.Error -> {
-                    state.value = state.value.copy(loading = false)
-                    state.value = state.value.copy(errorMsg = result.message)
+                    state.value = state.value.copy(errorMsg = result.message,loading = false)
                 }
             }
         }.launchIn(viewModelScope)
     }
 
-     fun getShopTitleFromOrder(shopUid: String) : String{
-        val currentShopTitle = shopsList.find { it.uid == shopUid }?.shopName
-        return currentShopTitle ?: "No Title"
+    private fun  getItemsByOrderId(orderId : String){
+        repo.getItemsByOrderId.invoke(currentShopId.value, orderId).onEach { result ->
+            when(result){
+                is Resource.Loading -> {
+                    state.value = state.value.copy(loading = true)
+                }
+                is Resource.Success -> {
+                    state.value = state.value.copy(
+                        success = result.data!!.success,
+                        orderItems = result.data.orderItems,
+                        noItems = result.data.noItems,
+                        loading = false
+                    )
+                }
+                is Resource.Error -> {
+                    state.value = state.value.copy(errorMsg = result.message,loading = false)
+                }
+
+            }
+        }.launchIn(viewModelScope)
     }
+
+
 
 
 }

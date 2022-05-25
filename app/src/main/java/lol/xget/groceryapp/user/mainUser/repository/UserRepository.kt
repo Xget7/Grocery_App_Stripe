@@ -19,7 +19,9 @@ interface UserRepository {
 
     suspend fun getOrders(shopId: String, orderIdFrom: String) : DatabaseReference
 
-    suspend fun getOrderbyId(shopId: String, orderId: String) : DatabaseReference
+    suspend fun getOrderById(shopId: String, orderId: String) : DatabaseReference
+
+    suspend fun getItemsByOrderId(shopId: String, orderId: String) : DatabaseReference
 
     suspend fun getCurrentProduct(shopId : String, currentProduct : String) : Task<DataSnapshot>
 

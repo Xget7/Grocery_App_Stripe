@@ -1,5 +1,6 @@
 package lol.xget.groceryapp.user.profileUser.use_case
 
+import lol.xget.groceryapp.user.mainUser.use_case.GetItemsByOrderId
 import lol.xget.groceryapp.user.mainUser.use_case.GetShopsList
 import lol.xget.groceryapp.user.shoppingCar.use_case.GetShopData
 import lol.xget.groceryapp.user.shoppingCar.use_case.GetUserData
@@ -14,5 +15,6 @@ data class UserUseCases(
     val placeOrder : PlaceOrderUseCase,
     val getOrders : GetOrdersUseCase,
     val getOrderById : GetOrderByIdUseCase,
+    val getItemsByOrderId : GetItemsByOrderId,
 
     )
