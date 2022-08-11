@@ -10,6 +10,7 @@ data class CartItems(
     var id: Int? = null,
     var itemPhoto : String? = null,
     var itemId: String? = null,
+    var itemBuyerId: String? = null,
     var shopId: String? = null,
     var itemQuantity: String? = null,
     var itemName: String? = null,

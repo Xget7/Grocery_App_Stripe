@@ -8,10 +8,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.delay
 import lol.xget.groceryapp.domain.util.LoginUtil.UserType.getUserType
@@ -19,6 +24,19 @@ import lol.xget.groceryapp.domain.util.LoginUtil.UserType.getUserType
 @Composable
 fun SplashScreen(navController: NavController, currentUser: FirebaseUser?){
 
+//    val composition by rememberLottieComposition(
+//        LottieCompositionSpec.RawRes(R.raw.code)
+//    )
+//
+//    // control of the animation
+//    val progress by animateLottieCompositionAsState(
+//        // pass the composition created above
+//        composition,
+//        iterations = LottieConstants.IterateForever,
+//        isPlaying = true,
+//        speed = 1f,
+//        restartOnPlay = false
+//    )
 
     val scale = remember {
         Animatable(0f)
@@ -33,14 +51,14 @@ fun SplashScreen(navController: NavController, currentUser: FirebaseUser?){
                 }
             )
         )
-        delay(2000L)
         getUserType(currentUser, navController)
+
 
     }
 
 
     Box(modifier = Modifier
-        .background(Color.Cyan)
+        .background(Color(0xFFF02020))
         .fillMaxSize())
 }
 

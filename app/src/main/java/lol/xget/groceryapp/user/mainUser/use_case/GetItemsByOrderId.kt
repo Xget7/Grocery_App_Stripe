@@ -1,5 +1,6 @@
 package lol.xget.groceryapp.user.mainUser.use_case
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import com.google.firebase.FirebaseException
 import com.google.firebase.database.DataSnapshot
@@ -20,6 +21,7 @@ class GetItemsByOrderId  @Inject constructor(
     private val repo: UserRepository
 ) {
     private val currentItems : MutableList<CartItems> = mutableStateListOf(CartItems())
+    private val currentItemsFiltered : MutableList<CartItems> = mutableStateListOf(CartItems())
 
 
 
@@ -34,30 +36,34 @@ class GetItemsByOrderId  @Inject constructor(
                     repo.getItemsByOrderId(currentShopId, currentOrderId)
                         .addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
+                                currentItems.clear()
                                 for (ds in snapshot.children) {
                                     ds.getValue(CartItems::class.java)?.let {
                                         currentItems.add(it)
                                     }
-                                }
-                                if (currentItems.size > 0) {
-                                    trySend(
-                                        Resource.Success(
-                                            UserOrdersDetailState(
-                                                success = true,
-                                                orderItems = currentItems
+
+                                    if (currentItems.size > 0) {
+                                        currentItemsFiltered.addAll(currentItems)
+                                        trySend(
+                                            Resource.Success(
+                                                UserOrdersDetailState(
+                                                    success = true,
+                                                    orderItems = currentItems
+                                                )
                                             )
                                         )
-                                    )
-                                }else{
-                                    trySend(
-                                        Resource.Success(
-                                            UserOrdersDetailState(
-                                                success = true,
-                                                noItems = true
+                                    }else{
+                                        trySend(
+                                            Resource.Success(
+                                                UserOrdersDetailState(
+                                                    success = true,
+                                                    noItems = true
+                                                )
                                             )
                                         )
-                                    )
+                                    }
                                 }
+
                             }
 
                             override fun onCancelled(error: DatabaseError) {

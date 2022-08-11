@@ -59,7 +59,9 @@ fun ProductDetailScreen(
 
     //total product price
 
-    Surface(color = White, modifier = Modifier.fillMaxSize()) {
+    Surface(
+        color = MaterialTheme.colors.onSecondary
+        , modifier = Modifier.fillMaxSize()) {
         Column(
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.End,
@@ -79,14 +81,14 @@ fun ProductDetailScreen(
                     text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                color = MaterialTheme.colors.onSecondary,
+                                color = MaterialTheme.colors.onBackground,
                             )
                         ) {
                             append("$")
                         }
                         withStyle(
                             style = SpanStyle(
-                                color = Color.Black,
+                                color = MaterialTheme.colors.background ,
                                 fontWeight = FontWeight.Bold
                             ),
                         ) {
@@ -112,7 +114,7 @@ fun ProductDetailScreen(
                         .height(60.dp),
                     shape = RoundedCornerShape(40),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = MaterialTheme.colors.onSecondary
+                        backgroundColor = MaterialTheme.colors.background
                     ),
                     onClick = {
                         val item = CartItems(
@@ -124,7 +126,8 @@ fun ProductDetailScreen(
                             itemPriceTotal = productFinalPrice.value.toString(),
                             itemAmount = productAmount.value,
                             itemPhoto = viewModel.productPhoto.value,
-                            itemQuantity =  viewModel.productQuantity.value
+                            itemQuantity =  viewModel.productQuantity.value,
+                            itemBuyerId = viewModel.currentUserId
                         )
 
                         viewModel.addToCart(item).also {
@@ -137,9 +140,10 @@ fun ProductDetailScreen(
                     Icon(
                         imageVector = Icons.Filled.ShoppingCart,
                         contentDescription = "Add to cart",
-                        modifier = Modifier.padding(end = 8.dp)
+                        modifier = Modifier.padding(end = 8.dp),
+                        tint = MaterialTheme.colors.background
                     )
-                    Text(text = "Add to cart", color = White, fontSize = 18.sp)
+                    Text(text = "Add to cart", color = MaterialTheme.colors.onSecondary, fontSize = 18.sp)
                 }
             }
 
@@ -174,20 +178,7 @@ fun ProductDetailScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.width(280.dp))
 
-                IconButton(
-                    onClick = {
-                              navController.navigate(Destinations.ShoppingCar.route)
-                    },
-                    modifier = Modifier.background(MaterialTheme.colors.onSecondary),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = "Shopping Car",
-                        tint = MaterialTheme.colors.primaryVariant
-                    )
-                }
             }
 
             Column(
@@ -283,7 +274,7 @@ fun ProductDetailScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            tint = MaterialTheme.colors.primaryVariant,
+                            tint = MaterialTheme.colors.background,
                             contentDescription = "Add Item",
                             modifier = Modifier
                                 .background(
@@ -299,7 +290,7 @@ fun ProductDetailScreen(
                     Text(
                         text = productAmount.value.toString(),
                         fontSize = 23.sp,
-                        color = White,
+                        color = MaterialTheme.colors.primaryVariant,
                         modifier = Modifier
                             .padding(top = 0.dp)
                             .align(Alignment.CenterVertically),
@@ -316,7 +307,7 @@ fun ProductDetailScreen(
                     ) {
                         Icon(
                             imageVector = TablerIcons.Minus,
-                            tint = MaterialTheme.colors.primaryVariant,
+                            tint = MaterialTheme.colors.background,
                             contentDescription = "Remove Item",
                             modifier = Modifier.background(
                                 color = MaterialTheme.colors.onSecondary,
@@ -336,12 +327,12 @@ fun ProductDetailScreen(
                         .fillMaxWidth()
                         .height(150.dp),
                     fontSize = 16.sp,
-                    color = White,
+                    color = MaterialTheme.colors.primaryVariant,
                     style = TextStyle(
                         fontFamily = raleway,
                         fontWeight = FontWeight.Medium
                     ),
-                    maxLines = 10
+                    maxLines = 12
                 )
             }
 
@@ -352,10 +343,6 @@ fun ProductDetailScreen(
             SweetSuccess(message = "Added to cart")
         }
 
-
-        if (viewModel.state.value.loading!!) {
-            DialogBoxLoading()
-        }
 
         if (viewModel.state.value.errorMsg != null) {
             EventDialog(

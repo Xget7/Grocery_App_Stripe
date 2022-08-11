@@ -24,6 +24,8 @@ fun TransparentTextField(
     textFieldValue: MutableState<String>,
     textLabel: String,
     maxChar: Int? = null,
+    maxLines : Int? = null,
+    laberColor : Color? = null,
     readOnly: Boolean = false,
     capitalization: KeyboardCapitalization = KeyboardCapitalization.None,
     keyboardType: KeyboardType,
@@ -40,7 +42,7 @@ fun TransparentTextField(
         onValueChange = { textFieldValue.value = it },
         label = {
             Text(text = textLabel, style = TextStyle(
-                color = MaterialTheme.colors.primaryVariant
+                color = laberColor ?: MaterialTheme.colors.primaryVariant
             ))
         },
         readOnly = readOnly,
@@ -55,8 +57,8 @@ fun TransparentTextField(
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = Color.Transparent,
             textColor = MaterialTheme.colors.primaryVariant,
+        ),
 
-
-        )
+        maxLines = maxLines ?: Int.MAX_VALUE
     )
 }

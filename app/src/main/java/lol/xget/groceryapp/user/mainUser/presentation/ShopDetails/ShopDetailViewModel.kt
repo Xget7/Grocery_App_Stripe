@@ -1,32 +1,36 @@
 package lol.xget.groceryapp.user.mainUser.presentation.ShopDetails
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import lol.xget.groceryapp.common.Constants
 import lol.xget.groceryapp.common.Constants.swapList
 import lol.xget.groceryapp.common.Resource
 import lol.xget.groceryapp.seller.mainSeller.domain.ShopModel
 import lol.xget.groceryapp.seller.mainSeller.use_case.HomeSellerUseCases
+import lol.xget.groceryapp.user.mainUser.domain.Review
 import lol.xget.groceryapp.user.mainUser.presentation.components.categories.Categories
 import lol.xget.groceryapp.user.mainUser.presentation.components.categories.getFoodCategory
+import lol.xget.groceryapp.user.mainUser.use_case.HomeUserUseCases
 import javax.inject.Inject
 
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
 class ShopDetailViewModel @Inject constructor(
-    private val useCase: HomeSellerUseCases,
+    private val sellerCase: HomeSellerUseCases,
+    private val userCase: HomeUserUseCases,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    val scope = CoroutineScope(Dispatchers.IO)
 
     val state: MutableState<ShopDetailScreenState> = mutableStateOf(ShopDetailScreenState())
 
@@ -38,7 +42,7 @@ class ShopDetailViewModel @Inject constructor(
 
     val currentProduct = mutableStateOf(lol.xget.groceryapp.seller.mainSeller.domain.ProductModel())
 
-    val finalCost = mutableStateOf(0)
+    val averageShopRating = mutableStateOf(0F)
 
     var productListOriginal = mutableListOf<lol.xget.groceryapp.seller.mainSeller.domain.ProductModel>()
 
@@ -82,61 +86,98 @@ class ShopDetailViewModel @Inject constructor(
         getShop(shopIdSaved.value)
         getProductsFromShop(shopIdSaved.value)
         newSearch()
+
     }
 
-
-    //execute only once
-    private fun getShop(shopId: String) {
-
-        useCase.getSpecificShop.invoke(shopId).onEach { result ->
+    private fun getShopRatings(shopId: String){
+        userCase.getRatingFromShopUserUseCase.invoke(shopId).onEach { result ->
             when (result) {
                 is Resource.Loading -> {
                     state.value = state.value.copy(loading = true)
                 }
                 is Resource.Success -> {
-                    state.value = state.value.copy(success = true)
-                    state.value =
-                        state.value.copy(specificShopModel = result.data?.specificShopModel)
-                    parseResults(state.value.specificShopModel)
-                    state.value = state.value.copy(loading = false)
+                    state.value = state.value.copy(success = true,loading = false)
+                    result.data?.reviewsList?.let { calculateAverageRating(it) }
+
                 }
                 is Resource.Error -> {
                     state.value = state.value.copy(errorMsg = result.message)
                 }
             }
         }.launchIn(viewModelScope)
+    }
+    private fun calculateAverageRating(revs: List<Review>){
+        viewModelScope.launch {
+            try {
+                val average = mutableStateOf(0F)
+                val totalRating = mutableStateOf(0F)
+                val reviewsSize = revs.size
+                for (review in revs){
+                    val rating = review.rating?.toFloat()
+                    if (rating != null) {
+                        totalRating.value += rating
+                    }
+                }
+                average.value = totalRating.value / reviewsSize
+                averageShopRating.value = average.value
+                cancel()
+            }catch (e: Exception){
+                state.value = state.value.copy(errorMsg = e.localizedMessage)
+            }
 
+
+        }
+    }
+
+    //execute only once
+    private fun getShop(shopId: String) {
+            sellerCase.getSpecificShop.invoke(shopId).onEach { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        state.value = state.value.copy(loading = true)
+                    }
+                    is Resource.Success -> {
+                        state.value = state.value.copy(specificShopModel = result.data?.specificShopModel,success = true, loading = false)
+                        Log.e("PArseResultsError", result.data?.specificShopModel.toString())
+                        parseResults(result.data?.specificShopModel)
+                    }
+                    is Resource.Error -> {
+                        state.value = state.value.copy(errorMsg = result.message)
+                    }
+                }
+            }.launchIn(viewModelScope)
     }
 
     private fun parseResults(shopFb: ShopModel?) {
-        shopOpen.value = shopFb?.shopOpen!!
-        deliveryFee.value = shopFb.deliveryFee!!
-        shopName.value = shopFb.shopName!!
-        phone.value = shopFb.phone!!
-        shopFb.shopBanner?.let {
-            shopBannerImage.value = it
+        viewModelScope.launch {
+            shopOpen.value = shopFb?.shopOpen!!
+            deliveryFee.value = shopFb.deliveryFee!!
+            shopName.value = shopFb.shopName!!
+            phone.value = shopFb.phone!!
+            shopFb.shopBanner?.let {
+                shopBannerImage.value = it
+            }
+            shopFb.gmail?.let {
+                gmail.value = it
+            }
+            address.value = shopFb.address!!
+            shopFb.profilePhoto?.let {
+                profilePhoto.value = it
+            }
+            latitude.value = shopFb.latitude!!.toDouble()
+            longitude.value = shopFb.longitude!!.toDouble()
+            gmmIntentUri.value =
+                Uri.parse("http://maps.google.com/maps?q=loc:" + latitude.value + "," + longitude.value)
         }
-        shopFb.gmail?.let {
-            gmail.value = it
-        }
-        address.value = shopFb.address!!
-        shopFb.profilePhoto?.let {
-            profilePhoto.value = it
-        }
-        latitude.value = shopFb.latitude!!.toDouble()
-        longitude.value = shopFb.longitude!!.toDouble()
-        gmmIntentUri.value =
-            Uri.parse("http://maps.google.com/maps?q=loc:" + latitude.value + "," + longitude.value)
     }
 
     private fun getProductsFromShop(shopId: String) {
-        useCase.getShopProducts.invoke(shopId).onEach { result ->
+        sellerCase.getShopProducts.invoke(shopId).onEach { result ->
             when (result) {
                 is Resource.Loading -> {
                     state.value = state.value.copy(loading = true)
                 }
                 is Resource.Success -> {
-                    state.value = state.value.copy(success = true)
                     state.value = state.value.copy(productsList = result.data?.productModel)
                     result.data?.let { it ->
                         it.productModel?.let { list ->
@@ -144,6 +185,8 @@ class ShopDetailViewModel @Inject constructor(
                             productListOriginal = list.toMutableList()
                         }
                     }
+                    getShopRatings(shopId)
+                    state.value = state.value.copy(success = true, loading = false)
 
 
                 }
@@ -187,6 +230,7 @@ class ShopDetailViewModel @Inject constructor(
         selectedCategory.value = newCategory
         onQueryChanged(category)
     }
+
 
     fun hideErrorDialog() {
         state.value = state.value.copy(

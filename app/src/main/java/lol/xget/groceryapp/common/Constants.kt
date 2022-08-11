@@ -8,8 +8,12 @@ import java.util.regex.Pattern
 object Constants {
     val gson = Gson()
 
-    val LONGITUDE = "longitude"
-    val LATITUDE= "latitude"
+    const val LONGITUDE = "longitude"
+    const val LATITUDE= "latitude"
+
+    const val FMC_KEY = "AAAAhmX8WrU:APA91bEzp71R3ubbnVaJNWPLYK7Vou4lTOMVOJuILSyE3HtbjGyM5hDNoHWDACek_z_kS9FWesGMD_KGXx-veUkVwiIm5GMGqgEKL-bKD3VUUMCMRKSTUUMmihYMEK--xbcr6oWnhR4h"
+    const val FMC_TOPIC = "PUSH_NOTIFICATIONS"
+
     val EMAIL_ADDRESS_PATTERN: Pattern = Pattern.compile(
         "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
                 "\\@" +
@@ -41,6 +45,16 @@ object Constants {
         "Dairy"
         )
 
+    val listOfOrdersState = listOf(
+        "All",
+        "In Progress",
+        "Canceled",
+        "Completed"
+    )
+
+    const val NOTIFICATION_REQUEST_CODE = 1001
+    const val NOTIFICATION_CHANNEL_CODE = "notification_channel"
+    const val NOTIFICATION_CHANNEL_NAME = "lol.xget.groceryapp"
     fun <T> SnapshotStateList<T>.swapList(newList: List<T>){
         clear()
         addAll(newList)

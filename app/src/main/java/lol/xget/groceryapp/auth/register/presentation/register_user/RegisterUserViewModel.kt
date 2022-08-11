@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +24,8 @@ import lol.xget.groceryapp.common.Resource
 import lol.xget.groceryapp.auth.mapLocalization.domain.LocationModel
 import lol.xget.groceryapp.domain.use_case.auth.AuthUseCases
 import lol.xget.groceryapp.auth.register.presentation.register_seller.RegisterSellerState
+import lol.xget.groceryapp.domain.util.Destinations
+import lol.xget.groceryapp.user.mainUser.domain.User
 import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
@@ -59,7 +62,7 @@ class RegisterUserViewModel @Inject constructor(
         email: String,
         password: String,
         confirmPassword: String,
-        user: lol.xget.groceryapp.user.mainUser.domain.User,
+        user: User,
     ): Boolean {
 
         if (user.userName!!.isBlank()) {
@@ -90,13 +93,15 @@ class RegisterUserViewModel @Inject constructor(
     }
 
     @ExperimentalCoroutinesApi
-    fun registerUser(user: lol.xget.groceryapp.user.mainUser.domain.User) {
+    fun registerUser(user: User, navController: NavController) {
         if (verifyUser(emailValue.value, passwordValue.value, confirmPasswordValue.value, user)) {
             regUseCase.registerCase.invoke(emailValue.value, passwordValue.value, user)
                 .onEach { result ->
                     when (result) {
                         is Resource.Success -> {
                             _state.value = _state.value.copy(successRegister = true)
+                            navController.navigate(Destinations.UserMainDestination.route)
+                            navController.popBackStack()
                         }
                         is Resource.Loading -> {
                             _state.value = _state.value.copy(displayPb = true)

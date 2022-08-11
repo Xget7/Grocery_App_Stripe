@@ -19,7 +19,6 @@ class PlaceOrderUseCase @Inject constructor(
     private val repo: UserRepository
 ) {
     private val currentUser = FirebaseAuth.getInstance().currentUser?.uid
-    val timesTamp = System.currentTimeMillis()
 
     operator fun invoke(shopId: String, order: Order, carItemsToBuy : List<CartItems>): Flow<Resource<ShopingCarState>> =
         callbackFlow {
@@ -27,23 +26,25 @@ class PlaceOrderUseCase @Inject constructor(
             try {
                 try {
                     trySend(Resource.Loading())
-                    repo.placeOrder(shopId, order).child(timesTamp.toString()).setValue(order)
+                    repo.placeOrder(shopId, order).child(order.orderId!!).setValue(order)
                         .addOnSuccessListener {
                             try {
                                 for (item in carItemsToBuy) {
-                                    ref.child(timesTamp.toString()).child("items").child(item.itemId).setValue(item)
+                                    ref.child(order.orderId).child("items").child(item.itemId!!).setValue(item)
                                 }
                                 trySend(Resource.Success(ShopingCarState(successPlacedOrder = true)))
 
                             }catch (e : FirebaseException){
+                                cancel()
                                 trySend(Resource.Error(e.localizedMessage!!))
                             }
                         }.addOnFailureListener {
+                            cancel()
                             trySend(Resource.Error(it.localizedMessage!!))
                         }
 
                 } catch (e: FirebaseException) {
-                    cancel()
+                    awaitClose { channel.close() }
                     trySend(Resource.Error(e.localizedMessage!!))
                 }
 

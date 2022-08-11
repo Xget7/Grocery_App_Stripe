@@ -21,4 +21,7 @@ interface CartItemsDao {
     // all the data of database.
     @Query("SELECT * FROM cart_items_table ORDER BY id ASC")
     fun getAllCartItems(): Flow<List<CartItems>>
+
+    @Delete
+    fun deleteAllCartItems(listOfItems :List<CartItems>)
 }

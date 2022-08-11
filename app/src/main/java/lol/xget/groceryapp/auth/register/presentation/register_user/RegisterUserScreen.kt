@@ -78,6 +78,7 @@ import lol.xget.groceryapp.databinding.ActivityMainBinding.inflate
 import lol.xget.groceryapp.databinding.ActivityMapsBinding.inflate
 import lol.xget.groceryapp.databinding.AutoCompleteSupportFragmentBinding.inflate
 import lol.xget.groceryapp.ui.components.DialogBoxLoading
+import lol.xget.groceryapp.user.mainUser.domain.User
 
 
 @ExperimentalMaterialApi
@@ -100,269 +101,255 @@ fun RegistrationScreen(
 
     val focusManager = LocalFocusManager.current
 
-    var warningToastActivateGps by remember {
-        mutableStateOf(false)
-    }
-    var warningToastRejectedPermissions by remember { mutableStateOf(false) }
-
-
-
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colors.background)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
+    if (viewModel._state.value.displayPb == true) {
+        Row(
+            Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            CircularProgressIndicator(color = MaterialTheme.colors.onSecondary)
+        }
 
-
-                IconButton(
-                    onClick = {
-                        //oNBAck
-                        navController.navigate(Destinations.LoginDestinations.route)
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back Icon",
-                        tint = MaterialTheme.colors.primaryVariant
-                    )
-                }
-
-                Text(
-                    text = "Register as user",
-                    style = MaterialTheme.typography.h5.copy(
-                        color = MaterialTheme.colors.primaryVariant
-                    )
-                )
-
-            }
-
+    }else{
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colors.background)
+        ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(5.dp)
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState())
             ) {
-                Spacer(modifier = Modifier.height(20.dp))
-                TransparentTextField(
-                    textFieldValue = viewModel.fullNameValue,
-                    textLabel = "Name",
-                    keyboardType = KeyboardType.Text,
-                    keyboardActions = KeyboardActions(
-                        onNext = {
-                            focusManager.moveFocus(FocusDirection.Down)
-                        }
-                    ),
-                    imeAction = ImeAction.Next
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-
-                TransparentTextField(
-                    textFieldValue = viewModel.emailValue,
-                    textLabel = "Email",
-                    keyboardType = KeyboardType.Email,
-                    keyboardActions = KeyboardActions(
-                        onNext = { focusManager.moveFocus(FocusDirection.Down) }
-                    ),
-                    imeAction = ImeAction.Next
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-
-                TransparentTextField(
-                    textFieldValue = viewModel.phoneValue,
-                    textLabel = "Phone Number",
-                    maxChar = 10,
-                    keyboardType = KeyboardType.Phone,
-                    keyboardActions = KeyboardActions(
-                        onNext = { focusManager.moveFocus(FocusDirection.Down) }
-                    ),
-                    imeAction = ImeAction.Next
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-
-                TransparentTextField(
-                    textFieldValue = viewModel.passwordValue,
-                    textLabel = "Password",
-                    keyboardType = KeyboardType.Password,
-                    keyboardActions = KeyboardActions(
-                        onNext = {
-                            focusManager.moveFocus(FocusDirection.Down)
-                        }
-                    ),
-                    imeAction = ImeAction.Next,
-                    trailingIcon = {
-                        IconButton(
-                            onClick = {
-                                passwordVisibility = !passwordVisibility
-                            }
-                        ) {
-                            Icon(
-                                imageVector = if (passwordVisibility) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                contentDescription = "Toggle Password Icon"
-                            )
-                        }
-                    },
-                    visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation()
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-
-                TransparentTextField(
-                    textFieldValue = viewModel.confirmPasswordValue,
-                    textLabel = "Confirm Password",
-                    keyboardType = KeyboardType.Password,
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            focusManager.clearFocus()
-                        }
-                    ),
-                    imeAction = ImeAction.Done,
-                    trailingIcon = {
-                        IconButton(
-                            onClick = {
-                                confirmPasswordVisibility = !confirmPasswordVisibility
-                            }
-                        ) {
-                            Icon(
-                                imageVector = if (confirmPasswordVisibility) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                contentDescription = "Toggle Password Icon"
-                            )
-                        }
-                    },
-                    visualTransformation = if (confirmPasswordVisibility) VisualTransformation.None else PasswordVisualTransformation()
-                )
-
-                Spacer(modifier = Modifier.height(26.dp))
-                OutlinedButton(
-                    modifier = Modifier
-                        .width(300.dp)
-                        .height(60.dp),
-                    shape = RoundedCornerShape(40),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color(
-                            0xFF01ae5e
-                        )
-                    ),
-                    onClick = {
-                        val user = lol.xget.groceryapp.user.mainUser.domain.User(
-                            userName = viewModel.fullNameValue.value,
-                            phone = viewModel.phoneValue.value,
-                            address = viewModel.addressValue.value,
-                            accountType = "user",
-                            email = viewModel.emailValue.value,
-                            country = viewModel.countryValue.value,
-                            uid = viewModel.userUid.value,
-                            latitude = 0f,
-                            longitude = 0f
-
-                        )
-                        viewModel.registerUser(user)
-                    }
-                ) {
-                    Text(text = "Sign Up", color = Color.White, fontSize = 18.sp)
-                }
-
-                Spacer(modifier = Modifier.height(26.dp))
-
-                ClickableText(
-                    text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                color = MaterialTheme.colors.primaryVariant,
-                            )
-                        ) {
-                            append("Already have an account?")
-                        }
-                        withStyle(
-                            style = SpanStyle(
-                                color = MaterialTheme.colors.primaryVariant,
-                                fontWeight = FontWeight.Bold
-                            )
-                        ) {
-                            append("Log in")
-                        }
-                    },
-                    onClick = {
-                       navController.navigate(Destinations.LoginDestinations.route)
-                    }
-                )
-
-
-
-                Spacer(modifier = Modifier.height(26.dp))
-
-                ClickableText(
-                    text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                color = MaterialTheme.colors.primaryVariant,
-                            )
-                        ) {
-                            append("Are you a seller?")
-                        }
-
-                        withStyle(
-                            style = SpanStyle(
-                                color = MaterialTheme.colors.primaryVariant,
-                                fontWeight = FontWeight.Bold
-                            )
-                        ) {
-                            append("Register as seller")
-                        }
-                    },
-                    onClick = {
-                        navController.navigate(
-                            Destinations.RegisterSellerDestinations.passLatitudeLatitude(
-                                0.0,
-                                0.0
-                            )
-                        )
-                    }
-                )
-
-
-            }
-            if (viewModel._state.value.displayPb == true) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    DialogBoxLoading()
+
+
+                    IconButton(
+                        onClick = {
+                            navController.navigate(Destinations.LoginDestinations.route)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back Icon",
+                            tint = MaterialTheme.colors.onSecondary
+                        )
+                    }
+
+                    Text(
+                        text = "Register as user",
+                        style = MaterialTheme.typography.h5.copy(
+                            color = MaterialTheme.colors.primaryVariant
+                        )
+                    )
+
                 }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    Spacer(modifier = Modifier.height(20.dp))
+                    TransparentTextField(
+                        textFieldValue = viewModel.fullNameValue,
+                        textLabel = "Name",
+                        keyboardType = KeyboardType.Text,
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                focusManager.moveFocus(FocusDirection.Down)
+                            }
+                        ),
+                        imeAction = ImeAction.Next
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    TransparentTextField(
+                        textFieldValue = viewModel.emailValue,
+                        textLabel = "Email",
+                        keyboardType = KeyboardType.Email,
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                        ),
+                        imeAction = ImeAction.Next,
+                        maxLines = 1
+
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    TransparentTextField(
+                        textFieldValue = viewModel.phoneValue,
+                        textLabel = "Phone Number",
+                        maxChar = 10,
+                        keyboardType = KeyboardType.Phone,
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                        ),
+                        imeAction = ImeAction.Next,
+                        maxLines = 1
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    TransparentTextField(
+                        textFieldValue = viewModel.passwordValue,
+                        textLabel = "Password",
+                        keyboardType = KeyboardType.Password,
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                focusManager.moveFocus(FocusDirection.Down)
+                            }
+                        ),
+                        imeAction = ImeAction.Next,
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    passwordVisibility = !passwordVisibility
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = if (passwordVisibility) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = "Toggle Password Icon"
+                                )
+                            }
+                        },
+                        visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                        maxLines = 1
+
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    TransparentTextField(
+                        textFieldValue = viewModel.confirmPasswordValue,
+                        textLabel = "Confirm Password",
+                        keyboardType = KeyboardType.Password,
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus()
+                            }
+                        ),
+                        imeAction = ImeAction.Done,
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    confirmPasswordVisibility = !confirmPasswordVisibility
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = if (confirmPasswordVisibility) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = "Toggle Password Icon"
+                                )
+                            }
+                        },
+                        visualTransformation = if (confirmPasswordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                        maxLines = 1
+
+                    )
+
+                    Spacer(modifier = Modifier.height(26.dp))
+                    OutlinedButton(
+                        modifier = Modifier
+                            .width(300.dp)
+                            .height(60.dp),
+                        shape = RoundedCornerShape(40),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = MaterialTheme.colors.onSecondary
+                        ),
+                        onClick = {
+                            val user = User(
+                                userName = viewModel.fullNameValue.value,
+                                phone = viewModel.phoneValue.value,
+                                address = viewModel.addressValue.value,
+                                accountType = "user",
+                                email = viewModel.emailValue.value,
+                                uid = viewModel.userUid.value,
+                                latitude = null,
+                                longitude = null
+
+                            )
+                            viewModel.registerUser(user, navController)
+                        }
+                    ) {
+                        Text(text = "Sign Up", color = Color.White, fontSize = 18.sp)
+                    }
+
+                    Spacer(modifier = Modifier.height(26.dp))
+
+                    ClickableText(
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = MaterialTheme.colors.primaryVariant,
+                                )
+                            ) {
+                                append("Already have an account?")
+                            }
+                            withStyle(
+                                style = SpanStyle(
+                                    color = MaterialTheme.colors.onSecondary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            ) {
+                                append("Log in")
+                            }
+                        },
+                        onClick = {
+                            navController.navigate(Destinations.LoginDestinations.route)
+                        }
+                    )
+
+
+
+                    Spacer(modifier = Modifier.height(26.dp))
+
+                    ClickableText(
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = MaterialTheme.colors.primaryVariant,
+                                )
+                            ) {
+                                append("Are you a seller?")
+                            }
+
+                            withStyle(
+                                style = SpanStyle(
+                                    color = MaterialTheme.colors.onSecondary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            ) {
+                                append("Register as seller")
+                            }
+                        },
+                        onClick = {
+                            navController.navigate(
+                                Destinations.RegisterSellerDestinations.passLatitudeLatitude(
+                                    0.0,
+                                    0.0
+                                )
+                            )
+                        }
+                    )
+
+
+                }
+
 
             }
 
 
-        }
-        if (warningToastRejectedPermissions) {
-            SweetToastUtil.SweetWarning(message = "Without location permissions we can't get your location")
-            warningToastRejectedPermissions = false
-        }
-        if (warningToastActivateGps) {
-            SweetToastUtil.SweetWarning(message = "You need to active your location")
-            warningToastActivateGps = false
-        }
-
-        if (viewModel._state.value.successRegister && inProfileScreen.equals(false)) {
-            navController.navigate(Destinations.UserMainDestination.route)
-            inProfileScreen = true
-        }
-
-        if (viewModel._state.value.errorMsg != null) {
-            EventDialog(
-                errorMessage = viewModel._state.value.errorMsg,
-                onDismiss = { viewModel.hideErrorDialog() })
+            if (viewModel._state.value.errorMsg != null) {
+                EventDialog(
+                    errorMessage = viewModel._state.value.errorMsg,
+                    onDismiss = { viewModel.hideErrorDialog() })
+            }
         }
     }
+
 }
 
 

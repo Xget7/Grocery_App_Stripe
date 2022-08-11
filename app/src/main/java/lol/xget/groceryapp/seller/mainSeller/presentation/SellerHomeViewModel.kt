@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import lol.xget.groceryapp.common.Constants.swapList
 import lol.xget.groceryapp.common.Resource
 import lol.xget.groceryapp.seller.mainSeller.use_case.HomeSellerUseCases
+import lol.xget.groceryapp.user.mainUser.domain.User
 import javax.inject.Inject
 
 @HiltViewModel
@@ -108,17 +109,20 @@ class SellerHomeViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun showData(user: lol.xget.groceryapp.user.mainUser.domain.User?) {
-        if (user != null) {
-            shopName.value = user.shopName!!
-            userName.value = user.userName!!
-            userGmail.value = FirebaseAuth.getInstance().currentUser!!.email!!
-            user.profilePhoto?.let {
-                shopPhoto.value = it
+    private fun showData(user: User?) {
+        viewModelScope.launch {
+            if (user != null) {
+                shopName.value = user.shopName!!
+                userName.value = user.userName!!
+                userGmail.value = FirebaseAuth.getInstance().currentUser!!.email!!
+                user.profilePhoto?.let {
+                    shopPhoto.value = it
+                }
+            } else {
+                state.value = state.value.copy(errorMsg = "User is null")
             }
-        } else {
-            state.value = state.value.copy(errorMsg = "User is null")
         }
+
     }
 
 

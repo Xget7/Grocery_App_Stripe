@@ -1,5 +1,9 @@
 package lol.xget.groceryapp.user.mainUser.presentation.orders.ordersDetails
 
+import android.annotation.SuppressLint
+import android.icu.text.DateFormat
+import android.icu.text.SimpleDateFormat
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -7,7 +11,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddComment
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Reviews
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,22 +24,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.maps.android.ktx.model.streetViewPanoramaCamera
+import lol.xget.groceryapp.domain.util.Destinations
 import lol.xget.groceryapp.ui.components.DialogBoxLoading
+import lol.xget.groceryapp.user.mainUser.presentation.components.OrderDetailItemsList
 import lol.xget.groceryapp.user.mainUser.presentation.components.OrderList
+import java.util.*
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun UserOrdersDetailScreen(
     navController: NavController,
+    navControllerWithoutBNB: NavController,
     viewModel: UserOrderDetailViewModel = hiltViewModel()
 ) {
     val scrollLazyListState = rememberLazyListState()
-    val currentOrder by remember {
-        mutableStateOf(viewModel.currentOrder.value)
-    }
+
+    val simple: DateFormat = SimpleDateFormat("dd MMM yyyy")
+
 
     if (viewModel.state.value.loading == true) {
         Column(
@@ -40,15 +54,15 @@ fun UserOrdersDetailScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            DialogBoxLoading()
+            CircularProgressIndicator(color = MaterialTheme.colors.onSecondary)
         }
-
     } else {
         Scaffold(
             topBar = {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .height(90.dp)
                         .padding(16.dp)
                         .background(MaterialTheme.colors.background)
                 ) {
@@ -67,15 +81,29 @@ fun UserOrdersDetailScreen(
                             }) {
                                 Icon(
                                     imageVector = Icons.Default.ArrowBackIosNew,
-                                    contentDescription = "back arrow"
+                                    contentDescription = "back arrow",
+                                    tint = MaterialTheme.colors.onSecondary
                                 )
                             }
+                            Spacer(modifier = Modifier.width(30.dp))
                             Text(
                                 text = "Order Details",
-                                fontSize = 34.sp,
+                                fontSize = 30.sp,
                                 color = MaterialTheme.colors.primaryVariant,
                                 fontWeight = FontWeight.Medium
                             )
+                            Spacer(modifier = Modifier.width(60.dp))
+                            IconButton(onClick = {
+                                navControllerWithoutBNB.navigate(
+                                    Destinations.UserReviewsScreen.passShop(viewModel.currentShopId.value)
+                                )
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.AddComment,
+                                    contentDescription = "Review button",
+                                    tint = MaterialTheme.colors.onSecondary
+                                )
+                            }
 
                         }
 
@@ -86,13 +114,16 @@ fun UserOrdersDetailScreen(
                 }
             }
         ) {
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
                 Column(
+                    Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.Start,
                 ) {
                     Row(
+                        Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -104,12 +135,12 @@ fun UserOrdersDetailScreen(
                             ),
                             modifier = Modifier.width(200.dp)
                         )
-                        currentOrder.orderId?.let {
+                        viewModel.currentOrder.value.orderId?.let {
                             Text(
                                 text = it,
                                 style = TextStyle(
                                     fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
+                                    fontWeight = FontWeight.Medium,
                                     color = MaterialTheme.colors.primaryVariant
                                 ),
                                 modifier = Modifier.width(200.dp)
@@ -117,6 +148,7 @@ fun UserOrdersDetailScreen(
                         }
                     }
                     Row(
+                        Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -128,12 +160,12 @@ fun UserOrdersDetailScreen(
                             ),
                             modifier = Modifier.width(200.dp)
                         )
-                        currentOrder.orderTime?.let {
+                        viewModel.currentOrder.value.orderTime?.let {
                             Text(
-                                text = it,
+                                text = simple.format(Date(it.toLong())),
                                 style = TextStyle(
                                     fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
+                                    fontWeight = FontWeight.Medium,
                                     color = MaterialTheme.colors.primaryVariant
                                 ),
                                 modifier = Modifier.width(200.dp)
@@ -141,10 +173,12 @@ fun UserOrdersDetailScreen(
                         }
                     }
                     Row(
+                        Modifier.fillMaxWidth(),
+
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Date ",
+                            text = "Order Status ",
                             style = TextStyle(
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold,
@@ -153,7 +187,7 @@ fun UserOrdersDetailScreen(
                             modifier = Modifier.width(200.dp)
                         )
 
-                        when (currentOrder.orderStatus) {
+                        when (viewModel.currentOrder.value.orderStatus) {
                             "In Progress" -> {
                                 Text(
                                     text = "In progress",
@@ -179,6 +213,7 @@ fun UserOrdersDetailScreen(
 
                     }
                     Row(
+                        Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -190,13 +225,12 @@ fun UserOrdersDetailScreen(
                             ),
                             modifier = Modifier.width(200.dp)
                         )
-                        TODO("Modificar db")
-                        currentOrder.orderShopName?.let {
+                        viewModel.currentOrder.value.orderShopName?.let {
                             Text(
                                 text = it,
                                 style = TextStyle(
                                     fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
+                                    fontWeight = FontWeight.Medium,
                                     color = MaterialTheme.colors.primaryVariant
                                 ),
                                 modifier = Modifier.width(200.dp)
@@ -205,6 +239,7 @@ fun UserOrdersDetailScreen(
                     }
 
                     Row(
+                        Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -216,13 +251,12 @@ fun UserOrdersDetailScreen(
                             ),
                             modifier = Modifier.width(200.dp)
                         )
-                        TODO("Modificar db")
-                        currentOrder.orderItems?.let {
+                        viewModel.currentOrder.value.orderItems?.let {
                             Text(
                                 text = it.toString(),
                                 style = TextStyle(
                                     fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
+                                    fontWeight = FontWeight.Medium,
                                     color = MaterialTheme.colors.primaryVariant
                                 ),
                                 modifier = Modifier.width(200.dp)
@@ -230,6 +264,7 @@ fun UserOrdersDetailScreen(
                         }
                     }
                     Row(
+                        Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -241,17 +276,61 @@ fun UserOrdersDetailScreen(
                             ),
                             modifier = Modifier.width(200.dp)
                         )
-                        TODO("Modificar db")
-                        currentOrder.orderCost?.let {
+                        viewModel.currentOrder.value.orderCost?.let {
                             Text(
-                                text = it + "Include shipping cost",
+                                text = "$it (Include shipping cost)",
                                 style = TextStyle(
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Medium,
                                     color = MaterialTheme.colors.primaryVariant
                                 ),
                                 modifier = Modifier.width(200.dp)
                             )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(40.dp)
+                            .background(MaterialTheme.colors.onSecondary)
+                    ) {
+                        Text(
+                            text = "Items",
+                            style = TextStyle(
+                                fontSize = 25.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colors.background
+                            ),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+
+                    }
+
+                    if (viewModel.state.value.noItems == false) {
+                        LazyColumn(
+                            state = scrollLazyListState
+                        ) {
+                            items(viewModel.currentItemsList) { order ->
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Log.e("orderLisItems?", order.toString())
+                                OrderDetailItemsList(
+                                    order
+                                )
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                            }
+                        }
+                    } else {
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .height(100.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CircularProgressIndicator(color = MaterialTheme.colors.onSecondary)
                         }
                     }
                 }

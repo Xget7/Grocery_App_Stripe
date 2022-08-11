@@ -8,14 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val DarkColorPalette = darkColors(
-    primary = Color(0xFF1A090D),
-    background = Color(0xFFFCFFFB),
-    onBackground = Color(0xFFFF5C4D),
-    surface = Color(0xFFA8BA9A),
-    onSurface = Color(0xFF6B6570)
-)
-
-private val ColorPalette = lightColors(
     primary = Color(0xFF000000),
     primaryVariant = Color(0xFFFFFFFF),
     background = Color(0xFF15142c),
@@ -25,24 +17,17 @@ private val ColorPalette = lightColors(
     onSecondary = Color(0xFF4CAF50)
 )
 
-@Composable
-fun ModalBottomSheetTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit
-) {
-    val colors = if (darkTheme) {
-        DarkColorPalette
-    } else {
-        ColorPalette
-    }
+private val ColorPalette = lightColors(
+    primary = Color(0xFF000000),
+    primaryVariant = Color(0xFF000000),
+    background = Color(0xFFFFFFFF),
+    onBackground = Color(0xFF5BA56D),
+    surface = Color(0xFF3E86C5),
+    onSurface = Color(0xFFF57373),
+    onSecondary = Color(0xFFD54848)
+)
 
-    MaterialTheme(
-        colors = colors,
-        typography = Typography,
-        shapes = Shapes,
-        content = content
-    )
-}
+
 
 @Composable
 fun GroceryAppTheme(darkTheme: Boolean = true, content : @Composable() () -> Unit) {

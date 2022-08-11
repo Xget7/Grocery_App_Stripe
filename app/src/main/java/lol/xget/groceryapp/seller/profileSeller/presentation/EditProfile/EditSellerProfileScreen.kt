@@ -1,4 +1,5 @@
 package lol.xget.groceryapp.seller.profileSeller.presentation.EditProfile
+import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -16,6 +17,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +39,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.AutocompleteActivity
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.skydoves.landscapist.glide.GlideImage
 import com.talhafaki.composablesweettoast.util.SweetToastUtil.SweetSuccess
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -51,10 +59,14 @@ import lol.xget.groceryapp.user.mainUser.domain.User
 @Composable
 fun EditSellerProfileScreen(
     navController: NavController,
+    activity: Activity,
     viewModel: EditSellerProfileViewModel = hiltViewModel()
 ) {
     var profileImage by remember {
         mutableStateOf<Uri?>(null)
+    }
+    val resultPlacesError = remember {
+        mutableStateOf(false)
     }
 
     var shopBannerImage by remember {
@@ -62,7 +74,6 @@ fun EditSellerProfileScreen(
     }
 
     val context = LocalContext.current
-    var uploadBannerSuccess = false
 
     val profileImageLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
@@ -76,6 +87,51 @@ fun EditSellerProfileScreen(
 
 
     val focusManager = LocalFocusManager.current
+
+    val launchPlaces =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+            when (it.resultCode) {
+                Activity.RESULT_OK -> {
+                    it.data?.let { _ ->
+
+                        val place = Autocomplete.getPlaceFromIntent(it.data!!)
+                        viewModel.addressValue.value = place.address!!
+                        place.addressComponents?.let { it1 ->
+                            Log.e(
+                                "AddressComponents",
+                                it1.toString()
+                            )
+                        }
+                        viewModel.longitude.value = place.latLng?.longitude!!.toFloat()
+                        viewModel.latitude.value = place.latLng?.latitude!!.toFloat()
+                        place.address?.let{ addr ->
+                            viewModel.addressValue.value = addr
+                        }
+                    }
+                }
+
+                AutocompleteActivity.RESULT_ERROR -> {
+                    //  Handle the error.
+                    it.data?.let { intent ->
+                        val status = Autocomplete.getStatusFromIntent(it.data!!)
+                        Log.d("Error",status.statusMessage.toString() )
+                        resultPlacesError.value = true
+                    }
+                }
+                Activity.RESULT_CANCELED -> {
+                    // The user canceled the operation.
+                }
+            }
+
+
+        }
+    val fields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
+
+    // Start the autocomplete intent.
+    val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+        .build(activity)
+
+
 
     Box(
         modifier = Modifier
@@ -92,15 +148,26 @@ fun EditSellerProfileScreen(
                 profilePhotoBitmap.value = ImageDecoder.decodeBitmap(source)
             }
         }
+        IconButton(onClick = {
+            navController.navigateUp()
+        }) {
+            Icon(
+                modifier = Modifier.padding(top = 22.dp),
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Back",
+                tint = MaterialTheme.colors.onSecondary
+            )
+        }
 
         Text(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 12.dp),
+                .padding(top = 22.dp),
             text = "Profile",
-            style = MaterialTheme.typography.h4.copy(
+            style = MaterialTheme.typography.h2.copy(
                 color = MaterialTheme.colors.primaryVariant
-            )
+            ),
+            fontSize = 25.sp
         )
 
 
@@ -163,7 +230,7 @@ fun EditSellerProfileScreen(
                         style = MaterialTheme.typography.h4.copy(
                             fontWeight = FontWeight.Medium
                         ),
-                        color = MaterialTheme.colors.primaryVariant
+                        color = MaterialTheme.colors.onSecondary
                     )
 
 
@@ -209,59 +276,6 @@ fun EditSellerProfileScreen(
                             imeAction = ImeAction.Next
                         )
 
-
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-
-                        ) {
-                            TransparentTextField(
-                                modifier = Modifier
-                                    .width(100.dp)
-                                    .height(50.dp),
-                                textFieldValue = viewModel.countryValue,
-                                textLabel = "Country",
-                                keyboardType = KeyboardType.Text,
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        focusManager.moveFocus(FocusDirection.Down)
-                                    }
-                                ),
-                                imeAction = ImeAction.Next
-                            )
-
-                            TransparentTextField(
-                                modifier = Modifier
-                                    .width(100.dp)
-                                    .height(50.dp),
-                                textFieldValue = viewModel.stateValue,
-                                textLabel = "State",
-                                keyboardType = KeyboardType.Text,
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        focusManager.moveFocus(FocusDirection.Down)
-                                    }
-                                ),
-                                imeAction = ImeAction.Next
-                            )
-
-                            TransparentTextField(
-                                modifier = Modifier
-                                    .width(100.dp)
-                                    .height(50.dp),
-                                textFieldValue = viewModel.cityValue,
-                                textLabel = "City",
-                                keyboardType = KeyboardType.Text,
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        focusManager.moveFocus(FocusDirection.Down)
-                                    }
-                                ),
-                                imeAction = ImeAction.Next
-                            )
-                        }
-
                         TransparentTextField(
                             textFieldValue = viewModel.addressValue,
                             textLabel = " Address",
@@ -271,7 +285,10 @@ fun EditSellerProfileScreen(
                                     focusManager.moveFocus(FocusDirection.Down)
                                 }
                             ),
-                            imeAction = ImeAction.Next
+                            imeAction = ImeAction.Next,
+                            modifier = Modifier.clickable {
+                                launchPlaces.launch(intent)
+                            }
                         )
 
                         TransparentTextField(
@@ -304,6 +321,7 @@ fun EditSellerProfileScreen(
                             longitude = viewModel.longitude.value,
                             state = viewModel.stateValue.value,
                             online = true,
+                            uid = viewModel.currentUser,
                             deliveryFee = viewModel.deliveryFee.value,
                             shopOpen = false,
                             email = viewModel.currentUserGmail
@@ -335,7 +353,7 @@ fun EditSellerProfileScreen(
             LaunchedEffect(viewModel.state.value.successUpdate) {
                 delay(500)
                 navController.navigate(
-                    Destinations.SellerHomeDestinations.route
+                    Destinations.SellerMainDestinations.route
                 )
             }
         }

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import lol.xget.groceryapp.common.Resource
+import lol.xget.groceryapp.seller.mainSeller.domain.ProductModel
 import lol.xget.groceryapp.seller.mainSeller.presentation.AddProducts.AddProductState
 import lol.xget.groceryapp.seller.mainSeller.repository.SellerRepository
 import org.kpropmap.asMap
@@ -25,7 +26,7 @@ class AddProductUseCase @Inject constructor(
     private val ref = FirebaseStorage.getInstance()
 
     operator fun invoke(
-        product: lol.xget.groceryapp.seller.mainSeller.domain.ProductModel,
+        product: ProductModel,
         productPhoto: Uri?
     ): Flow<Resource<AddProductState>> = callbackFlow {
 

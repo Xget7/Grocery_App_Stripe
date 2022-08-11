@@ -22,27 +22,29 @@ fun EventDialog(
 ) {
     AlertDialog(
         modifier = modifier
-            .background(Color.White)
             .padding(16.dp),
         onDismissRequest = { onDismiss?.invoke() },
         title = {
             Text(
                 "Error",
                 style = TextStyle(
-                    color = Color.Black,
+                    color = Color.Red,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
             )
         },
         text = {
-            Text(
-                text = errorMessage!!,
-                style = TextStyle(
-                    color = Color.Red,
-                    fontSize = 16.sp
+            errorMessage?.let {
+                Text(
+                    text = it,
+                    style = TextStyle(
+                        color =MaterialTheme.colors.primaryVariant,
+                        fontSize = 16.sp
+                    )
                 )
-            )
+            }
+
         },
         buttons = {
             Row(
@@ -55,6 +57,7 @@ fun EventDialog(
                     Text(text = "Accept", style = MaterialTheme.typography.button)
                 }
             }
-        }
+        },
+        backgroundColor = MaterialTheme.colors.background
     )
 }

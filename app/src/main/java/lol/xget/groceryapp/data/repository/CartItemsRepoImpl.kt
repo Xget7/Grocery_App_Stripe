@@ -14,6 +14,10 @@ class CartItemsRepoImpl @Inject constructor(
     val readAllItems : Flow<List<CartItems>>
         get() = cartItemsDao.getAllCartItems()
 
+
+    suspend fun deleteAllItems(listOfItems : List<CartItems>){
+        cartItemsDao.deleteAllCartItems(listOfItems)
+    }
     suspend fun addItem(item: CartItems){
         cartItemsDao.add(item)
     }

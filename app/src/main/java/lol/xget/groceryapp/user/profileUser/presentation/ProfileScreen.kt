@@ -1,5 +1,6 @@
 package lol.xget.groceryapp.user.profileUser.presentation
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -18,11 +19,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddLocation
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.EditLocation
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -34,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.android.libraries.places.api.model.Place
@@ -50,14 +56,18 @@ import lol.xget.groceryapp.auth.login.presentation.components.RoundedButton
 import lol.xget.groceryapp.auth.login.presentation.components.TransparentTextField
 import lol.xget.groceryapp.user.mainUser.domain.User
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @ExperimentalCoroutinesApi
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    activity : Activity,
+    activity: Activity,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
 
+    val openedScaffold = remember {
+        mutableStateOf(false)
+    }
 
     var profileImage by remember {
         mutableStateOf<Uri?>(null)
@@ -68,6 +78,7 @@ fun ProfileScreen(
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
             profileImage = uri
         }
+
     val bitmap = remember {
         mutableStateOf<Bitmap?>(null)
     }
@@ -83,22 +94,30 @@ fun ProfileScreen(
     val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
         .build(activity)
 
-    val launchPlaces = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()){
+    val launchPlaces =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
             when (it.resultCode) {
                 Activity.RESULT_OK -> {
                     it.data?.let { _ ->
 
                         val place = Autocomplete.getPlaceFromIntent(it.data!!)
                         viewModel.addressValue.value = place.address!!
+                        place.addressComponents?.let { it1 ->
+                            Log.e(
+                                "AddressComponents",
+                                it1.toString()
+                            )
+                        }
                         viewModel.longitude.value = place.latLng?.longitude!!.toFloat()
                         viewModel.latitude.value = place.latLng?.latitude!!.toFloat()
                     }
                 }
 
                 AutocompleteActivity.RESULT_ERROR -> {
-                    // TODO: Handle the error.
+                    //  Handle the error.
                     it.data?.let { intent ->
                         val status = Autocomplete.getStatusFromIntent(it.data!!)
+                        Log.d("Error",status.statusMessage.toString() )
                         resultPlacesError.value = true
                     }
                 }
@@ -108,17 +127,91 @@ fun ProfileScreen(
             }
 
 
-    }
+        }
 
 
     val focusManager = LocalFocusManager.current
 
-    val navigationItems = listOf(
-        Destinations.UserHomeDestinations,
-        Destinations.ProfileUserDestinations
-    )
+
+    val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
 
     Scaffold(
+        topBar = {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier.padding(top = 20.dp),
+                    text = "Profile",
+                    style = MaterialTheme.typography.h5.copy(
+                        color = MaterialTheme.colors.primaryVariant
+                    ),
+                    fontSize = 30.sp
+                )
+                Spacer(modifier = Modifier.width(120.dp))
+                IconButton(onClick = {
+//                    openedScaffold.value = true
+                }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Settings,
+                        contentDescription = "Settings ICon",
+                        tint = MaterialTheme.colors.onSecondary
+                    )
+                }
+            }
+        },
+        drawerContent = {
+            if (scaffoldState.drawerState.isOpen){
+                Column(
+                    Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    Text(
+                        text = "Settings",
+                        style = MaterialTheme.typography.h5,
+                        modifier = Modifier.padding(16.dp),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colors.onSecondary
+                    )
+                    Divider()
+                    TextButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { navController.navigate(Destinations.UserOrdersScreen.route) }) {
+                        Text(
+                            text = "Orders",
+                            style = MaterialTheme.typography.h5,
+                            modifier = Modifier.padding(16.dp),
+                            fontSize = 16.sp,
+                            color =MaterialTheme.colors.primaryVariant
+
+                        )
+                    }
+                    Divider()
+                    TextButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                        TODO()
+                    }) {
+                        Text(
+                            text = "Politics ",
+                            style = MaterialTheme.typography.h5,
+                            modifier = Modifier.padding(16.dp),
+                            fontSize = 16.sp,
+                            color =MaterialTheme.colors.primaryVariant
+                        )
+                    }
+
+
+                }
+            }
+
+        },
+        scaffoldState = scaffoldState,
+        drawerBackgroundColor = MaterialTheme.colors.background,
     ) {
         Box(
             modifier = Modifier
@@ -136,13 +229,6 @@ fun ProfileScreen(
             }
 
 
-            Text(
-                modifier = Modifier.padding(start = 165.dp, top = 14.dp),
-                text = "Profile",
-                style = MaterialTheme.typography.h5.copy(
-                    color = MaterialTheme.colors.primaryVariant
-                )
-            )
 
 
             Box(
@@ -163,13 +249,13 @@ fun ProfileScreen(
 
                         Card(
                             modifier = Modifier
-                                .size(100.dp)
+                                .size(140.dp)
                                 .testTag(tag = "circle")
                                 .clickable(
                                     onClick = { launcher.launch("image/*") }
                                 ),
                             shape = CircleShape,
-                            elevation = 12.dp
+                            elevation = 8.dp
                         ) {
                             if (bitmap.value != null) {
                                 bitmap.value?.let { btm ->
@@ -181,7 +267,6 @@ fun ProfileScreen(
                                     )
                                 }
                             } else {
-
                                 GlideImage(
                                     imageModel = viewModel.profilePhoto.value,
                                     // Crop, Fit, Inside, FillHeight, FillWidth, None
@@ -192,19 +277,17 @@ fun ProfileScreen(
                                     // shows an error ImageBitmap when the request failed.
                                     error = ImageBitmap.imageResource(R.drawable.error)
                                 )
-
-
                             }
-
-
                         }
                         Spacer(modifier = Modifier.height(20.dp))
 
                         Text(
                             text = viewModel.fullNameValue.value,
                             style = MaterialTheme.typography.h4.copy(
-                                fontWeight = FontWeight.Medium
-                            )
+                                fontWeight = FontWeight.Bold
+                            ),
+                            fontSize = 24.sp,
+                            color = MaterialTheme.colors.onSecondary
                         )
 
 
@@ -227,18 +310,25 @@ fun ProfileScreen(
                                 keyboardActions = KeyboardActions(
                                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                                 ),
-                                imeAction = ImeAction.Next
+                                imeAction = ImeAction.Next,
+                                maxLines = 1,
+                                laberColor = MaterialTheme.colors.onSecondary
+
+
                             )
 
                             TransparentTextField(
                                 textFieldValue = viewModel.phoneValue,
                                 textLabel = "Phone Number",
-                                maxChar = 10,
+                                maxChar = 14,
                                 keyboardType = KeyboardType.Phone,
                                 keyboardActions = KeyboardActions(
                                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                                 ),
-                                imeAction = ImeAction.Next
+                                imeAction = ImeAction.Next,
+                                maxLines = 1,
+                                laberColor = MaterialTheme.colors.onSecondary
+
                             )
 
                             TransparentTextField(
@@ -250,26 +340,57 @@ fun ProfileScreen(
                                         focusManager.moveFocus(FocusDirection.Down)
                                     }
                                 ),
-                                imeAction = ImeAction.Next
+                                imeAction = ImeAction.Next,
+                                maxLines = 1,
+                                laberColor = MaterialTheme.colors.onSecondary,
+                                readOnly = true
                             )
 
-                            if (viewModel.longitude.value == 0f && viewModel.latitude.value == 0f){
-                                OutlinedButton(onClick = { launchPlaces.launch(intent) }) {
-                                    Text(text = "Put your location")
+                            Spacer(modifier = Modifier.height(25.dp))
+
+                            if (viewModel.longitude.value == 0f && viewModel.latitude.value == 0f) {
+                                OutlinedButton(
+                                    modifier = Modifier,
+                                    onClick = { launchPlaces.launch(intent) },
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Color(0xFFF05555)
+                                    )
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.AddLocation,
+                                        contentDescription = "Location Icon",
+                                        tint = MaterialTheme.colors.background
+                                    )
+                                    Text(
+                                        text = "Set your location",
+                                        color = MaterialTheme.colors.background
+                                    )
                                 }
-                            }else{
-                                OutlinedButton(onClick = { launchPlaces.launch(intent) }) {
-                                    Text(text = "Update location")
+                            } else {
+                                OutlinedButton(
+                                    modifier = Modifier,
+                                    onClick = { launchPlaces.launch(intent) },
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Color(0xFFF05555)
+                                    )
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.EditLocation,
+                                        contentDescription = "Location Icon",
+                                        tint = MaterialTheme.colors.background
+                                    )
+                                    Text(
+                                        text = "Update location",
+                                        color = MaterialTheme.colors.background
+                                    )
                                 }
                             }
-
-
 
 
                             val user = User(
                                 profilePhoto = if (profileImage == null) {
                                     viewModel.profilePhoto.value
-                                }else {
+                                } else {
                                     profileImage.toString()
                                 },
                                 accountType = "user",
@@ -280,14 +401,16 @@ fun ProfileScreen(
                                 address = viewModel.addressValue.value,
                                 country = viewModel.country.value,
                                 uid = viewModel.firebaseAuthCurrentUser,
-                                latitude =viewModel.latitude.value,
+                                latitude = viewModel.latitude.value,
                                 longitude = viewModel.longitude.value
                             )
 
-                            Spacer(modifier = Modifier.height(6.dp))
+                            Spacer(modifier = Modifier.height(16.dp))
                             RoundedButton(
                                 text = "Save",
+                                color = MaterialTheme.colors.onSecondary,
                                 displayProgressBar = viewModel.state.value.loading!!,
+                                progressBarColor = MaterialTheme.colors.background,
                                 onClick = {
                                     viewModel.updateUserProfile(user, profileImage)
                                 }
@@ -320,6 +443,11 @@ fun ProfileScreen(
                 EventDialog(
                     errorMessage = viewModel.state.value.errorMsg,
                     onDismiss = { viewModel.hideErrorDialog() })
+            }
+            LaunchedEffect(openedScaffold.value == true) {
+                if (openedScaffold.value){
+                    scaffoldState.drawerState.open()
+                }
             }
         }
     }

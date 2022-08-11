@@ -18,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.skydoves.landscapist.glide.GlideImage
 import lol.xget.groceryapp.R
@@ -31,8 +32,9 @@ fun ShopListItem(shop: lol.xget.groceryapp.seller.mainSeller.domain.ShopModel, o
             .padding(2.dp)
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        elevation = 2.dp,
-        backgroundColor = Color(0xFF1d1c37),
+        elevation = 4.dp,
+        shape = RoundedCornerShape(10.dp),
+        backgroundColor = Color(0xFFFFD3D3),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
 
@@ -74,7 +76,8 @@ fun ShopListItem(shop: lol.xget.groceryapp.seller.mainSeller.domain.ShopModel, o
                         text = shop.shopName!!,
                         style = typography.h4,
                         color = MaterialTheme.colors.primaryVariant,
-                        modifier = Modifier.width(200.dp)
+                        modifier = Modifier.width(200.dp),
+                        fontWeight = FontWeight.Bold
                     )
 
                     Spacer(modifier = Modifier.width(10.dp))

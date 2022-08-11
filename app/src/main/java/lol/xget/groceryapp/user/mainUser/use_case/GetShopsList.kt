@@ -28,7 +28,6 @@ class GetShopsList @Inject constructor(
         try {
             try {
                 trySend(Resource.Loading())
-
                 repo.getShopsList().addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         fbShopsList.clear()
@@ -37,7 +36,6 @@ class GetShopsList @Inject constructor(
                             fbShopsList.add(shop!!)
                         }
                         launch {
-                            delay(2000)
                             trySend(Resource.Success(UserHomeScreenState(shopModel = fbShopsList , loading = false)))
                         }
                     }

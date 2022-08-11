@@ -2,5 +2,6 @@
     <string name="app_name">GroceryApp</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyA_bCcuVoA-EvRfUFVmngWIuQzLWVtXpZU</string>
+    <string name="msg_token_fmt" />
 
 </resources>

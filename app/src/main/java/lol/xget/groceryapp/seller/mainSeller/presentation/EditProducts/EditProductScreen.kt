@@ -34,6 +34,7 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.skydoves.landscapist.glide.GlideImage
@@ -54,7 +55,6 @@ fun EditProductScreen(
     navController: NavController,
     viewModel: EditProductViewModel = hiltViewModel()
 ) {
-    //TODO( fix upload without image image = null)
 
     val openDialog by viewModel.open.observeAsState(false)
 
@@ -92,24 +92,25 @@ fun EditProductScreen(
         }
         IconButton(
             onClick = {
-                navController.navigate(Destinations.SellerHomeDestinations.route)
+                navController.navigate(Destinations.SellerMainDestinations.route)
             }
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "Back Icon",
-                tint = MaterialTheme.colors.primaryVariant
+                tint = MaterialTheme.colors.onSecondary
             )
         }
 
         Text(
             modifier = Modifier
                 .align(alignment = Alignment.TopCenter)
-                .padding(top = 10.dp),
+                .padding(top = 14.dp),
             text = "Update Product",
             style = MaterialTheme.typography.h5.copy(
-                color = MaterialTheme.colors.primaryVariant
-            )
+                color = MaterialTheme.colors.onSecondary
+            ),
+            fontSize = 18.sp
         )
 
 
@@ -270,7 +271,13 @@ fun EditProductScreen(
                                 checked = viewModel.productDiscountAvalide.value,
                                 onCheckedChange = {
                                     viewModel.productDiscountAvalide.value = it
-                                }
+                                },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = MaterialTheme.colors.onSecondary,
+                                    checkedTrackColor = MaterialTheme.colors.onSecondary,
+                                    uncheckedThumbColor = MaterialTheme.colors.background,
+                                    uncheckedTrackColor = MaterialTheme.colors.onSecondary
+                                )
                             )
                         }
 
@@ -328,9 +335,10 @@ fun EditProductScreen(
                         if (buttomVisible){
                             RoundedButton(
                                 text = viewModel.msg.value,
-                                displayProgressBar = viewModel.state.value.displayPb
+                                displayProgressBar = viewModel.state.value.displayPb,
+                                color = MaterialTheme.colors.onSecondary,
+                                textColor = MaterialTheme.colors.background
                             ) {
-                                Log.e("ProductPhotoFromModel", productImage.toString())
                                 viewModel.uploadProductToFb(viewModel.currentProduct.value, productImage)
                             }
                         }else{
@@ -341,10 +349,6 @@ fun EditProductScreen(
                     }
                 }
             }
-        }
-
-        if (openDialog) {
-            DialogBoxLoading()
         }
 
 

@@ -29,12 +29,13 @@ import androidx.compose.ui.unit.sp
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.launch
 import lol.xget.groceryapp.R
+import lol.xget.groceryapp.seller.mainSeller.domain.ProductModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProductBottomSheetDetail(
     bottomSheetScaffoldState: BottomSheetScaffoldState,
-    product: lol.xget.groceryapp.seller.mainSeller.domain.ProductModel?,
+    product: ProductModel?,
     onClick: () -> Unit,
     onDetailClick: () -> Unit
 ) {
@@ -48,7 +49,7 @@ fun ProductBottomSheetDetail(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(270.dp)
-                        .background(color = MaterialTheme.colors.onSurface)
+                        .background(color = MaterialTheme.colors.background)
                 ) {
                     Column(
                         Modifier.fillMaxSize(),
@@ -68,13 +69,13 @@ fun ProductBottomSheetDetail(
                                 Icon(
                                     imageVector = Icons.Default.ArrowBack,
                                     contentDescription = "Back arrow",
-                                    tint = MaterialTheme.colors.primaryVariant
+                                    tint = MaterialTheme.colors.onSecondary
                                 )
                             }
                             Spacer(modifier = Modifier.width(67.dp))
                             Text(
                                 text = "Product Details",
-                                color = MaterialTheme.colors.primaryVariant,
+                                color = MaterialTheme.colors.onSecondary,
                                 modifier = Modifier.padding(top = 14.dp),
                                 fontSize = 20.sp,
                                 fontWeight = Bold
@@ -84,7 +85,7 @@ fun ProductBottomSheetDetail(
                                 Icon(
                                     imageVector = Icons.Default.Edit,
                                     contentDescription = "Edit Icon",
-                                    tint = MaterialTheme.colors.primaryVariant
+                                    tint = MaterialTheme.colors.onSecondary
                                 )
                             }
                             Spacer(modifier = Modifier.width(10.dp))
@@ -92,15 +93,14 @@ fun ProductBottomSheetDetail(
                                 Icon(
                                     imageVector = Icons.Default.Delete,
                                     contentDescription = "delete Icon",
-                                    tint = MaterialTheme.colors.primaryVariant
+                                    tint = MaterialTheme.colors.onSecondary
                                 )
                             }
                         }
 
 
-                        product?.productPhoto?.let {
+                        product.productPhoto?.let {
                             Card(
-
                                 modifier = Modifier
                                     .size(100.dp)
                                     .testTag(tag = "circle")
@@ -123,7 +123,7 @@ fun ProductBottomSheetDetail(
 
 
                         }
-                        product?.discountNote?.let {
+                        product.discountNote?.let {
                             if (it.isNotBlank()) {
                                 Text(
                                     text = it, style = TextStyle(
@@ -144,7 +144,7 @@ fun ProductBottomSheetDetail(
                             }
 
                         }
-                        product?.productTitle?.let {
+                        product.productTitle?.let {
                             Text(
                                 text = it,
                                 fontWeight = Bold,

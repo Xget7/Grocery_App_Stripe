@@ -28,7 +28,7 @@ fun CategoryChip(
 
     Surface(
         modifier = Modifier.padding(end = 8.dp),
-        elevation = 8.dp,
+        elevation = 4.dp,
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colors.background
 //        color = if (isSelected) Color.LightGray else MaterialTheme.colors.onSecondary
@@ -46,7 +46,7 @@ fun CategoryChip(
                 text = category,
                 style = TextStyle(fontFamily = raleway,
                     fontWeight = FontWeight.Bold,
-                    color = if (isSelected) MaterialTheme.colors.primaryVariant else Color.LightGray,
+                    color = if (isSelected) Color(0xFF4CAF50) else Color.Black,
                     fontSize = 16.sp),
                 modifier=  Modifier.drawBehind {
                     drawLine(

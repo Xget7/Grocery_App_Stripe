@@ -19,27 +19,30 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.skydoves.landscapist.glide.GlideImage
 import lol.xget.groceryapp.R
+import lol.xget.groceryapp.seller.mainSeller.domain.ProductModel
 
 
 @Composable
-fun ProductListItem(product: lol.xget.groceryapp.seller.mainSeller.domain.ProductModel, onClick: () -> Unit) {
+fun ProductListItem(product: ProductModel, onClick: () -> Unit) {
 
     Card(
         modifier = Modifier
             .padding(vertical = 1.dp)
+            .padding(8.dp)
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        elevation = 2.dp,
-        backgroundColor = MaterialTheme.colors.primary,
+        elevation = 6.dp,
+        backgroundColor = MaterialTheme.colors.background,
         shape = RoundedCornerShape(corner = CornerSize(12.dp)),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-
             Card(
                 modifier = Modifier
                     .size(70.dp)
@@ -62,7 +65,7 @@ fun ProductListItem(product: lol.xget.groceryapp.seller.mainSeller.domain.Produc
             }
             Column(
                 modifier = Modifier
-                    .padding(2.dp)
+                    .padding(6.dp)
                     .fillMaxWidth()
                     .align(Alignment.CenterVertically)
             ) {
@@ -87,15 +90,34 @@ fun ProductListItem(product: lol.xget.groceryapp.seller.mainSeller.domain.Produc
                     }
 
                 }
-                Text(
-                    text = product.productTitle!!,
-                    style = typography.h6,
-                    color = MaterialTheme.colors.primaryVariant
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = product.productTitle!!,
+                        style = typography.h6,
+                        color = MaterialTheme.colors.primaryVariant,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                        modifier = Modifier.width(130.dp)
+                    )
+                    Spacer(modifier = Modifier.width(1.dp))
+                    Text(
+                        text = product.productCategory!!,
+                        style = typography.h6,
+                        color = MaterialTheme.colors.primaryVariant,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp,
+                        modifier = Modifier.width(140.dp),
+                        textAlign = TextAlign.End
+                    )
+                }
+
 
                 Text(
                     text = product.productQuantity!!,
                     style = typography.caption,
+                    fontSize = 14.sp,
                     color = MaterialTheme.colors.primaryVariant
                 )
 

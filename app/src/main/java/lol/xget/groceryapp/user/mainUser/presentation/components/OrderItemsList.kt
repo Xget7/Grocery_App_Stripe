@@ -28,11 +28,9 @@ fun OrderList(
 ) {
     val simple: DateFormat = SimpleDateFormat("dd MMM yyyy")
 
-
-
     Box(
         modifier = Modifier
-            .height(117.dp)
+            .height(110.dp)
             .fillMaxWidth()
             .padding(1.dp)
     ){
@@ -41,11 +39,12 @@ fun OrderList(
                 .fillMaxSize()
                 .padding(0.dp),
             shape = RoundedCornerShape(5),
-            backgroundColor = Color(0xFF1F2D42),
+            backgroundColor = MaterialTheme.colors.onSecondary
+            ,
             elevation = 4.dp
         ) {
             Column(
-                modifier = Modifier.padding(8.dp),
+                modifier = Modifier.padding(4.dp),
                 horizontalAlignment = Alignment.Start
             ) {
                 Row(
@@ -56,17 +55,17 @@ fun OrderList(
                         Text(
                             text = "Order ID: $it",
                             fontSize = 15.sp,
-                            color = MaterialTheme.colors.primaryVariant,
-                            fontWeight = FontWeight.Bold
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.Bold,
+                            modifier =  Modifier.width(220.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.width(70.dp))
 
                     order.orderTime?.let {
                         Text(
                             text = simple.format(Date(it.toLong())),
                             fontSize = 16.sp,
-                            color = MaterialTheme.colors.primaryVariant,
+                            color = MaterialTheme.colors.background,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -81,46 +80,49 @@ fun OrderList(
                     Text(
                         text = shopName,
                         fontSize = 16.sp,
-                        color = MaterialTheme.colors.primaryVariant,
+                        color = MaterialTheme.colors.background,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.width(280.dp)
                     )
-                    Spacer(modifier = Modifier.width(230.dp))
                     IconButton(onClick = {
                         onClick()
                     }) {
-                        Icon(imageVector = Icons.Default.ArrowRight, contentDescription = "Navigate Arrow")
+                        Icon(imageVector = Icons.Default.ArrowRight, contentDescription = "Navigate Arrow", tint = MaterialTheme.colors.background)
                     }
                 }
 
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     //Name Of commerce
                     Text(
                         text = "Amount: $${order.orderCost}",
                         fontSize = 16.sp,
-                        color = MaterialTheme.colors.primaryVariant,
+                        color = MaterialTheme.colors.background,
+                        modifier = Modifier.width(225.dp)
                     )
-                    Spacer(modifier = Modifier.width(148.dp))
+
                     when(order.orderStatus){
                         "In Progress" -> {
                             Text(
                                 text = "In progress",
                                 fontSize = 16.sp,
-                                color = Color(0xFF03A9F4),
+                                color = Color(0xFF68C5F0),
                             )
                         }
                         "Cancelled" -> {
                             Text(
                                 text = "Cancelled",
                                 fontSize = 16.sp,
-                                color = Color.Red,
+                                color = Color.White,
                             )
                         }
                         else -> {
                             Text(
                                 text = "Completed",
                                 fontSize = 16.sp,
-                                color = MaterialTheme.colors.onSecondary,
+                                color = Color.Green,
                             )
                         }
                     }

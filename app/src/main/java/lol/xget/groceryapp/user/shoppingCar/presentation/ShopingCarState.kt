@@ -5,6 +5,7 @@ import lol.xget.groceryapp.user.mainUser.domain.User
 
 data class ShopingCarState(
     val successPlacedOrder: Boolean? = false,
+    val noItemsInCart: Boolean? = false,
     val displayPb: Boolean? = false,
     val shop : ShopModel? = null,
     val user : User? = null,

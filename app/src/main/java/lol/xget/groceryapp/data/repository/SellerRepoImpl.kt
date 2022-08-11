@@ -4,6 +4,8 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.FirebaseMessaging
+import lol.xget.groceryapp.common.Constants
 import lol.xget.groceryapp.seller.mainSeller.repository.SellerRepository
 import lol.xget.groceryapp.user.mainUser.domain.User
 import javax.inject.Inject
@@ -13,13 +15,13 @@ class SellerRepoImpl @Inject constructor(
 
 ) : SellerRepository {
     private val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-
+    private val fbMessagingService = FirebaseMessaging.getInstance()
     //clean entry of data , checked before
     override suspend fun addProduct(product: Map<String, Any?>, userUid: String): Task<Void> {
         return db.getReference("sellers")
             .child(userUid).child("products")
             .child(product["productId"].toString())
-            .updateChildren(product)
+            .setValue(product)
     }
 
 
@@ -65,6 +67,22 @@ class SellerRepoImpl @Inject constructor(
 
     override suspend fun getShopData(currentShop: String): DatabaseReference {
         return db.getReference("sellers").child(currentShop)
+    }
+
+    override suspend fun getAllOrders(currentShop: String): DatabaseReference {
+        return db.getReference("sellers").child(currentShop).child("orders")
+    }
+
+    override suspend fun subscribeToOrders(): Task<Void> {
+        return fbMessagingService.subscribeToTopic(Constants.FMC_TOPIC)
+    }
+
+    override suspend fun unsubscribeToOrders(): Task<Void> {
+        return fbMessagingService.unsubscribeFromTopic(Constants.FMC_TOPIC)
+    }
+
+    override suspend fun changeOrderStatus(shopId: String, orderId: String): DatabaseReference {
+        return db.getReference("sellers").child(shopId).child("orders").child(orderId).child("orderStatus")
     }
 
 

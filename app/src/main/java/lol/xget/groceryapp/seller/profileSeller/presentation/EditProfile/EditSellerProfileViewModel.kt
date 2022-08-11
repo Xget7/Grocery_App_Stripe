@@ -80,7 +80,6 @@ class EditSellerProfileViewModel @Inject constructor(
     @ExperimentalCoroutinesApi
     fun updateProfile(user : User, profilePhoto: Uri?, shopBanner : Uri?){
         Log.e("profileImageIsEmpty?VmMutableVarsFromDb", "${shopBannerImage.value}  + ${shopImage.value} ")
-
         repo.updateShopData.invoke(user, profilePhoto, shopBanner).onEach { result ->
             when(result){
                 is Resource.Loading -> {
@@ -98,7 +97,7 @@ class EditSellerProfileViewModel @Inject constructor(
 
     }
 
-    fun parseDbData(user: User?) {
+    private fun parseDbData(user: User?) {
         user?.shopBanner?.let {
             shopBannerImage.value = it
         }
@@ -120,10 +119,6 @@ class EditSellerProfileViewModel @Inject constructor(
         deliveryFee.value = user.deliveryFee!!.toString()
     }
 
-
-    private fun closeDialog() {
-        open.value = false
-    }
 
 
     fun hideErrorDialog() {

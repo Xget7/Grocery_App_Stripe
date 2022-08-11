@@ -44,7 +44,7 @@ class ProfileViewModel @Inject constructor(
 
     init {
         Log.e("currentUser", currentUser)
-        getProfileData(currentUser, "user")
+        getProfileData( "user")
         Places.initialize(app, BuildConfig.MAPS_API_KEY);
     }
 
@@ -70,7 +70,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     @ExperimentalCoroutinesApi
-    fun getProfileData(userid : String, accountType : String){
+    fun getProfileData( accountType : String){
         repo.getProfileInfo.invoke(accountType).onEach { result ->
             when(result){
                 is Resource.Loading -> {

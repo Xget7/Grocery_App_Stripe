@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.materialIcon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,7 +50,7 @@ fun SellProductsList(
     val gradient = Brush.verticalGradient(
         colors = listOf(Color.Transparent, Color.Black),
         startY = 210f/3,  // 1/3
-        endY = 640f
+        endY = 620f
     )
 
     Card(
@@ -106,8 +107,8 @@ fun SellProductsList(
                         Locale.getDefault()
                     ) else it.toString()
                 },
-                fontSize = 20.sp,
-                color = Color.White,
+                fontSize = 22.sp,
+                color = MaterialTheme.colors.background,
                 style = TextStyle(
                     fontFamily = raleway,
                     fontWeight = FontWeight.Medium
@@ -131,7 +132,7 @@ fun SellProductsList(
                             }
                             withStyle(
                                 style = SpanStyle(
-                                    color = MaterialTheme.colors.primaryVariant,
+                                    color = MaterialTheme.colors.background,
                                     fontWeight = FontWeight.Bold
                                 )
                             ) {
@@ -149,7 +150,7 @@ fun SellProductsList(
                             }
                             withStyle(
                                 style = SpanStyle(
-                                    color = MaterialTheme.colors.primaryVariant,
+                                    color = MaterialTheme.colors.background,
                                     fontWeight = FontWeight.Medium,
                                     fontSize = 13.sp,
                                 )
@@ -159,7 +160,7 @@ fun SellProductsList(
 
                         },
                         fontSize = 18.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colors.background,
                         modifier = Modifier
                             .padding(start = 15.dp, top = 5.dp),
                         style = TextStyle(
@@ -174,14 +175,14 @@ fun SellProductsList(
                         text = buildAnnotatedString {
                             withStyle(
                                 style = SpanStyle(
-                                    color = MaterialTheme.colors.onSecondary,
+                                    color = Color.Green,
                                 )
                             ) {
                                 append("$")
                             }
                             withStyle(
                                 style = SpanStyle(
-                                    color = MaterialTheme.colors.primaryVariant,
+                                    color = MaterialTheme.colors.background,
                                     fontWeight = FontWeight.Bold
                                 )
                             ) {
@@ -189,7 +190,7 @@ fun SellProductsList(
                             }
                         },
                         fontSize = 18.sp,
-                        color = Color.White,
+                        color =MaterialTheme.colors.background,
                         modifier = Modifier
                             .padding(start = 15.dp, top = 5.dp),
                         style = TextStyle(
@@ -201,7 +202,7 @@ fun SellProductsList(
                     Text(
                         text = "" + product.productQuantity!!,
                         fontSize = 13.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colors.background,
                         modifier = Modifier
                             .padding(start = 0.dp, top = 9.dp)
                             .alignByBaseline(),

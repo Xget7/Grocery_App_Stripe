@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import lol.xget.groceryapp.common.Resource
 import lol.xget.groceryapp.domain.use_case.products.AddProductUseCase
+import lol.xget.groceryapp.seller.mainSeller.domain.ProductModel
 import javax.inject.Inject
 
 
@@ -39,7 +40,7 @@ class AddProductViewModel @Inject constructor(
 
 
 
-    fun uploadProductToFb(product : lol.xget.groceryapp.seller.mainSeller.domain.ProductModel, productPhoto : Uri?){
+    fun uploadProductToFb(product : ProductModel, productPhoto : Uri?){
         productId.value = System.currentTimeMillis().toString()
         if (validateProduct()){
             useCase.invoke(product, productPhoto).onEach { result ->

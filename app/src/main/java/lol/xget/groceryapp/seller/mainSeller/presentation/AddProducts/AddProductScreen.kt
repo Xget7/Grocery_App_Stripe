@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
@@ -41,6 +42,7 @@ import lol.xget.groceryapp.auth.login.presentation.components.RoundedButton
 import lol.xget.groceryapp.auth.login.presentation.components.TransparentTextField
 import lol.xget.groceryapp.common.Constants
 import lol.xget.groceryapp.domain.util.Destinations
+import lol.xget.groceryapp.seller.mainSeller.domain.ProductModel
 import lol.xget.groceryapp.ui.components.DialogBoxLoading
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -62,7 +64,6 @@ fun AddProductScreen(
     val context = LocalContext.current
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
-
             profileImage = uri
         }
     val bitmap = remember {
@@ -88,13 +89,13 @@ fun AddProductScreen(
         }
         IconButton(
             onClick = {
-                navController.navigate(Destinations.SellerHomeDestinations.route)
+                navController.navigate(Destinations.SellerMainDestinations.route)
             }
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "Back Icon",
-                tint = MaterialTheme.colors.primaryVariant
+                tint = MaterialTheme.colors.onSecondary
             )
         }
 
@@ -132,9 +133,18 @@ fun AddProductScreen(
                                 onClick = { launcher.launch("image/*") }
                             ),
                         shape = CircleShape,
+                        backgroundColor = MaterialTheme.colors.background,
                         elevation = 12.dp
                     ) {
-
+                        if (bitmap.value == null) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(text = "Add Image", modifier = Modifier, color =MaterialTheme.colors.primaryVariant )
+                            }
+                        }
                         bitmap.value?.let { btm ->
                             Image(
                                 bitmap = btm.asImageBitmap(),
@@ -170,7 +180,6 @@ fun AddProductScreen(
                         )
 
                         TransparentTextField(
-                            //TODO("At least 30 char")
                             textFieldValue = viewModel.productDescription,
                             textLabel = "Description",
                             maxChar = 200,
@@ -178,7 +187,8 @@ fun AddProductScreen(
                             keyboardActions = KeyboardActions(
                                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
                             ),
-                            imeAction = ImeAction.Next
+                            imeAction = ImeAction.Next,
+                            modifier = Modifier.height(90.dp)
                         )
 
                         TransparentTextField(
@@ -195,7 +205,7 @@ fun AddProductScreen(
 
                         TransparentTextField(
                             singleLine = true,
-                            textFieldValue = viewModel.productQuantity ,
+                            textFieldValue = viewModel.productQuantity,
                             textLabel = "Quantity, kg , g , lb",
                             keyboardType = KeyboardType.Text,
                             keyboardActions = KeyboardActions(
@@ -215,31 +225,40 @@ fun AddProductScreen(
                                 expanded = !expanded
                             },
 
-                        ) {
-                            Text(if(viewModel.productCategory.value == ""){
-                                "Select Category"
-                            }else{
-                                viewModel.productCategory.value
-                            }, color = MaterialTheme.colors.primaryVariant)
+                            ) {
+                            Text(
+                                if (viewModel.productCategory.value == "") {
+                                    "Select Category"
+                                } else {
+                                    viewModel.productCategory.value
+                                }, color = MaterialTheme.colors.primaryVariant
+                            )
                             Icon(
                                 imageVector = Icons.Filled.ArrowDropDown,
                                 contentDescription = null,
                                 tint = MaterialTheme.colors.primaryVariant
                             )
                             DropdownMenu(
+                                modifier = Modifier.background(
+                                    MaterialTheme.colors.background
+                                ),
                                 expanded = expanded,
-                                onDismissRequest = { expanded = false })
+                                onDismissRequest = { expanded = false },
+                                properties = PopupProperties(),
+                            )
                             {
                                 Constants.listOfCategories.forEach { label ->
                                     DropdownMenuItem(
                                         modifier = Modifier
                                             .width(300.dp)
-                                            .align(Alignment.CenterHorizontally),
+                                            .align(Alignment.CenterHorizontally)
+                                            .background(MaterialTheme.colors.background),
                                         onClick = {
-                                        expanded = false
-                                        viewModel.productCategory.value = label
-                                    }) {
-                                        Text(text = label)
+                                            expanded = false
+                                            viewModel.productCategory.value = label
+                                        },
+                                        ) {
+                                        Text(text = label, color = MaterialTheme.colors.onSecondary)
                                     }
                                 }
                             }
@@ -254,7 +273,13 @@ fun AddProductScreen(
                                 checked = viewModel.productDiscountAvalide.value,
                                 onCheckedChange = {
                                     viewModel.productDiscountAvalide.value = it
-                                }
+                                },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = MaterialTheme.colors.onSecondary,
+                                    checkedTrackColor = MaterialTheme.colors.onSecondary,
+                                    uncheckedThumbColor = MaterialTheme.colors.background,
+                                    uncheckedTrackColor = MaterialTheme.colors.onSecondary
+                                )
                             )
                         }
 
@@ -289,7 +314,7 @@ fun AddProductScreen(
 
                         val dateFormat: DateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
                         val date = java.util.Date()
-                        val product = lol.xget.groceryapp.seller.mainSeller.domain.ProductModel(
+                        val product = ProductModel(
                             productPhoto = profileImage.toString(),
                             productId = System.currentTimeMillis().toString(),
                             productTitle = viewModel.productTitle.value,
@@ -304,26 +329,22 @@ fun AddProductScreen(
                             timestamp = dateFormat.format(date)
                         )
 
-                        if (buttomVisible){
+                        if (buttomVisible) {
                             RoundedButton(
                                 text = viewModel.msg.value,
-                                displayProgressBar = viewModel.state.value.displayPb
+                                displayProgressBar = viewModel.state.value.displayPb,
+                                color = MaterialTheme.colors.onSecondary,
+                                textColor = MaterialTheme.colors.background
                             ) {
                                 viewModel.uploadProductToFb(product, profileImage)
                             }
-                        }else{
+                        } else {
                             Text(text = viewModel.msg.value)
                         }
 
 
                     }
                 }
-            }
-            if (openDialog) {
-                DialogBoxLoading()
-            }
-            if (viewModel.state.value.displayPb) {
-                DialogBoxLoading()
             }
 
         }
@@ -338,8 +359,12 @@ fun AddProductScreen(
 
         if (viewModel.state.value.successAdded) {
             buttomVisible = false
-            viewModel.msg.value = "Sucess"
-            if (viewModel.state.value.successAdded) LaunchedEffect(viewModel.state.value.successAdded){ navController?.navigate(Destinations.SellerHomeDestinations.route) }
+            viewModel.msg.value = "Success"
+            if (viewModel.state.value.successAdded) LaunchedEffect(viewModel.state.value.successAdded) {
+                navController.navigate(
+                    Destinations.SellerMainDestinations.route
+                )
+            }
 
 
         }

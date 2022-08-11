@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,6 +19,8 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import lol.xget.groceryapp.auth.register.use_case.RegisterUseCase
 import lol.xget.groceryapp.common.Resource
+import lol.xget.groceryapp.domain.util.Destinations
+import lol.xget.groceryapp.user.mainUser.domain.User
 import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
@@ -40,8 +43,10 @@ class RegisterSellerViewModel @Inject constructor(
     val emailValue = mutableStateOf("")
     val shopNameValue = mutableStateOf("")
     val countryValue = mutableStateOf("")
-    val longitude = mutableStateOf(0.0)
-    val latitude = mutableStateOf(0.0)
+
+    val longitude = mutableStateOf(0f)
+    val latitude = mutableStateOf(0f)
+
     var stateValue = mutableStateOf("")
     val cityValue = mutableStateOf("")
     val addressValue = mutableStateOf("")
@@ -58,40 +63,11 @@ class RegisterSellerViewModel @Inject constructor(
 
 
 
-    fun setLocationAddresses(latitude : Double, longitude: Double){
-        viewModelScope.launch {
-            if (latitude != 0.0 && longitude != 0.0){
-                try {
-                    val geoCoder= Geocoder(application, Locale.getDefault())
-                    val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
-                    delay(1000)
-                    countryValue.value =  addresses[0].countryName
-                    stateValue.value =  addresses[0].adminArea
-                    cityValue.value = addresses[0].locality
-                    addressValue.value =  addresses[0].getAddressLine(0)
-                }catch (e: Exception){
-                    _state.value = _state.value.copy(errorMsg = "Error with location")
-                    hideErrorDialog()
-                }
-            }else{
-                _state.value = _state.value.copy(errorMsg = "Cannot get location")
-                hideErrorDialog()
-            }
-        }
-    }
-
-    fun locationEnabled() {
-        viewModelScope.launch {
-            val locationManager = application.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            gpsStatus.value = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        }
-    }
-
-    fun verifyUser(
+    private fun verifyUser(
         email: String,
         password: String,
         confirmPassword: String,
-        user: lol.xget.groceryapp.user.mainUser.domain.User,
+        user: User,
     ): Boolean {
         if (user.userName!!.isBlank()) {
             _state.value = state.value.copy(errorMsg = "Name is empty.")
@@ -111,30 +87,20 @@ class RegisterSellerViewModel @Inject constructor(
         } else if (password != confirmPassword) {
             _state.value = state.value.copy(errorMsg = "Passwords don't match.")
             return false
-        } else if (user.address!!.isBlank()) {
-            _state.value = state.value.copy(errorMsg = "Address is empty.")
-            return false
         } else if (email.isBlank()) {
             _state.value = state.value.copy(errorMsg = "Email is empty.")
             return false
         } else if (user.phone!!.isBlank()) {
             _state.value = state.value.copy(errorMsg = "Phone is empty.")
             return false
-        }else if (user.city!!.isBlank()) {
-            _state.value = state.value.copy(errorMsg = "City is empty.")
-            return false
-        }else if (user.state!!.isBlank()) {
-            _state.value = state.value.copy(errorMsg = "State is empty.")
-            return false
-        }
-        else if (user.country!!.isBlank()) {
-            _state.value = state.value.copy(errorMsg = "Country is empty.")
+        }else if (user.address!!.isBlank()) {
+            _state.value = state.value.copy(errorMsg = "Missing address.")
             return false
         }else return true
     }
 
     @ExperimentalCoroutinesApi
-    fun registerUser(user: lol.xget.groceryapp.user.mainUser.domain.User) {
+    fun registerUser(user: User, navController: NavController) {
         if (verifyUser(
                 emailValue.value ,
                 passwordValue.value,
@@ -146,13 +112,15 @@ class RegisterSellerViewModel @Inject constructor(
                 when (result) {
                     is Resource.Success -> {
                         _state.value = _state.value.copy(successRegister = true, displayPb = false)
+                        navController.popBackStack()
+                        navController.navigate(Destinations.SellerMainDestinations.route)
+
                     }
                     is Resource.Loading -> {
                         _state.value = _state.value.copy(displayPb = true)
                     }
                     is Resource.Error -> {
-                        _state.value = _state.value.copy(displayPb = false)
-                        _state.value = _state.value.copy(errorMsg = result.message)
+                        _state.value = _state.value.copy(errorMsg = result.message,displayPb = false)
                     }
                 }
             }.launchIn(viewModelScope)
@@ -166,8 +134,5 @@ class RegisterSellerViewModel @Inject constructor(
         )
     }
 
-    private fun closeDialog() {
-        open.value = false
-    }
 
 }

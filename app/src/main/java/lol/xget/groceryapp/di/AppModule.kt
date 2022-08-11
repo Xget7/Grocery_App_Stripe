@@ -27,14 +27,11 @@ import lol.xget.groceryapp.domain.use_case.products.UpdateProductUseCase
 import lol.xget.groceryapp.domain.use_case.auth.AuthUseCases
 import lol.xget.groceryapp.seller.mainSeller.use_case.*
 import lol.xget.groceryapp.user.mainUser.repository.UserRepository
-import lol.xget.groceryapp.user.mainUser.use_case.GetShopsList
-import lol.xget.groceryapp.user.mainUser.use_case.GetSpecificShopUseCase
-import lol.xget.groceryapp.user.profileUser.use_case.GetOrdersUseCase
-import lol.xget.groceryapp.user.profileUser.use_case.GetProfileUseCase
-import lol.xget.groceryapp.user.profileUser.use_case.UpdateProfileUseCase
-import lol.xget.groceryapp.user.profileUser.use_case.UserUseCases
+import lol.xget.groceryapp.user.mainUser.use_case.*
+import lol.xget.groceryapp.user.profileUser.use_case.*
 import lol.xget.groceryapp.user.shoppingCar.use_case.GetShopData
 import lol.xget.groceryapp.user.shoppingCar.use_case.GetUserData
+import lol.xget.groceryapp.user.shoppingCar.use_case.GetUserDataFromReviews
 import lol.xget.groceryapp.user.shoppingCar.use_case.PlaceOrderUseCase
 
 import javax.inject.Singleton
@@ -55,6 +52,8 @@ object AppModule {
         return GoogleSignIn.getClient(context, signInOptions)
     }
 
+
+
     @Singleton // Tell Dagger-Hilt to create a singleton accessible everywhere in ApplicationCompenent (i.e. everywhere in the application)
     @Provides
     fun provideYourDatabase(
@@ -64,7 +63,6 @@ object AppModule {
         CartItemsDatabase::class.java,
         "CartItems"
     ).build() // The reason we can construct a database for the repo
-
 
 
     @Provides
@@ -85,6 +83,7 @@ object AppModule {
         return SellerRepoImpl()
     }
 
+
     @Provides
     @Singleton
     fun cartItemsDao(db: CartItemsDatabase): CartItemsDao = db.cartItemsDao()
@@ -101,10 +100,21 @@ object AppModule {
             getSellerProfile = GetSellerProfileUseCase(sellerRepo),
             updateShopData = UpdateShopData(sellerRepo),
             getSpecificShop = GetSpecificShopUseCase(sellerRepo),
-            updateShopBanners = UpdateShopBanners(sellerRepo)
+            updateShopBanners = UpdateShopBanners(sellerRepo),
+            getAllOrders = GetAllOrders(sellerRepo),
+            subscribeToOrders = SubscribeToOrdersUseCase(sellerRepo),
+            unsubscribeToOrders = UnsubscribeToOrdersUseCase(sellerRepo),
+             changeOrderStatus = ChangeOrderStatus(sellerRepo)
         )
     }
-
+    @Provides
+    @Singleton
+    fun provideUserUseCases(sellerRepo: UserRepository): HomeUserUseCases {
+        return HomeUserUseCases(
+            getRatingFromShopUserUseCase = GetRatingsFromShopUseCase(sellerRepo),
+            getShopsList = GetShopsList(sellerRepo)
+        )
+    }
 
     @Provides
     @Singleton
@@ -116,7 +126,10 @@ object AppModule {
             getShop = GetShopData(profileUserRepository),
             getUSerData = GetUserData(profileUserRepository),
             placeOrder = PlaceOrderUseCase(profileUserRepository),
-            getOrders = GetOrdersUseCase(profileUserRepository)
+            getOrders = GetOrdersUseCase(profileUserRepository),
+            getItemsByOrderId = GetItemsByOrderId(profileUserRepository),
+            getOrderById = GetOrderByIdUseCase(profileUserRepository),
+            getUSerDataFromReviews = GetUserDataFromReviews(profileUserRepository)
         )
     }
 

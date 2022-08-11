@@ -44,7 +44,6 @@ class UserHomeScreenViewModel @Inject constructor(
     init {
         getUser()
         getShopsList()
-
     }
 
 
@@ -58,9 +57,7 @@ class UserHomeScreenViewModel @Inject constructor(
                 }
                 is Resource.Success -> {
 
-                    state.value = state.value.copy(successLoad = result.data!!.successLoad)
-                    state.value = state.value.copy(shopModel = result.data.shopModel)
-
+                    state.value = state.value.copy(successLoad = result.data!!.successLoad,shopModel = result.data.shopModel, loading = false)
                     //getting shops data into ShopList
                     state.value.shopModel?.let { list ->
                         shopList.swapList(list)
@@ -70,31 +67,39 @@ class UserHomeScreenViewModel @Inject constructor(
                     }
                 }
                 is Resource.Error -> {
-                    state.value = state.value.copy(loading = false)
-                    state.value = state.value.copy(errorMsg = result.message)
+                    state.value = state.value.copy(loading = false,errorMsg = result.message)
                 }
             }
         }.launchIn(viewModelScope)
     }
 
-    private fun filterListByLocation(shopList: List<ShopModel> , user: User) : List<ShopModel>{
-        if (user.latitude!! <= 0f && user.longitude!! <= 0f){
-            return emptyList()
+    private fun filterListByLocation(shopList: List<ShopModel> , user: User) : List<ShopModel> {
+        try {
+            if (user.latitude == null || user.longitude == null){
+                return emptyList()
+            }
+        }catch (e : Exception){
+            state.value = state.value.copy(errorMsg = "We can't get user location")
         }
 
         val filteredList = mutableStateListOf<ShopModel>()
 
-        for (shop in shopList){
-            val distanceBetweenUserAndShop = distance(
-                user.latitude!!.toDouble(),
-                user.longitude!!.toDouble(),
-                shop.latitude!!.toDouble(),
-                shop.longitude!!.toDouble()
-            )
-            if (distanceBetweenUserAndShop < 15){
-                filteredList.add(shop)
+        try {
+            for (shop in shopList){
+                val distanceBetweenUserAndShop = distance(
+                    user.latitude!!.toDouble(),
+                    user.longitude!!.toDouble(),
+                    shop.latitude!!.toDouble(),
+                    shop.longitude!!.toDouble()
+                )
+                if (distanceBetweenUserAndShop < 15){
+                    filteredList.add(shop)
+                }
             }
+        }catch (e : Exception){
+            state.value = state.value.copy(errorMsg = "We can't user location")
         }
+
 
         return filteredList
     }

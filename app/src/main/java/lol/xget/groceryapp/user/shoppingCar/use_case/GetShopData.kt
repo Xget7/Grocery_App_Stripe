@@ -11,6 +11,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import lol.xget.groceryapp.common.Resource
+import lol.xget.groceryapp.seller.mainSeller.domain.ShopModel
 import lol.xget.groceryapp.seller.mainSeller.repository.SellerRepository
 import lol.xget.groceryapp.user.mainUser.presentation.ShopDetails.ShopDetailScreenState
 import lol.xget.groceryapp.user.mainUser.repository.UserRepository
@@ -21,20 +22,17 @@ import javax.inject.Inject
 class GetShopData @Inject constructor(
     private val repo : UserRepository
 ) {
-
-
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke (currentShop: String): Flow<Resource<ShopingCarState>> =
         callbackFlow {
-            var shop: lol.xget.groceryapp.seller.mainSeller.domain.ShopModel?
+            var shop: ShopModel?
             try {
                 try {
                     trySend(Resource.Loading())
                     repo.getShopData(currentShop)
                         .addValueEventListener(object : ValueEventListener {
-
                             override fun onDataChange(snapshot: DataSnapshot) {
-                                shop = snapshot.getValue(lol.xget.groceryapp.seller.mainSeller.domain.ShopModel::class.java)
+                                shop = snapshot.getValue(ShopModel::class.java)
                                 trySend(Resource.Success(ShopingCarState(shop = shop)))
                             }
 
@@ -57,7 +55,6 @@ class GetShopData @Inject constructor(
                     awaitClose { channel.close() }
                 } catch (ex: Exception) {
                     ex.printStackTrace()
-                    Log.e("GetProductsUseCase", ex.message ?: "")
                 }
             } catch (e: FirebaseException) {
                 trySend(

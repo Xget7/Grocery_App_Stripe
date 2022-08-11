@@ -3,9 +3,11 @@ package lol.xget.groceryapp.auth.register.presentation.register_seller
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 
 import androidx.compose.foundation.layout.*
@@ -35,19 +37,27 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.AutocompleteActivity
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.talhafaki.composablesweettoast.util.SweetToastUtil.SweetWarning
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import lol.xget.groceryapp.MainActivity
 import lol.xget.groceryapp.domain.util.Destinations
 import lol.xget.groceryapp.auth.login.presentation.components.EventDialog
 import lol.xget.groceryapp.auth.login.presentation.components.TransparentTextField
 import lol.xget.groceryapp.auth.mapLocalization.presentation.MapsActivityResultContract
+import lol.xget.groceryapp.ui.GroceryAppTheme
 import lol.xget.groceryapp.ui.components.DialogBoxLoading
 import java.util.*
 
@@ -62,59 +72,68 @@ fun RegistrationSellerScreen(
 
 ) {
 
-
     var userLatLng by remember {
         mutableStateOf(LatLng(0.0, 0.0))
     }
 
-    val launchMap = rememberLauncherForActivityResult(MapsActivityResultContract()) {
-
-        viewModel.setLocationAddresses(it.latitude, it.longitude)
-        userLatLng = it
+    val resultPlacesError = remember {
+        mutableStateOf(false)
     }
-
     val openDialog by viewModel.open.observeAsState(false)
-    val gpsStatus by viewModel.gpsStatus.observeAsState(false)
 
-    val scope = rememberCoroutineScope()
 
     var passwordVisibility by remember { mutableStateOf(false) }
     var confirmPasswordVisibility by remember { mutableStateOf(false) }
 
     val focusManager = LocalFocusManager.current
 
-    var warningToastActivateGps by remember {
-        mutableStateOf(false)
-    }
-    var warningToastRejectedPermissions by remember { mutableStateOf(false) }
+    val launchPlaces =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+            when (it.resultCode) {
+                Activity.RESULT_OK -> {
+                    it.data?.let { _ ->
 
-    LaunchedEffect(key1 = true) {
-        viewModel.userLatLngflow.collect {
-            userLatLng = it
-        }
-    }
-
-
-    val requestPermission =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                viewModel.locationEnabled()
-                if (gpsStatus) {
-                    scope.launch {
-                        launchMap.launch(userLatLng)
+                        val place = Autocomplete.getPlaceFromIntent(it.data!!)
+                        viewModel.addressValue.value = place.address!!
+                        place.addressComponents?.let { it1 ->
+                            Log.e(
+                                "AddressComponents",
+                                it1.toString()
+                            )
+                        }
+                        viewModel.longitude.value = place.latLng?.longitude!!.toFloat()
+                        viewModel.latitude.value = place.latLng?.latitude!!.toFloat()
+                        place.address?.let{ addr ->
+                            viewModel.addressValue.value = addr
+                        }
                     }
-                } else {
-                    warningToastActivateGps = true
                 }
 
-            } else {
-                warningToastRejectedPermissions = true
+                AutocompleteActivity.RESULT_ERROR -> {
+                    //  Handle the error.
+                    it.data?.let { intent ->
+                        val status = Autocomplete.getStatusFromIntent(it.data!!)
+                        Log.d("Error",status.statusMessage.toString() )
+                        resultPlacesError.value = true
+                    }
+                }
+                Activity.RESULT_CANCELED -> {
+                    // The user canceled the operation.
+                }
             }
+
+
         }
+    val fields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
+
+    // Start the autocomplete intent.
+    val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+        .build(activity)
 
 
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .background(MaterialTheme.colors.background)
     ) {
 
@@ -137,7 +156,7 @@ fun RegistrationSellerScreen(
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back Icon",
-                        tint = MaterialTheme.colors.primaryVariant
+                        tint = MaterialTheme.colors.onSecondary
                     )
                 }
 
@@ -147,36 +166,7 @@ fun RegistrationSellerScreen(
                         color = MaterialTheme.colors.primaryVariant
                     )
                 )
-                IconButton(
-                    modifier = Modifier.padding(start = 150.dp),
-                    onClick = {
-                        when (PackageManager.PERMISSION_GRANTED) {
-                            ContextCompat.checkSelfPermission(
-                                activity,
-                                Manifest.permission.ACCESS_FINE_LOCATION
-                            ) -> {
-                                viewModel.locationEnabled()
-                                if (gpsStatus) {
 
-                                        launchMap.launch(userLatLng)
-                                } else {
-                                    warningToastActivateGps = true
-                                }
-                            }
-                            else -> {
-                                // Asking for permission
-                                requestPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                            }
-                        }
-                    }
-                ) {
-                    //TODO("obligatorio usar este boton")
-                    Icon(
-                        imageVector = Icons.Default.MyLocation,
-                        contentDescription = "Location icon",
-                        tint = MaterialTheme.colors.primaryVariant
-                    )
-                }
 
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -233,77 +223,43 @@ fun RegistrationSellerScreen(
                     imeAction = ImeAction.Next
                 )
 
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().clickable {
+                        launchPlaces.launch(intent)
+                    }
 
                 ) {
                     TransparentTextField(
                         modifier = Modifier
-                            .width(100.dp)
-                            .height(50.dp),
-                        textFieldValue = viewModel.countryValue,
-                        textLabel = "Country",
+                            .width(300.dp)
+                            .height(70.dp).clickable {
+                                launchPlaces.launch(intent)
+                            },
+                        textFieldValue = viewModel.addressValue,
+                        textLabel = "Address",
+
                         keyboardType = KeyboardType.Text,
                         keyboardActions = KeyboardActions(
                             onNext = {
                                 focusManager.moveFocus(FocusDirection.Down)
                             }
                         ),
-                        imeAction = ImeAction.Next
+                        imeAction = ImeAction.Next,
+                        readOnly = true
                     )
 
-                    TransparentTextField(
-                        modifier = Modifier
-                            .width(100.dp)
-                            .height(50.dp),
-                        textFieldValue = viewModel.stateValue,
-                        textLabel = "State",
-                        keyboardType = KeyboardType.Text,
-                        keyboardActions = KeyboardActions(
-                            onNext = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        ),
-                        imeAction = ImeAction.Next
-                    )
-
-                    TransparentTextField(
-                        modifier = Modifier
-                            .width(100.dp)
-                            .height(50.dp),
-                        textFieldValue = viewModel.cityValue,
-                        textLabel = "City",
-                        keyboardType = KeyboardType.Text,
-                        keyboardActions = KeyboardActions(
-                            onNext = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        ),
-                        imeAction = ImeAction.Next
-                    )
 
 
                 }
 
-                TransparentTextField(
-                    textFieldValue = viewModel.addressValue,
-                    textLabel = " Address",
-                    keyboardType = KeyboardType.Text,
-                    keyboardActions = KeyboardActions(
-                        onNext = {
-                            focusManager.moveFocus(FocusDirection.Down)
-                        }
-                    ),
-                    imeAction = ImeAction.Next,
-                    maxChar = 100
-                )
 
                 TransparentTextField(
                     textFieldValue = viewModel.deliveryFee,
                     textLabel = " Delivery fee",
-                    keyboardType = KeyboardType.Text,
+                    keyboardType = KeyboardType.Number,
                     keyboardActions = KeyboardActions(
                         onNext = {
                             focusManager.moveFocus(FocusDirection.Down)
@@ -365,17 +321,14 @@ fun RegistrationSellerScreen(
 
                 Spacer(modifier = Modifier.height(36.dp))
 
-                val startDate = Date(System.currentTimeMillis())
-
                 OutlinedButton(
                     modifier = Modifier
                         .width(300.dp)
                         .height(60.dp),
                     shape = RoundedCornerShape(40),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color(
-                            0xFF01ae5e
-                        )
+                        backgroundColor = MaterialTheme.colors.onSecondary
+
                     ),
                     onClick = {
                         val user = lol.xget.groceryapp.user.mainUser.domain.User(
@@ -392,10 +345,10 @@ fun RegistrationSellerScreen(
                             deliveryFee = viewModel.deliveryFee.value,
                             shopName = viewModel.shopNameValue.value,
                             shopOpen = false,
-                            latitude = userLatLng.latitude.toFloat(),
-                            longitude = userLatLng.longitude.toFloat()
+                            latitude = viewModel.latitude.value,
+                            longitude = viewModel.longitude.value
                         )
-                        viewModel.registerUser(user)
+                        viewModel.registerUser(user, navController)
                     }
                 ) {
                     Text(text = "Sign Up", color = Color.White, fontSize = 18.sp)
@@ -426,30 +379,19 @@ fun RegistrationSellerScreen(
                     }
                 )
                 if (openDialog) {
-                    DialogBoxLoading()
+                    CircularProgressIndicator(color = MaterialTheme.colors.onSecondary)
                 }
                 if (viewModel.state.value.displayPb == true) {
-                    DialogBoxLoading()
+                    CircularProgressIndicator(color = MaterialTheme.colors.onSecondary)
                 }
 
-                if (warningToastRejectedPermissions) {
-                    SweetWarning(message = "Without location permissions we can't get your location")
-                    warningToastRejectedPermissions = false
-                }
-                if (warningToastActivateGps) {
-                    SweetWarning(message = "You need to active your location")
-                    warningToastActivateGps = false
-                }
+
             }
 
 
         }
 
-        if (viewModel._state.value.successRegister) {
-            //testing
-            LaunchedEffect(viewModel._state.value.successRegister) { navController?.navigate(Destinations.SellerHomeDestinations.route) }
 
-        }
 
         if (viewModel._state.value.errorMsg != null) {
             EventDialog(
@@ -459,4 +401,14 @@ fun RegistrationSellerScreen(
     }
 }
 
+
+@OptIn(ExperimentalMaterialApi::class)
+@Preview
+@Composable
+fun Prev() {
+    val nav = rememberNavController()
+    GroceryAppTheme() {
+        RegistrationSellerScreen(navController =nav , activity = MainActivity())
+    }
+}
 

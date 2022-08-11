@@ -10,6 +10,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.joinAll
 import lol.xget.groceryapp.common.Resource
 import lol.xget.groceryapp.seller.mainSeller.repository.SellerRepository
 import lol.xget.groceryapp.user.mainUser.presentation.ShopDetails.ShopDetailScreenState
@@ -19,7 +20,6 @@ import javax.inject.Inject
 class GetSpecificShopUseCase @Inject constructor(
     private val repo : SellerRepository
 ) {
-
 
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke (currentShop: String): Flow<Resource<ShopDetailScreenState>> =
@@ -34,6 +34,8 @@ class GetSpecificShopUseCase @Inject constructor(
                             override fun onDataChange(snapshot: DataSnapshot) {
                                 shop = snapshot.getValue(lol.xget.groceryapp.seller.mainSeller.domain.ShopModel::class.java)
                                 trySend(Resource.Success(ShopDetailScreenState(specificShopModel = shop)))
+                                cancel()
+
                             }
 
                             override fun onCancelled(error: DatabaseError) {

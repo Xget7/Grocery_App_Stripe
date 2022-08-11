@@ -34,22 +34,20 @@ class GetOrdersUseCase @Inject constructor(
                 try {
                     trySend(Resource.Loading())
                     for (shopId in shopsList) {
+                        allOrdersList.clear()
                         repo.getOrders(shopId.uid!!, userId)
                             .addValueEventListener(object : ValueEventListener {
                                 override fun onDataChange(snapshot: DataSnapshot) {
-                                    allOrdersList.clear()
                                     for (ds in snapshot.children) {
-                                        //ya ando ahora hay problema aca
                                         ds.getValue(Order::class.java)?.let {
                                             allOrdersList.add(it)
                                         }
                                     }
                                     if (allOrdersList.isNotEmpty()){
-                                        Log.e("Filtered list", allOrdersList[0].toString())
-                                        trySend(Resource.Success(UserOrdersState(orders = allOrdersList, successLoadOders = true)))
+                                        val filteredOrders = allOrdersList.filter { it.orderBy == userId }
+                                        trySend(Resource.Success(UserOrdersState(orders = filteredOrders, successLoadOders = true, loading = false)))
 
                                     }
-                                    //allOrdersList.filter { it.orderBy == userId }
                                 }
 
                                 override fun onCancelled(error: DatabaseError) {

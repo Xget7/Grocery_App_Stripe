@@ -19,11 +19,11 @@ import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
-class SellerAccountViewModel @Inject constructor(
+class SellerConfigViewModel @Inject constructor(
     val repo: HomeSellerUseCases,
 ) : ViewModel() {
 
-    private val currentUserUid = FirebaseAuth.getInstance().currentUser!!.uid
+    val currentUserUid = FirebaseAuth.getInstance().currentUser!!.uid
     val currentUserInstance = FirebaseAuth.getInstance()
 
     var open = MutableLiveData<Boolean>()
@@ -58,8 +58,7 @@ class SellerAccountViewModel @Inject constructor(
                 }
 
                 is Resource.Success -> {
-                    state.value = state.value.copy(user = result.data!!.user)
-                    state.value = state.value.copy(loading = false)
+                    state.value = state.value.copy(user = result.data!!.user,loading = false)
                     val userFb = state.value.user
                     shopNameValue.value = userFb?.shopName!!
                     accountType.value = userFb.accountType!!
@@ -71,7 +70,9 @@ class SellerAccountViewModel @Inject constructor(
                     }
                     cityValue.value = userFb.city!!
                     countryValue.value = userFb.country!!
-                    addressValue.value = userFb.address!!
+                    userFb.address?.let {
+                        addressValue.value = it
+                    }
                     phoneValue.value = userFb.phone!!
                     userFb.shopBanner?.let {
                         shopBannerImage.value = it
@@ -82,8 +83,7 @@ class SellerAccountViewModel @Inject constructor(
 
                 }
                 is Resource.Error -> {
-                    state.value = state.value.copy(errorMsg = result.message)
-                    state.value = state.value.copy(loading = false)
+                    state.value = state.value.copy(errorMsg = result.message,loading = false)
                 }
             }
         }.launchIn(viewModelScope)
@@ -103,11 +103,10 @@ class SellerAccountViewModel @Inject constructor(
                     state.value = state.value.copy(loading = true)
                 }
                 is Resource.Success -> {
-                    state.value = state.value.copy(successUpdate = result.data!!.successUpdate)
-                    state.value = state.value.copy(loading = false)
+                    state.value = state.value.copy(successUpdate = result.data!!.successUpdate,loading = false)
                 }
                 is Resource.Error -> {
-                    state.value = state.value.copy(errorMsg = result.message)
+                    state.value = state.value.copy(errorMsg = result.message,loading = false)
                 }
             }
         }.launchIn(viewModelScope)

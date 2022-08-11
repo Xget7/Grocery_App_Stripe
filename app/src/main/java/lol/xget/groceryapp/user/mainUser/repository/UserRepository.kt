@@ -3,9 +3,13 @@ package lol.xget.groceryapp.user.mainUser.repository
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import lol.xget.groceryapp.user.mainUser.domain.Review
 import lol.xget.groceryapp.user.shoppingCar.domain.Order
 
 interface UserRepository {
+
 
     suspend fun updateProfile(user: lol.xget.groceryapp.user.mainUser.domain.User, userUid: String) : Task<Void>
 
@@ -19,11 +23,16 @@ interface UserRepository {
 
     suspend fun getOrders(shopId: String, orderIdFrom: String) : DatabaseReference
 
-    suspend fun getOrderById(shopId: String, orderId: String) : DatabaseReference
+    suspend fun getOrderById(shopId: String, orderId: String) : Task<DataSnapshot>
 
     suspend fun getItemsByOrderId(shopId: String, orderId: String) : DatabaseReference
 
+
     suspend fun getCurrentProduct(shopId : String, currentProduct : String) : Task<DataSnapshot>
+
+    suspend fun placeShopRating(shopId: String, review: Review)  : Task<Void>
+
+    suspend fun getShopRatings(shopId: String) : DatabaseReference
 
 
 }

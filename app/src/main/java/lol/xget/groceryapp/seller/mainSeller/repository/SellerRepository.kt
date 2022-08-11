@@ -14,12 +14,16 @@ interface SellerRepository {
     suspend fun updateProduct(productId: String, userId: String, newData: Map<String, Any?>) : Task<Void>
     suspend fun getProductData(currentProduct : String, userId: String) : Task<DataSnapshot>
 
+
     //profile/shop
     suspend fun getProfile(userUid: String, accountType: String) : Task<DataSnapshot>
     suspend fun updateShopData(currentUser: String, newShopData: User) : Task<Void>
     suspend fun updateShopBanners(currentUser: String, newShopData: User) : Task<Void>
     suspend fun getShopData(currentShop : String) : DatabaseReference
-
+    suspend fun getAllOrders(currentShop : String) : DatabaseReference
+    suspend fun subscribeToOrders() : Task<Void>
+    suspend fun unsubscribeToOrders() : Task<Void>
+    suspend fun changeOrderStatus(shopId: String, orderId: String) : DatabaseReference
 
 
 }

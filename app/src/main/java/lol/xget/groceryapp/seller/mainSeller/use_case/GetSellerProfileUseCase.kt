@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import lol.xget.groceryapp.common.Resource
 import lol.xget.groceryapp.seller.mainSeller.presentation.SellerHomeState
 import lol.xget.groceryapp.seller.mainSeller.repository.SellerRepository
+import lol.xget.groceryapp.user.mainUser.domain.User
 import java.io.IOException
 import javax.inject.Inject
 
@@ -23,9 +24,8 @@ class GetSellerProfileUseCase @Inject constructor(
                 trySend(Resource.Loading())
                 repo.getProfile(userId, accountType).addOnSuccessListener { db ->
                     if (db.exists()) {
-                        val user = db.getValue(lol.xget.groceryapp.user.mainUser.domain.User::class.java)
+                        val user = db.getValue(User::class.java)
                         trySend(Resource.Success(SellerHomeState(user = user)))
-
                     }
                 }.addOnFailureListener {
                     try {

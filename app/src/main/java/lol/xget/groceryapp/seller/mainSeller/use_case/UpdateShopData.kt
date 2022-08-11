@@ -36,11 +36,15 @@ class UpdateShopData @Inject constructor(
 
                     //Profile photo upload
                     val profImgRefChild =
-                        ref.getReference("profileImages").child(user.accountType!!)
-                            .child(user.uid!!).child("photo")
+                        user.uid?.let {
+                            ref.getReference("profileImages").child(user.accountType!!)
+                                .child(it).child("photo")
+                        }
                     val imgRef =
-                        ref.getReference("profileImages").child(user.accountType)
-                            .child(user.uid!!)
+                        user.accountType?.let {
+                            ref.getReference("profileImages").child(it)
+                                .child(user.uid!!)
+                        }
                     //banner photo upload
                     val bannerImgRefChild =
                         ref.getReference("bannersImages").child(user.accountType!!)
@@ -51,11 +55,11 @@ class UpdateShopData @Inject constructor(
 
                     if (shopPhoto != null) {
                         try {
-                            imgRef.listAll().addOnSuccessListener {
+                            imgRef?.listAll()?.addOnSuccessListener {
                                 if (it.items.size > 0) {
                                     //if exist profile image
-                                    profImgRefChild.putFile(shopPhoto)
-                                        .addOnSuccessListener {
+                                    profImgRefChild?.putFile(shopPhoto)
+                                        ?.addOnSuccessListener {
                                             // Get the download URL and upload to
                                             profImgRefChild.downloadUrl.addOnSuccessListener {
                                                 launch {
@@ -75,13 +79,13 @@ class UpdateShopData @Inject constructor(
                                                         }
                                                 }
                                             }
-                                        }.addOnFailureListener {
+                                        }?.addOnFailureListener {
                                             trySend(Resource.Error("Can't change your profile photo"))
                                         }
 
                                 } else {
                                     //If no exist profile image
-                                    profImgRefChild.putFile(shopPhoto).addOnSuccessListener {
+                                    profImgRefChild?.putFile(shopPhoto)?.addOnSuccessListener {
                                         profImgRefChild.downloadUrl.addOnSuccessListener {
                                             launch {
                                                 user.profilePhoto = it.toString()
@@ -100,7 +104,7 @@ class UpdateShopData @Inject constructor(
                                                     }
                                             }
                                         }
-                                    }.addOnFailureListener {
+                                    }?.addOnFailureListener {
                                         trySend(Resource.Error("Can't upload your profile photo"))
                                     }
                                 }

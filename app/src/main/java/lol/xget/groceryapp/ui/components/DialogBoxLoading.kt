@@ -66,7 +66,7 @@ fun DialogBoxLoading(
                         .padding(bottom = paddingBottom),
                     text = "Please wait...",
                     style = TextStyle(
-                        color = Color.Black,
+                        color = MaterialTheme.colors.background,
                         fontSize = 16.sp,
                         fontFamily = FontFamily(
                             Font(R.font.raleway_medium, FontWeight.Normal)

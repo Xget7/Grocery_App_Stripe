@@ -4,6 +4,9 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import lol.xget.groceryapp.user.mainUser.domain.Review
 import lol.xget.groceryapp.user.mainUser.repository.UserRepository
 import lol.xget.groceryapp.user.shoppingCar.domain.Order
 import org.kpropmap.asMap
@@ -15,7 +18,8 @@ class UserRepoImpl @Inject constructor(
 
     //to realtimeDatabase
     private val db2 = FirebaseDatabase.getInstance()
-
+    val coroutineScope: CoroutineScope
+        get() = CoroutineScope(Dispatchers.IO)
 
     override suspend fun updateProfile(
         user: lol.xget.groceryapp.user.mainUser.domain.User,
@@ -45,8 +49,8 @@ class UserRepoImpl @Inject constructor(
         return db2.getReference("sellers").child(shopId).child("orders")
     }
 
-    override suspend fun getOrderById(shopId: String, orderId: String): DatabaseReference {
-        return db2.getReference("sellers").child(shopId).child("orders").child(orderId)
+    override suspend fun getOrderById(shopId: String, orderId: String): Task<DataSnapshot> {
+        return db2.getReference("sellers").child(shopId).child("orders").child(orderId).get()
 
     }
 
@@ -61,6 +65,14 @@ class UserRepoImpl @Inject constructor(
     ): Task<DataSnapshot> {
         return db2.getReference("sellers").child(shopId).child("products").child(currentProduct)
             .get()//?
+    }
+
+    override suspend fun placeShopRating(shopId: String, review: Review): Task<Void> {
+        return db2.getReference("sellers").child(shopId).child("ratings").child(review.uid!!).setValue(review)
+    }
+
+    override suspend fun getShopRatings(shopId: String): DatabaseReference {
+        return db2.getReference("sellers").child(shopId).child("ratings")
     }
 
 

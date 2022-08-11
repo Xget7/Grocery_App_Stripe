@@ -1,5 +1,6 @@
 package lol.xget.groceryapp.auth.login.presentation
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -48,6 +49,7 @@ import lol.xget.groceryapp.domain.util.Destinations
 import lol.xget.groceryapp.ui.components.DialogBoxLoading
 
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @ExperimentalCoroutinesApi
 @ExperimentalMaterialApi
 @Composable
@@ -59,241 +61,250 @@ fun LoginScreen(
     var passwordVisibility by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
-    val state = viewModel.state.value
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.onBackground)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.grocery),
-            contentDescription = "Login Image",
-            contentScale = ContentScale.Fit,
-            modifier = Modifier
-                .padding(bottom = 350.dp)
-                .align(Alignment.Center)
-                .width(250.dp)
-                .height(250.dp)
-        )
-
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomCenter
+    if (viewModel.state.value.displayPb) {
+        Row(
+            Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            ConstraintLayout {
-
-                val (surface, fab) = createRefs()
-
-                Surface(
+            CircularProgressIndicator(color = MaterialTheme.colors.onSecondary)
+        }
+    }else{
+        Scaffold() {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colors.onSecondary)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.grocery),
+                    contentDescription = "Login Image",
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(450.dp)
-                        .constrainAs(surface) {
-                            bottom.linkTo(parent.bottom)
-                        },
-                    color = MaterialTheme.colors.background,
-                    shape = RoundedCornerShape(
-                        topStartPercent = 8,
-                        topEndPercent = 8
-                    )
+                        .padding(bottom = 350.dp)
+                        .align(Alignment.Center)
+                        .width(250.dp)
+                        .height(250.dp)
+                )
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.BottomCenter
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp, bottom = 20.dp),
-                        verticalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Spacer(modifier = Modifier.height(14.dp))
-                        Text(
-                            text = "Welcome Back!",
-                            style = MaterialTheme.typography.h4.copy(
-                                fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colors.primaryVariant
-                            )
-                        )
-
-                        Text(
-                            text = "Login to your Account",
-                            style = MaterialTheme.typography.h5.copy(
-                                color = MaterialTheme.colors.primaryVariant
-                            )
-                        )
-
-                        Column(
+                    ConstraintLayout {
+                        val (surface, fab) = createRefs()
+                        Surface(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            TransparentTextField(
-                                singleLine = true,
-                                textFieldValue = viewModel.emailValue,
-                                textLabel = "Email",
-                                keyboardType = KeyboardType.Email,
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        focusManager.moveFocus(FocusDirection.Down)
-                                    }
-                                ),
-                                imeAction = ImeAction.Next
+                                .height(480.dp)
+                                .constrainAs(surface) {
+                                    bottom.linkTo(parent.bottom)
+                                },
+                            color = MaterialTheme.colors.background,
+                            shape = RoundedCornerShape(
+                                topStartPercent = 8,
+                                topEndPercent = 8
                             )
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp, bottom = 20.dp),
+                                verticalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                Spacer(modifier = Modifier.height(14.dp))
+                                Text(
+                                    text = "Welcome Back!",
+                                    style = MaterialTheme.typography.h4.copy(
+                                        fontWeight = FontWeight.Medium,
+                                        color = MaterialTheme.colors.primaryVariant
+                                    )
+                                )
 
-                            TransparentTextField(
-                                singleLine = true,
-                                textFieldValue = viewModel.passwordValue,
-                                textLabel = "Password",
-                                keyboardType = KeyboardType.Password,
-                                keyboardActions = KeyboardActions(
-                                    onDone = {
-                                        focusManager.clearFocus()
+                                Text(
+                                    text = "Login to your Account",
+                                    style = MaterialTheme.typography.h5.copy(
+                                        color = MaterialTheme.colors.primaryVariant
+                                    )
+                                )
 
-                                        //TODO("LOGIN")
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    TransparentTextField(
+                                        singleLine = true,
+                                        textFieldValue = viewModel.emailValue,
+                                        textLabel = "Email",
+                                        keyboardType = KeyboardType.Email,
+                                        keyboardActions = KeyboardActions(
+                                            onNext = {
+                                                focusManager.moveFocus(FocusDirection.Down)
+                                            }
+                                        ),
+                                        imeAction = ImeAction.Next,
+                                        maxLines = 1
+                                    )
+
+                                    TransparentTextField(
+                                        singleLine = true,
+                                        textFieldValue = viewModel.passwordValue,
+                                        textLabel = "Password",
+                                        keyboardType = KeyboardType.Password,
+                                        keyboardActions = KeyboardActions(
+                                            onDone = {
+                                                focusManager.clearFocus()
+
+                                                //TODO("LOGIN")
+                                            }
+                                        ),
+                                        imeAction = ImeAction.Done,
+                                        trailingIcon = {
+                                            IconButton(
+                                                onClick = {
+                                                    passwordVisibility = !passwordVisibility
+                                                }
+                                            ) {
+                                                Icon(
+                                                    imageVector = if (passwordVisibility) {
+                                                        Icons.Default.Visibility
+                                                    } else {
+                                                        Icons.Default.VisibilityOff
+                                                    },
+                                                    contentDescription = "Toggle Password Icon"
+                                                )
+                                            }
+                                        },
+                                        visualTransformation = if (passwordVisibility) {
+                                            VisualTransformation.None
+                                        } else {
+                                            PasswordVisualTransformation()
+                                        },
+                                        maxLines = 1,
+                                    )
+
+                                    ClickableText(
+
+                                        text = buildAnnotatedString {
+                                            append("Forgot Password?")
+                                        },
+                                        style = TextStyle(
+                                            color = Color.Black
+                                        )
+                                    ) {
+                                        navController.navigate(Destinations.RecoverPasswordDestinations.route)
                                     }
-                                ),
-                                imeAction = ImeAction.Done,
-                                trailingIcon = {
-                                    IconButton(
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    OutlinedButton(
+                                        modifier = Modifier
+                                            .width(300.dp)
+                                            .height(60.dp),
+                                        shape = RoundedCornerShape(40),
+                                        colors = ButtonDefaults.buttonColors(
+                                            backgroundColor = MaterialTheme.colors.onSecondary
+                                        ),
                                         onClick = {
-                                            passwordVisibility = !passwordVisibility
+                                            viewModel.login(
+                                                viewModel.emailValue.value,
+                                                viewModel.passwordValue.value,
+                                                navController
+                                            )
+                                        },
+
+                                        ) {
+                                        Text(text = "Login", color = Color.White, fontSize = 18.sp)
+                                    }
+                                    Spacer(modifier = Modifier.height(4.dp))
+
+                                    GoogleButton(
+                                        modifier = Modifier
+                                            .height(50.dp)
+                                            .width(300.dp)
+                                            .align(Alignment.CenterHorizontally),
+                                        shape = RoundedCornerShape(40),
+                                        onClicked = {
+                                            TODO()
+                                        }
+                                    )
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    ClickableText(
+                                        text = buildAnnotatedString {
+                                            withStyle(
+                                                style = SpanStyle(
+                                                    color = Color.Black,
+                                                )
+                                            ) {
+                                                append("Do not have an Account?")
+                                            }
+                                            withStyle(
+                                                style = SpanStyle(
+                                                    color = Color.Black,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            ) {
+                                                append("Sign up")
+                                            }
                                         }
                                     ) {
-                                        Icon(
-                                            imageVector = if (passwordVisibility) {
-                                                Icons.Default.Visibility
-                                            } else {
-                                                Icons.Default.VisibilityOff
-                                            },
-                                            contentDescription = "Toggle Password Icon"
-                                        )
+                                        navController.navigate(Destinations.RegisterUserDestinations.route)
                                     }
-                                },
-                                visualTransformation = if (passwordVisibility) {
-                                    VisualTransformation.None
-                                } else {
-                                    PasswordVisualTransformation()
                                 }
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
+                            }
+                        }
 
-
-                            ClickableText(
-                                text = buildAnnotatedString {
-                                    append("Forgot Password?")
+                        FloatingActionButton(
+                            modifier = Modifier
+                                .size(72.dp)
+                                .constrainAs(fab) {
+                                    top.linkTo(surface.top, margin = (-36).dp)
+                                    end.linkTo(surface.end, margin = 36.dp)
                                 },
-                                style = TextStyle(
-                                    color = MaterialTheme.colors.primaryVariant
+                            backgroundColor = MaterialTheme.colors.background,
+                            onClick = {
+                                viewModel.login(
+                                    viewModel.emailValue.value,
+                                    viewModel.passwordValue.value,
+                                    navController
                                 )
-                            ) {
-                                navController.navigate(Destinations.RecoverPasswordDestinations.route)
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(12.dp))
-
-
-
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            },
+                            elevation = FloatingActionButtonDefaults.elevation(4.dp)
                         ) {
-                            OutlinedButton(
-                                modifier = Modifier
-                                    .width(300.dp)
-                                    .height(60.dp),
-                                shape = RoundedCornerShape(40),
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color(
-                                        0xFF01ae5e
-                                    )
-                                ),
-                                onClick = {
-                                    viewModel.login(
-                                        viewModel.emailValue.value,
-                                        viewModel.passwordValue.value,
-                                        navController
-                                    )
-                                }
-                            ) {
-                                Text(text = "Login", color = Color.White, fontSize = 18.sp)
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            GoogleButton(
-                                modifier = Modifier
-                                    .height(50.dp)
-                                    .width(300.dp)
-                                    .align(Alignment.CenterHorizontally),
-                                shape = RoundedCornerShape(40),
-                                onClicked = {
-                                    TODO()
-                                }
+                            Icon(
+                                modifier = Modifier.size(42.dp),
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = "Forward Icon",
+                                tint = MaterialTheme.colors.onSecondary
                             )
-
-
-
-                            Spacer(modifier = Modifier.height(10.dp))
-                            ClickableText(
-                                text = buildAnnotatedString {
-                                    withStyle(
-                                        style = SpanStyle(
-                                            color = MaterialTheme.colors.primaryVariant,
-                                        )
-                                    ) {
-                                        append("Do not have an Account?")
-                                    }
-                                    withStyle(
-                                        style = SpanStyle(
-                                            color = MaterialTheme.colors.primaryVariant,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    ) {
-                                        append("Sign up")
-                                    }
-                                }
-                            ) {
-                                navController.navigate(Destinations.RegisterUserDestinations.route)
-                            }
                         }
+
+                    }
+
+
+
+
+
+                    if (viewModel.state.value.errorMsg != null) {
+                        EventDialog(
+                            errorMessage = viewModel.state.value.errorMsg,
+                            onDismiss = { viewModel.hideErrorDialog() })
                     }
                 }
-
-                FloatingActionButton(
-                    modifier = Modifier
-                        .size(72.dp)
-                        .constrainAs(fab) {
-                            top.linkTo(surface.top, margin = (-36).dp)
-                            end.linkTo(surface.end, margin = 36.dp)
-                        },
-                    backgroundColor = MaterialTheme.colors.primary,
-                    onClick = {
-                        //TODO()
-                    }
-                ) {
-                    Icon(
-                        modifier = Modifier.size(42.dp),
-                        imageVector = Icons.Default.ArrowForward,
-                        contentDescription = "Forward Icon",
-                        tint = Color.White
-                    )
-                }
-
-            }
-
-            if (viewModel.state.value.displayPb) {
-                DialogBoxLoading()
-            }
-
-
-
-            if (viewModel.state.value.errorMsg != null) {
-                EventDialog(
-                    errorMessage = viewModel.state.value.errorMsg,
-                    onDismiss = { viewModel.hideErrorDialog() })
             }
         }
+
     }
+
+
 }
 
 

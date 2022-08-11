@@ -41,8 +41,8 @@ fun GoogleButton(
     icon: Int = R.drawable.ic_baseline_google,
     shape: Shape = Shapes.medium,
     borderColor: Color = Color.LightGray,
-    backgroundColor: Color = MaterialTheme.colors.primaryVariant,
-    progressIndicatorColor: Color = MaterialTheme.colors.primary,
+    backgroundColor: Color = MaterialTheme.colors.background,
+    progressIndicatorColor: Color = MaterialTheme.colors.onSecondary,
     onClicked: () -> Unit
 ) {
     var clicked by remember { mutableStateOf(false) }

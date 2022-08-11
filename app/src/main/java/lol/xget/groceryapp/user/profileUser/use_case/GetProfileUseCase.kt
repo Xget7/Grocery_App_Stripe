@@ -8,6 +8,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import lol.xget.groceryapp.common.Resource
+import lol.xget.groceryapp.user.mainUser.domain.User
 import lol.xget.groceryapp.user.mainUser.repository.UserRepository
 import lol.xget.groceryapp.user.profileUser.presentation.ProfileState
 import java.io.IOException
@@ -24,7 +25,7 @@ class GetProfileUseCase @Inject constructor(
         try {
             repo.getProfile(currentUserUid!!, accountType).addOnSuccessListener { db ->
                 if (db.exists()) {
-                    val user = db.getValue(lol.xget.groceryapp.user.mainUser.domain.User::class.java)
+                    val user = db.getValue(User::class.java)
                     trySend(Resource.Success(ProfileState(user = user)))
                 }
             }.addOnFailureListener {

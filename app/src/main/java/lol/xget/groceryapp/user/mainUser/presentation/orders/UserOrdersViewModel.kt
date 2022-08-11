@@ -33,39 +33,33 @@ class UserOrdersViewModel  @Inject constructor(
     val shopTitleFromOrderList = mutableStateListOf<String>()
     private val currentUser = FirebaseAuth.getInstance().currentUser?.uid
 
-
-
     init {
         getShops()
 
     }
 
-
     private fun getShops() {
-        state.value = state.value.copy(loading = true)
         repo.getShopsList.invoke().onEach{
                 when(it){
+                    is Resource.Loading -> {
+                        state.value = state.value.copy(loading = true)
+                    }
                     is Resource.Success -> {
                         //getting shops data into ShopList
                         shopListState.value = shopListState.value.copy(shopModel = it.data?.shopModel)
                         shopListState.value.shopModel?.let { list ->
                             shopsList.swapList(list)
                             shopListState.value = shopListState.value.copy(loading = false)
-                            Log.e("shopListFrongetShopsViewModelElse", "Lists: ${shopsList}")
                         }
+                        Log.d("ORdersViewModel", "ORders : shoplist ${shopsList}")
                         if (shopsList.isNotEmpty()){
-                            shopListState.value = shopListState.value.copy(loading = false)
                             getOrdersFromUser()
                         }
                     }
                     is Resource.Error -> {
                         state.value = state.value.copy(errorMsg = it.message, loading = false)
                     }
-                    else -> {
-                        Log.e("shopListFrongetShopsViewModelElse", "error")
-                    }
                 }
-
             }.launchIn(viewModelScope)
     }
 
@@ -80,18 +74,18 @@ class UserOrdersViewModel  @Inject constructor(
                         success = result.data!!.success,
                         orders = result.data.orders ,
                         successLoadOders = result.data.successLoadOders,
+                        loading = result.data.loading
                     )
+                    val list = state.value.orders?.toList()
+                    Log.d("List", list.toString())
+                    ordersList.swapList(list!!)
                     //getting shops data into ShopList
-                    result.data.orders?.let { list ->
-                        ordersList.swapList(list)
-                        state.value = state.value.copy(loading = false)
-                    }
 
+                    state.value = state.value.copy(loading = false, successLoadOders= true)
 
                 }
                 is Resource.Error -> {
-                    state.value = state.value.copy(loading = false)
-                    state.value = state.value.copy(errorMsg = result.message)
+                    state.value = state.value.copy(errorMsg = result.message,loading = false)
                 }
             }
         }.launchIn(viewModelScope)
@@ -102,5 +96,10 @@ class UserOrdersViewModel  @Inject constructor(
         return currentShopTitle ?: "No Title"
     }
 
+    fun hideErrorDialog() {
+        state.value = state.value.copy(
+            errorMsg = null
+        )
+    }
 
 }

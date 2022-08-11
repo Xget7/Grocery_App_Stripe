@@ -1,6 +1,7 @@
 package lol.xget.groceryapp.user.profileUser.use_case
 
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.FirebaseException
 import com.google.firebase.database.DataSnapshot
@@ -30,59 +31,58 @@ class GetOrderByIdUseCase @Inject constructor(
         callbackFlow {
             try {
                 try {
-                    trySend(Resource.Loading())
-
-                        repo.getOrderById(currentShopId, currentOrderId,)
-                            .addValueEventListener(object : ValueEventListener {
-                                override fun onDataChange(snapshot: DataSnapshot) {
-                                    for (ds in snapshot.children) {
-                                        //ya ando ahora hay problema aca
-                                        ds.getValue(Order::class.java)?.let {
-                                            currentOrder.value = it
-                                        }
-                                    }
-                                    if (currentOrder.value.orderId != null) {
-                                        trySend(
-                                            Resource.Success(
-                                                UserOrdersDetailState(
-                                                    success = true
-                                                )
-                                            )
-                                        )
-
-                                    }
-                                }
-
-                                override fun onCancelled(error: DatabaseError) {
-                                    trySend(
-                                        Resource.Error(
-                                            error.message ?: "An unexpected error occured"
+                    try {
+                        trySend(Resource.Loading())
+                        repo.getOrderById(currentShopId, currentOrderId).addOnSuccessListener {
+                            if (it.exists()){
+                                currentOrder.value = it.getValue(Order::class.java)!!
+                                trySend(
+                                    Resource.Success(
+                                        UserOrdersDetailState(
+                                            success = true,
+                                            order = currentOrder.value,
+                                            loading = false
                                         )
                                     )
-                                }
-                            })
+                                )
+                            }else{
+                                Resource.Success(
+                                    UserOrdersDetailState(
+                                        success = false,
+                                        loading = false,
+                                        noItems = true
+                                    )
+                                )
+                            }
+
+                        }.addOnFailureListener {
+                            cancel()
+                            trySend(Resource.Error(it.localizedMessage!!))
+
+                        }
+
+                    } catch (e: FirebaseException) {
+                        cancel()
+                        trySend(Resource.Error(e.localizedMessage!!))
+                    }
+                    try {
+                        awaitClose { channel.close() }
+                    } catch (ex: Exception) {
+                        ex.printStackTrace()
+                    }
                 } catch (e: FirebaseException) {
-                    cancel()
-                    trySend(Resource.Error(e.localizedMessage!!))
+                    trySend(
+                        Resource.Error(
+                            e.localizedMessage ?: "An unexpected error occured"
+                        )
+                    ).isFailure
+                    awaitClose { cancel() }
                 }
 
-                try {
-                    awaitClose { channel.close() }
-                } catch (ex: Exception) {
-                    ex.printStackTrace()
-                }
-            } catch (e: FirebaseException) {
-                trySend(
-                    Resource.Error(
-                        e.localizedMessage ?: "An unexpected error occured"
-                    )
-                ).isFailure
-                awaitClose { cancel() }
             } catch (e: IOException) {
                 awaitClose { cancel() }
                 trySend(Resource.Error("Couldn't reach server. Check your internet connection.")).isFailure
             }
-
         }
 
 }

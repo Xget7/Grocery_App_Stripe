@@ -1,5 +1,6 @@
 package lol.xget.groceryapp.user
 
+import android.annotation.SuppressLint
 import androidx.compose.compiler.plugins.kotlin.EmptyFunctionMetrics.composable
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
@@ -17,26 +18,22 @@ import lol.xget.groceryapp.ui.BottomNavigationBar
 import lol.xget.groceryapp.user.mainUser.presentation.ProductDetail.ProductDetailScreen
 import lol.xget.groceryapp.user.mainUser.presentation.UserHomeScreen
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterialApi::class, ExperimentalCoroutinesApi::class)
 @Composable
 fun UserMainScreen(
-    navController: NavController,
+    navController: NavHostController,
     navHostWithOutBNB: NavController,
     activity: MainActivity
 ) {
 
-    val navigationItems = listOf(
-        Destinations.UserHomeDestinations,
-        Destinations.UserOrdersScreen,
-        Destinations.ProfileUserDestinations
-    )
 
     Scaffold(
         bottomBar = {
-            BottomNavigationBar(navController = navController, items = navigationItems)
+            BottomNavigationBar(navController = navController)
         }
     ) {
-        UserNavHost(navHostController = navController as NavHostController, navHostWithOutBNB =  navHostWithOutBNB,activity )
+        UserNavHost(navHostController = navController, navHostWithOutBNB =  navHostWithOutBNB,activity )
     }
 }
 

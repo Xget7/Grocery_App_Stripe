@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +27,7 @@ class ProductDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel(){
 
+    private val mAuth = FirebaseAuth.getInstance()
     val state: MutableState<ProductDetailState> = mutableStateOf(ProductDetailState())
 
 
@@ -39,7 +41,7 @@ class ProductDetailViewModel @Inject constructor(
     val currentShopId = mutableStateOf("")
     val productPrice = mutableStateOf("")
     val productPhoto = mutableStateOf("")
-
+    val currentUserId = mAuth.currentUser?.uid
     val currentProductAmount = MutableStateFlow(1)
     val productFinalPrice = MutableStateFlow(0f)
 
@@ -51,7 +53,6 @@ class ProductDetailViewModel @Inject constructor(
         val currentProductId = savedStateHandle.get<String>(Constants.PARAM_PRODUCT)
         if (currentProductId != null && _currentShopId != null){
             getProduct(_currentShopId, currentProductId)
-
         }
     }
     private fun getProduct(shopId: String,productId: String){
@@ -79,7 +80,6 @@ class ProductDetailViewModel @Inject constructor(
         viewModelScope.launch {
             currentProductAmount.value = currentProductAmount.value + 1
             productFinalPrice.value = currentProductAmount.value * productPrice.value.toFloat()
-            Log.e("producFinalprice", productFinalPrice.value.toString())
         }
     }
 
@@ -88,7 +88,6 @@ class ProductDetailViewModel @Inject constructor(
             if (currentProductAmount.value >= 1){
                 currentProductAmount.value = currentProductAmount.value - 1
                 productFinalPrice.value = currentProductAmount.value * productPrice.value.toFloat()
-                Log.e("producFinalprice", productFinalPrice.value.toString())
             }
         }
     }
@@ -117,8 +116,6 @@ class ProductDetailViewModel @Inject constructor(
     fun addToCart(cartItems: CartItems){
         viewModelScope.launch(Dispatchers.IO) {
             dbCartRepo.addItem(cartItems)
-
-
         }
     }
 
