@@ -1,5 +1,5 @@
-# Grocery App with PayPal 
-Multiple vendor grocery App with PayPal integration
+# Grocery App 
+Multiple vendor grocery App.
 
-Grocery 1.0.2 Base WITHOUT Car items Ui , Orders and PayPal 
+Grocery 1.0.2 Base , Need add Car items Ui , Orders and PayPal payment integration. 
 
